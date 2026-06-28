@@ -8678,7 +8678,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let providersHtml = '';
       if (providers.length > 0) {
         providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-          来源: ${providers.map(p => `${p.name}+${p.val}`).join(', ')}
+          来源：${providers.map(p => `${p.name}+${p.val}`).join(', ')}
         </div>`;
       }
 
@@ -9073,7 +9073,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let providersHtml = '';
       if (providers.length > 0) {
         providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-          来源: ${providers.map(p => `${p.name}+${p.val}`).join(', ')}
+          来源：${providers.map(p => `${p.name}+${p.val}`).join(', ')}
         </div>`;
       }
 
@@ -9102,10 +9102,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         edgeClass = 'edge-right';
       }
 
+      let customIcon = 'ri-pulse-line';
+      if (k === '储能') customIcon = 'ri-battery-charge-line';
+      else if (k === '充能') customIcon = 'ri-flashlight-line';
+      else if (k === '超频爆发' || k === '超载爆发') customIcon = 'ri-bolt-line';
+      else if (k === '重击强化') customIcon = 'ri-hammer-line';
+
       cardsHtml += `
         <div class="organ-attr-compact-card custom-attr-card ${edgeClass}" data-attr-key="${k}">
           <div class="compact-header-vertical">
-            <i class="ri-pulse-line"></i>
+            <i class="${customIcon}"></i>
             <span class="organ-attr-value ${valClass}">${val}</span>
           </div>
           <div class="compact-detail">
@@ -9122,7 +9128,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     // 渲染特性
     Object.entries(activeTraits).forEach(([traitName, traitSources]) => {
       const providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-        来源: ${traitSources.map(ts => ts.organName).join(', ')}
+        来源：${traitSources.map(ts => ts.organName).join(', ')}
       </div>`;
 
       const colIndex = customCardIdx % 7;
@@ -9144,10 +9150,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
       const traitVal = traitSources.length;
 
+      let traitIcon = 'ri-shield-flash-line';
+      if (traitName === '超频爆发' || traitName === '超载爆发') traitIcon = 'ri-bolt-line';
+      else if (traitName === '重击强化') traitIcon = 'ri-hammer-line';
+      else if (traitName === '充能') traitIcon = 'ri-flashlight-line';
+
       cardsHtml += `
         <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}" style="border-color: #2ea87a40; background: rgba(46,168,122,0.03);">
           <div class="compact-header-vertical" style="color: #2ea87a;">
-            <i class="ri-shield-flash-line"></i>
+            <i class="${traitIcon}"></i>
             <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${traitVal}</span>
           </div>
           <div class="compact-detail">
@@ -9356,6 +9367,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let lvlColor = '#57606a';
       let slotClass = 'empty-organ';
       let nameColor = '#57606a';
+      let setBadge = '';
 
       if (allEmpty) {
         displayName = `[${s.key}]`;
@@ -9377,7 +9389,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         const suffix = (count > 1) ? ` (${activeCount}/${count})` : "";
         displayName = `${baseName}${organLevel}${suffix}`;
         
-        let setBadge = '';
         if (firstOrgan && firstOrgan.套装) {
           setBadge = `<span class="organ-set-tag-badge" style="display:inline-block; font-size:7px; background:#d29922; color:#fff; padding:0 2px; border-radius:3px; margin-left:3px; font-weight:700; vertical-align:middle;">${firstOrgan.套装}</span>`;
         }
