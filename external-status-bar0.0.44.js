@@ -7640,6 +7640,46 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
   };
 
+
+  const getDefaultOrganForSlot = (slotKey, race) => {
+    // 阑尾和幸运只有人类有，其他种族默认无阑尾
+    if (slotKey === '阑尾') {
+      const isHuman = !race || race.includes('人类') || race.includes('凡人');
+      if (!isHuman) return { 空: true, 名称: '[空置阑尾]' };
+    }
+    return defaultOrgans[slotKey] || { 空: true, 名称: `[${slotKey}]` };
+  };
+
+  const getOrganIconClass = (slotName, organName) => {
+    const slotMap = {
+      "眼球": "ri-eye-fill",
+      "心脏": "ri-heart-pulse-fill",
+      "肺脏": "ri-windy-fill",
+      "胃": "ri-restaurant-fill",
+      "肠子": "ri-loop-left-line",
+      "阑尾": "ri-heart-add-fill",
+      "肌肉": "ri-hand-sanitizer-fill",
+      "肝脏": "ri-contrast-drop-2-fill",
+      "脾脏": "ri-shield-user-fill",
+      "肾脏": "ri-drop-fill",
+      "肋骨": "ri-split-cells-vertical",
+      "脊柱": "ri-node-tree",
+      "脑": "ri-brain-line",
+      "胆": "ri-contrast-drop-line",
+      "膀胱": "ri-ink-bottle-line",
+      "胰腺": "ri-bubble-chart-line",
+      "生殖": "ri-genderless-line"
+    };
+    const baseSlot = String(slotName || '').trim();
+    if (slotMap[baseSlot]) return slotMap[baseSlot];
+    
+    // 从名字里猜测槽位类型
+    const guessed = guessSlotFromOrganName(organName);
+    if (guessed && slotMap[guessed]) return slotMap[guessed];
+    
+    return "ri-heart-fill";
+  };
+
   // 任意器官都可以装配到任意位置（更接近饰品的特性），仅筛选出"器官"类型的备用件
   const findAvailableOrgansForSlot = (slotName, data) => {
     const results = [];
@@ -8508,7 +8548,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     ];
 
     const getAttrVal = (key, defaultVal) => {
-      // 获取所有槽位展开后的实例
       const expandedSlots = [];
       slotsDef.forEach(s => {
         const count = s.count || 1;
@@ -8521,17 +8560,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
       });
 
-      // 计算无器官时的基础值 = defaultVal - 所有展开后槽位的原生器官对该属性的加成之和
+      const race = data?.人物?.种族 || '';
       let nativeBonusSum = 0;
       expandedSlots.forEach(slot => {
-        const org = defaultOrgans[slot.baseKey];
-        if (org && org.属性加成 && org.属性加成[key] !== undefined) {
+        const org = getDefaultOrganForSlot(slot.baseKey, race);
+        if (org && !org.空 && org.属性加成 && org.属性加成[key] !== undefined) {
           nativeBonusSum += Number(org.属性加成[key]);
         }
       });
       let baseVal = defaultVal - nativeBonusSum;
 
-      // 累加当前实际装备/原生的器官加成
       let activeBonusSum = 0;
       expandedSlots.forEach(slot => {
         const organ = 器官列表[slot.key];
@@ -8541,16 +8579,22 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         
         let activeOrgan = null;
         if (isNative) {
-          activeOrgan = defaultOrgans[slot.baseKey];
+          activeOrgan = getDefaultOrganForSlot(slot.baseKey, race);
         } else if (isEquipped) {
           activeOrgan = organ;
         }
         
-        if (activeOrgan && activeOrgan.属性加成 && activeOrgan.属性加成[key] !== undefined) {
+        if (activeOrgan && !activeOrgan.空 && activeOrgan.属性加成 && activeOrgan.属性加成[key] !== undefined) {
           activeBonusSum += Number(activeOrgan.属性加成[key]);
         }
       });
-      return baseVal + activeBonusSum;
+      
+      let finalVal = baseVal + activeBonusSum;
+      const activeResources = ['燃点', '储能', '能量', '怒气', '法力', '主动能量'];
+      if (activeResources.includes(key) && finalVal < 0) {
+        finalVal = 0;
+      }
+      return finalVal;
     };
 
     let attrsGridHtml = '<div class="organ-attrs-header-bar">';
@@ -8909,6 +8953,163 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           </div>
         </div>
       `;
+    });
+
+    // 收集额外的自定义属性与特性
+    const expandedSlots = [];
+    slotsDef.forEach(s => {
+      const count = s.count || 1;
+      if (count > 1) {
+        for (let i = 1; i <= count; i++) {
+          expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
+        }
+      } else {
+        expandedSlots.push({ key: s.key, baseKey: s.key });
+      }
+    });
+
+    const customAttrs = new Set();
+    const activeTraits = {}; 
+    const baseAttrKeys = new Set(attrsDef.map(a => a.key));
+    const race = data?.人物?.种族 || '';
+
+    expandedSlots.forEach(slot => {
+      const organ = 器官列表[slot.key];
+      const isEmpty = !!organ && organ.空;
+      const isNative = !organ;
+      const isEquipped = !!organ && !organ.空;
+      
+      let activeOrgan = null;
+      if (isNative) {
+        activeOrgan = getDefaultOrganForSlot(slot.baseKey, race);
+      } else if (isEquipped) {
+        activeOrgan = organ;
+      }
+      
+      if (activeOrgan && !activeOrgan.空) {
+        if (activeOrgan.属性加成) {
+          Object.keys(activeOrgan.属性加成).forEach(k => {
+            if (!baseAttrKeys.has(k) && Number(activeOrgan.属性加成[k]) !== 0) {
+              customAttrs.add(k);
+            }
+          });
+        }
+        if (activeOrgan.特性) {
+          activeOrgan.特性.forEach(t => {
+            if (t) {
+              if (!activeTraits[t]) activeTraits[t] = [];
+              activeTraits[t].push({
+                organName: activeOrgan.名称,
+                slotKey: slot.key
+              });
+            }
+          });
+        }
+      }
+    });
+
+    // 渲染自定义属性
+    let customCardIdx = attrsDef.length;
+    customAttrs.forEach(k => {
+      let val = 0;
+      let providers = [];
+      expandedSlots.forEach(slot => {
+        const organ = 器官列表[slot.key];
+        const isEmpty = !!organ && organ.空;
+        const isNative = !organ;
+        const isEquipped = !!organ && !organ.空;
+        
+        let activeOrgan = null;
+        if (isNative) {
+          activeOrgan = getDefaultOrganForSlot(slot.baseKey, race);
+        } else if (isEquipped) {
+          activeOrgan = organ;
+        }
+        
+        if (activeOrgan && !activeOrgan.空 && activeOrgan.属性加成 && activeOrgan.属性加成[k] !== undefined) {
+          const v = Number(activeOrgan.属性加成[k]);
+          if (v !== 0) {
+            val += v;
+            providers.push({
+              name: isEquipped ? activeOrgan.名称 : `原生[${slot.baseKey}]`,
+              val: v
+            });
+          }
+        }
+      });
+
+      // 主动资源属性（如燃点、储能、能量、怒气、法力、主动能量）不为负数
+      const activeResources = ['燃点', '储能', '能量', '怒气', '法力', '主动能量'];
+      if (activeResources.includes(k) && val < 0) {
+        val = 0;
+      }
+
+      let providersHtml = '';
+      if (providers.length > 0) {
+        providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
+          来源: ${providers.map(p => `${p.name}+${p.val}`).join(', ')}
+        </div>`;
+      }
+
+      let valClass = val > 0 ? 'attr-up' : (val < 0 ? 'attr-down' : '');
+      let effectText = val > 0 ? '强化' : (val < 0 ? '抑制' : '正常');
+      let effectClass = val > 0 ? 'effect-buff' : (val < 0 ? 'effect-debuff' : 'effect-normal');
+      let detailedReport = `特有附加生理机能：${k} 当前值 ${val}。`;
+
+      const colIndex = customCardIdx % 7;
+      let edgeClass = '';
+      if (colIndex === 0 || colIndex === 1) {
+        edgeClass = 'edge-left';
+      } else if (colIndex === 5 || colIndex === 6) {
+        edgeClass = 'edge-right';
+      }
+
+      cardsHtml += `
+        <div class="organ-attr-compact-card custom-attr-card ${edgeClass}" data-attr-key="${k}">
+          <div class="compact-header-vertical">
+            <i class="ri-pulse-line"></i>
+            <span class="organ-attr-value ${valClass}">${val}</span>
+          </div>
+          <div class="compact-detail">
+            <div class="compact-attr-name">${k}</div>
+            <div class="compact-brief ${effectClass}">${effectText}</div>
+            <div class="compact-desc">${detailedReport}</div>
+            ${providersHtml}
+          </div>
+        </div>
+      `;
+      customCardIdx++;
+    });
+
+    // 渲染特性
+    Object.entries(activeTraits).forEach(([traitName, traitSources]) => {
+      const providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
+        来源: ${traitSources.map(ts => ts.organName).join(', ')}
+      </div>`;
+
+      const colIndex = customCardIdx % 7;
+      let edgeClass = '';
+      if (colIndex === 0 || colIndex === 1) {
+        edgeClass = 'edge-left';
+      } else if (colIndex === 5 || colIndex === 6) {
+        edgeClass = 'edge-right';
+      }
+
+      cardsHtml += `
+        <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}" style="border-color: #2ea87a40; background: rgba(46,168,122,0.03);">
+          <div class="compact-header-vertical" style="color: #2ea87a;">
+            <i class="ri-shield-flash-line"></i>
+            <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">激活</span>
+          </div>
+          <div class="compact-detail">
+            <div class="compact-attr-name" style="color: #2ea87a; font-weight: 700;">[特性] ${traitName}</div>
+            <div class="compact-brief effect-buff" style="color: #2ea87a;">额外效果</div>
+            <div class="compact-desc">由器官附带的额外机能加成。</div>
+            ${providersHtml}
+          </div>
+        </div>
+      `;
+      customCardIdx++;
     });
 
     if (cardsHtml === '') {
