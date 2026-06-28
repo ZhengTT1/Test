@@ -8294,8 +8294,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
       }
 
-      const detailDisplay = showAllAttrs ? 'block' : 'none';
-      const forceOpenClass = showAllAttrs ? 'expanded' : '';
+
 
       cardsHtml += `
         <div class="organ-attr-compact-card" data-attr-key="${attr.key}">
@@ -8323,14 +8322,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     attrsGridHtml += cardsHtml;
     attrsGridHtml += '</div>';
 
-    const $gridContainer = $panel.find('.organ-attrs-grid');
-    const $headerBar = $panel.find('.organ-attrs-header-bar');
-    if ($gridContainer.length) {
-      $gridContainer.replaceWith(attrsGridHtml);
-      if ($headerBar.length) $headerBar.remove();
-    } else {
-      $organSet.after(attrsGridHtml);
-    }
+    $panel.find('.organ-attrs-header-bar').remove();
+    $panel.find('.organ-attrs-grid').remove();
+    $organSet.after(attrsGridHtml);
 
 
 
