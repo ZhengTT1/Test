@@ -9,7 +9,7 @@
 // ==/UserScript==
 !(function () {
   "use strict";
-  let $ = null;
+  var $ = null;
 
   const SCRIPT_ID = "rpg_status_bar";
   const STORAGE_KEY = "rpg_status_bar_pos";
