@@ -8357,7 +8357,41 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 90, y: 90 }
     ];
 
-    const svgLines = "";
+    const svgLines = `
+      <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+        <!-- 外接圆 -->
+        <circle cx="50" cy="50" r="38" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+        <!-- 外接正方形 -->
+        <rect x="12" y="12" width="76" height="76" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+        <!-- 对角线和水平垂直辅助线，增加达芬奇手稿风格 -->
+        <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
+        <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
+        
+        <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
+        
+        <!-- 姿态1：直立十字人体 -->
+        <!-- 头部 -->
+        <circle cx="50" cy="17" r="3.2" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
+        <!-- 脖子 -->
+        <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(36, 41, 47, 0.15)" />
+        <!-- 身体躯干 -->
+        <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
+        <!-- 直立水平双臂 -->
+        <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 左臂 -->
+        <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 右臂 -->
+        <!-- 直立垂直双腿 -->
+        <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 左腿 -->
+        <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 右腿 -->
+
+        <!-- 姿态2：大字形展开人体 -->
+        <!-- 展开斜向上双臂 -->
+        <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" /> <!-- 左斜臂 -->
+        <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" /> <!-- 右斜臂 -->
+        <!-- 展开斜向下双腿 -->
+        <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" /> <!-- 左斜腿 -->
+        <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" /> <!-- 右斜腿 -->
+      </svg>
+    `;
 
     let slotsHtml = `
       <div class="organ-slots-header"><i class="ri-heart-pulse-fill"></i> 身体移植舱 (点击部位以移植替换)</div>
@@ -8650,7 +8684,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     aspect-ratio: 1 / 1;
     margin: 0 auto 15px;
     background-color: #f6f8fa;
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Vitruvian_man_by_Leonardo_da_Vinci.png/480px-Vitruvian_man_by_Leonardo_da_Vinci.png');
+    
     background-size: 95% contain;
     background-position: center center;
     background-repeat: no-repeat;
@@ -10057,7 +10091,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     aspect-ratio: 1 / 1;
     margin: 0 auto 15px;
     background-color: var(--bg-color);
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Vitruvian_man_by_Leonardo_da_Vinci.png/480px-Vitruvian_man_by_Leonardo_da_Vinci.png');
+    
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
