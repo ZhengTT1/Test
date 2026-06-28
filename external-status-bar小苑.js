@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RPG 状态栏
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  RPG状态栏悬浮球 - Brushed Metal风格
 // @author       Niccole
 // @match        */*
