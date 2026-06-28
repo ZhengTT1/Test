@@ -7715,6 +7715,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   const equipOrganToSlot = async (slotName, organItem) => {
     const data = fetchLatestMvuData();
     const patches = [];
+    const baseSlot = String(slotName || '').split('_')[0];
 
     patches.push({
       op: 'replace',
@@ -7771,12 +7772,14 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if (success) {
       showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 槽位嗷`);
       updateOrganUI();
+      setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
   };
 
   const unequipOrganFromSlot = async (slotName) => {
     const data = fetchLatestMvuData();
-    const organ = data?.人物?.器官系统?.器官列表?.[slotName] || defaultOrgans[slotName];
+    const baseSlot = String(slotName || '').split('_')[0];
+    const organ = data?.人物?.器官系统?.器官列表?.[slotName] || defaultOrgans[baseSlot];
     if (!organ || organ.空) return;
 
     const patches = [];
@@ -7809,7 +7812,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           名称: organ.名称,
           品质: organ.品质 || '普通',
           描述: organ.描述 || '从躯体卸下的器官',
-          部位: slotName,
+          部位: baseSlot,
           装备箱: true,
           属性加成: organ.属性加成 || {},
           特性: organ.特性 || [],
@@ -7822,6 +7825,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if (success) {
       showToast('success', `剥离成功：已将 [${organ.名称}] 从 [${slotName}] 槽位剥离并放入背包嗷`);
       updateOrganUI();
+      setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
   };
 
@@ -8220,6 +8224,21 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       equipOrganToSlot(targetSlot, organItem);
     });
   };
+
+    const slotsDef = [
+    { key: "眼球", count: 2, icon: "ri-eye-fill", x: 50.0, y: 7.0 },
+    { key: "心脏", count: 1, icon: "ri-heart-pulse-fill", x: 72.0, y: 12.9 },
+    { key: "肺脏", count: 2, icon: "ri-windy-fill", x: 88.1, y: 29.0 },
+    { key: "胃", count: 1, icon: "ri-restaurant-fill", x: 94.0, y: 51.0 },
+    { key: "肠子", count: 1, icon: "ri-loop-left-line", x: 88.1, y: 73.0 },
+    { key: "阑尾", count: 1, icon: "ri-heart-add-fill", x: 72.0, y: 89.1 },
+    { key: "肌肉", count: 2, icon: "ri-hand-sanitizer-fill", x: 50.0, y: 95.0 },
+    { key: "肝脏", count: 1, icon: "ri-contrast-drop-2-fill", x: 28.0, y: 89.1 },
+    { key: "脾脏", count: 1, icon: "ri-shield-user-fill", x: 11.9, y: 73.0 },
+    { key: "肾脏", count: 2, icon: "ri-drop-fill", x: 6.0, y: 51.0 },
+    { key: "肋骨", count: 4, icon: "ri-split-cells-vertical", x: 11.9, y: 29.0 },
+    { key: "脊柱", count: 1, icon: "ri-node-tree", x: 28.0, y: 12.9 }
+  ];
 
   const updateOrganUI = () => {
     if (!$) {
@@ -8647,20 +8666,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // ===== 身体移植舱（装备栏人体拓扑图） =====
     // 槽位定义：支持复数器官（数量 count）
-    const slotsDef = [
-      { key: "眼球", count: 2, icon: "ri-eye-fill", x: 50.0, y: 7.0 },
-      { key: "心脏", count: 1, icon: "ri-heart-pulse-fill", x: 72.0, y: 12.9 },
-      { key: "肺脏", count: 2, icon: "ri-windy-fill", x: 88.1, y: 29.0 },
-      { key: "胃", count: 1, icon: "ri-restaurant-fill", x: 94.0, y: 51.0 },
-      { key: "肠子", count: 1, icon: "ri-loop-left-line", x: 88.1, y: 73.0 },
-      { key: "阑尾", count: 1, icon: "ri-heart-add-fill", x: 72.0, y: 89.1 },
-      { key: "肌肉", count: 2, icon: "ri-hand-sanitizer-fill", x: 50.0, y: 95.0 },
-      { key: "肝脏", count: 1, icon: "ri-contrast-drop-2-fill", x: 28.0, y: 89.1 },
-      { key: "脾脏", count: 1, icon: "ri-shield-user-fill", x: 11.9, y: 73.0 },
-      { key: "肾脏", count: 2, icon: "ri-drop-fill", x: 6.0, y: 51.0 },
-      { key: "肋骨", count: 4, icon: "ri-split-cells-vertical", x: 11.9, y: 29.0 },
-      { key: "脊柱", count: 1, icon: "ri-node-tree", x: 28.0, y: 12.9 }
-    ];
+
 
     // 获取所有槽位展开后的实例 key 列表，例如 ['眼球_1', '眼球_2', '肋骨_1', ...]
     const getExpandedSlotKeys = () => {
@@ -8891,8 +8897,14 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       
       // 绑定部位插槽点击
       $list.find('.organ-gear-slot').off('click').on('click', function() {
-        const slotKey = $(this).data('slot-key');
-        showOrganSelectPopup(slotKey);
+        try {
+          const slotKey = $(this).data('slot-key');
+          console.log("[RPG] Organ slot clicked:", slotKey);
+          showOrganSelectPopup(slotKey);
+        } catch (e) {
+          console.error("[RPG] Error showing organ popup:", e);
+          alert("打开器官面板失败嗷：" + e.message + "\n" + e.stack);
+        }
       });
 
       // 动态文件上传背景监听
