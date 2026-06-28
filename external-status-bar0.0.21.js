@@ -8016,14 +8016,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       return defaultVal;
     };
 
-    const showAllAttrs = $panel.data('organ-show-all-attrs') === 'true';
-
     let attrsGridHtml = '<div class="organ-attrs-header-bar">';
     attrsGridHtml += `<span><i class="ri-pulse-line"></i> 生理指数评估</span>`;
-    attrsGridHtml += `<button class="btn-toggle-attrs" style="font-size:10px; background:#f6f8fa; border:1px solid #d0d7de; color:#24292f; padding:2px 8px; border-radius:4px; cursor:pointer; font-weight:600;">${showAllAttrs ? '精简显示' : '全部展开'}</button>`;
     attrsGridHtml += '</div>';
     
-    attrsGridHtml += `<div class="organ-attrs-grid ${showAllAttrs ? 'layout-all-expanded' : ''}">`;
+    attrsGridHtml += `<div class="organ-attrs-grid">`;
     
     let cardsHtml = '';
     attrsDef.forEach(attr => {
@@ -8301,12 +8298,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       const forceOpenClass = showAllAttrs ? 'expanded' : '';
 
       cardsHtml += `
-        <div class="organ-attr-compact-card ${forceOpenClass}" data-attr-key="${attr.key}" style="cursor:pointer;">
+        <div class="organ-attr-compact-card" data-attr-key="${attr.key}">
           <div class="compact-header-vertical">
             <i class="${attr.icon}"></i>
             <span class="organ-attr-value ${valClass}">${val}</span>
           </div>
-          <div class="compact-detail" style="display: ${detailDisplay};">
+          <div class="compact-detail">
             <div class="compact-attr-name">${attr.name}</div>
             <div class="compact-brief ${effectClass}">${effectText}</div>
             <div class="compact-desc">${detailedReport}</div>
@@ -8335,37 +8332,22 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       $organSet.after(attrsGridHtml);
     }
 
-    $panel.find('.btn-toggle-attrs').off('click').on('click', function(e) {
-      e.stopPropagation();
-      const currentVal = $panel.data('organ-show-all-attrs') === 'true';
-      $panel.data('organ-show-all-attrs', currentVal ? 'false' : 'true');
-      updateOrganUI();
-    });
 
-    $panel.find('.organ-attr-compact-card').off('click').on('click', function(e) {
-      e.stopPropagation();
-      if ($panel.data('organ-show-all-attrs') === 'true') return;
-
-      const $this = $(this);
-      const $detail = $this.find('.compact-detail');
-      $this.toggleClass('expanded');
-      $detail.slideToggle(120);
-    });
 
     // ===== 身体移植舱（装备栏人体拓扑图） =====
     const slotsDef = [
-      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: 10.0 },
-      { key: "心脏", icon: "ri-heart-pulse-fill", x: 69.0, y: 15.1 },
-      { key: "肺脏", icon: "ri-windy-fill", x: 82.9, y: 29.0 },
-      { key: "胃", icon: "ri-restaurant-fill", x: 88.0, y: 48.0 },
-      { key: "肠子", icon: "ri-loop-left-line", x: 82.9, y: 67.0 },
-      { key: "阑尾", icon: "ri-heart-add-fill", x: 69.0, y: 80.9 },
-      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 86.0 },
-      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 31.0, y: 80.9 },
-      { key: "脾脏", icon: "ri-shield-user-fill", x: 17.1, y: 67.0 },
-      { key: "肾脏", icon: "ri-drop-fill", x: 12.0, y: 48.0 },
-      { key: "肋骨", icon: "ri-split-cells-vertical", x: 17.1, y: 29.0 },
-      { key: "脊柱", icon: "ri-node-tree", x: 31.0, y: 15.1 }
+      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: -3.0 },
+      { key: "心脏", icon: "ri-heart-pulse-fill", x: 72.0, y: 2.9 },
+      { key: "肺脏", icon: "ri-windy-fill", x: 88.1, y: 19.0 },
+      { key: "胃", icon: "ri-restaurant-fill", x: 94.0, y: 41.0 },
+      { key: "肠子", icon: "ri-loop-left-line", x: 88.1, y: 63.0 },
+      { key: "阑尾", icon: "ri-heart-add-fill", x: 72.0, y: 79.1 },
+      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 85.0 },
+      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 28.0, y: 79.1 },
+      { key: "脾脏", icon: "ri-shield-user-fill", x: 11.9, y: 63.0 },
+      { key: "肾脏", icon: "ri-drop-fill", x: 6.0, y: 41.0 },
+      { key: "肋骨", icon: "ri-split-cells-vertical", x: 11.9, y: 19.0 },
+      { key: "脊柱", icon: "ri-node-tree", x: 28.0, y: 2.9 }
     ];
 
     const svgLines = `
@@ -8650,6 +8632,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     justify-content: center;
     transition: all 0.15s ease;
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    position: relative; /* 用于 tooltip 绝对定位的参考锚点 */
 }
 
 .organ-attr-compact-card:hover {
@@ -8688,13 +8671,30 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     color: #cf222e !important;
 }
 
-/* 展开卡片内的详细效果 */
+/* 悬浮展示详细效果 */
 .compact-detail {
-    margin-top: 5px;
-    padding-top: 5px;
-    border-top: 1px dashed #e1e4e8;
-    width: 100%;
-    font-size: 10px;
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    width: 140px;
+    background: #fbf8ef !important;
+    border: 1px solid #dcd1b4 !important;
+    border-radius: 6px;
+    padding: 6px 8px !important;
+    box-shadow: 0 4px 12px rgba(90, 70, 50, 0.18) !important;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    text-align: left;
+    white-space: normal;
+    display: block !important;
+}
+
+.organ-attr-compact-card:hover .compact-detail {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }
 
 .compact-attr-name {
@@ -8725,6 +8725,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 .compact-desc {
     color: #57606a;
     line-height: 1.3;
+    word-break: break-all;
 }
 
 /* 单张卡片在7列布局下展开时，跨 3 列展示文字 */
