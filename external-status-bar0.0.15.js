@@ -8394,9 +8394,40 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     `;
 
     let slotsHtml = `
-      <div class="organ-slots-header"><i class="ri-heart-pulse-fill"></i> 身体移植舱 (点击部位以移植替换)</div>
-      <div class="visual-organ-container">
-        ${svgLines}
+      <div class="organ-slots-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: 4px; margin-bottom: 8px;">
+        <span><i class="ri-heart-pulse-fill"></i> 身体移植舱 (点击部位以移植)</span>
+        <div class="organ-bg-controls" style="display: flex; gap: 8px; font-size: 10.5px;">
+          <label for="organ-bg-upload" style="cursor: pointer; color: #0969da; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-upload-2-line"></i> 换底图</label>
+          <input type="file" id="organ-bg-upload" accept="image/*" style="display: none;" />
+          <span id="organ-bg-reset" style="cursor: pointer; color: #cf222e; font-weight: 600; display: ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'inline-flex' : 'none'}; align-items: center; gap: 2px;"><i class="ri-refresh-line"></i> 重置</span>
+        </div>
+      </div>
+      <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: contain; background-position: center center; background-repeat: no-repeat;` : ''}">
+        <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
+          <!-- 外接圆 -->
+          <circle cx="50" cy="50" r="38" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+          <!-- 外接正方形 -->
+          <rect x="12" y="12" width="76" height="76" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+          <!-- 对角线和水平垂直辅助线 -->
+          <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
+          <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
+          
+          <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
+          <!-- 姿态1：直立十字人体 -->
+          <circle cx="50" cy="17" r="3.2" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
+          <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(36, 41, 47, 0.15)" />
+          <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
+          <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
+          <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
+          <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
+          <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
+
+          <!-- 姿态2：大字形展开人体 -->
+          <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" />
+          <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" />
+          <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" />
+          <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" />
+        </svg>
     `;
 
     slotsDef.forEach(s => {
@@ -8411,7 +8442,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         else if (organ.品质 === '诅诅' || organ.品质 === '诅咒') qClass = 'quality-cursed';
       }
 
-      // 如果器官名称里含有“原生”，或者不是自定义移植的，就只显示“人类XX”
       const isNative = !器官列表[s.key] || (organ.名称 || '').includes('原生');
       const displayName = isNative ? `人类${s.key}` : `${organ.名称}${organLevel}`;
 
@@ -8433,17 +8463,49 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const $list = $panel.find('#organ-page-list');
     if ($list.length) {
       $list.html(slotsHtml);
+      
+      // 绑定部位插槽点击
       $list.find('.organ-gear-slot').off('click').on('click', function() {
         const slotKey = $(this).data('slot-key');
         showOrganSelectPopup(slotKey);
       });
+
+      // 动态文件上传背景监听
+      $list.find('#organ-bg-upload').off('change').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          if (file.size > 2 * 1024 * 1024) {
+            alert("上传的背景图请小于 2MB 嗷！");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            const base64 = evt.target.result;
+            try {
+              localStorage.setItem(`${SCRIPT_ID}-organ-bg`, base64);
+              $list.find('.visual-organ-container').css('background-image', `url(${base64})`);
+              $list.find('.vitruvian-background-svg').css('opacity', '0');
+              $list.find('#organ-bg-reset').css('display', 'inline-flex');
+            } catch(err) {
+              alert("背景保存失败，可能是图片数据太大超出浏览器限制了嗷！");
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // 动态重置背景监听
+      $list.find('#organ-bg-reset').off('click').on('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem(`${SCRIPT_ID}-organ-bg`);
+        $list.find('.visual-organ-container').css('background-image', 'none');
+        $list.find('.vitruvian-background-svg').css('opacity', '1');
+        $(this).css('display', 'none');
+        $list.find('#organ-bg-upload').val('');
+      });
     }
   };
 
-
-  /**
-   * 刷新状态栏数据
-   */
   const refreshStatusBar = () => {
     console.log("[小苑调试] refreshStatusBar 正在执行...");
     const data = fetchLatestMvuData();
