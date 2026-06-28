@@ -7973,13 +7973,23 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // Sub-slots cards rendering
     let cardsHtml = '<div class="sub-slots-container">';
+    const race = data?.人物?.种族 || '';
     for (let i = 1; i <= count; i++) {
       const subKey = count > 1 ? `${baseSlot}_${i}` : baseSlot;
       const organInList = 器官列表[subKey];
       const isEmpty = !!organInList && organInList.空;
       const isEquipped = !!organInList && !organInList.空;
       const isNative = !organInList;
-      const organ = isEquipped ? organInList : (isEmpty ? null : defaultOrgans[baseSlot]);
+      
+      let organ = null;
+      if (isEquipped) {
+        organ = organInList;
+      } else if (!isEmpty) {
+        organ = getDefaultOrganForSlot(baseSlot, race);
+      }
+      if (organ && organ.空) {
+        organ = null;
+      }
 
       const isSelected = (selectedSubKey === subKey);
       const borderCol = isSelected ? '#0969da' : '#d0d7de';
@@ -7988,8 +7998,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         : `border: 1px solid ${borderCol}; padding: 4px 2px;`;
 
       let displayTitle = count > 1 ? `${baseSlot} #${i}` : `${baseSlot}`;
-      let displayOrganName = isEmpty ? '空置插槽' : stripNativePrefix(isNative ? baseSlot : organ.名称);
-      let qColor = isNative ? '#8c8c8c' : (isEquipped ? (qualityColors[organ.品质] || '#57606a') : '#afb8c1');
+      let displayOrganName = (!organ) ? '空置插槽' : stripNativePrefix(isNative ? baseSlot : (organ.名称 || baseSlot));
+      let qColor = isNative ? '#8c8c8c' : (isEquipped ? (qualityColors[organ?.品质 || '普通'] || '#57606a') : '#afb8c1');
 
       // Tooltip HTML content to be loaded dynamically
       let tooltipContent = `<div style="font-weight: 700; font-size: 12px; color: ${qColor}; margin-bottom: 4px;">${displayOrganName}</div>`;
@@ -9054,7 +9064,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let valClass = val > 0 ? 'attr-up' : (val < 0 ? 'attr-down' : '');
       let effectText = val > 0 ? '强化' : (val < 0 ? '抑制' : '正常');
       let effectClass = val > 0 ? 'effect-buff' : (val < 0 ? 'effect-debuff' : 'effect-normal');
-      let detailedReport = `特有附加生理机能：${k} 当前值 ${val}。`;
+      
+      let detailedReport = `特有附加生理机能：${k} 当前值为 ${val}。`;
+      if (k === '储能') {
+        detailedReport = `机械器官特有资源（蓄电池槽）。上限 ${val}。作为超频爆发等高能负荷技能的独立能量源。由于原生肉体不具备发电/恢复功能，需配合“充能”等机械功能运转恢复。`;
+      } else if (k === '充能') {
+        detailedReport = `动力机械回复效率。进行奔跑/位移等产生动能的动作时，可将动能转化为机械能，按效率恢复储能值。如果躯体储能上限为 0，此效果无法生效。`;
+      } else if (k === '超频爆发') {
+        detailedReport = `超频过载等级 +${val}。允许随时开启/关闭。开启时每回合自动消耗 5 点储能值，极大幅度提升移动速度、感官反应与物理筋力，能量耗尽时自动关闭。`;
+      } else if (k === '重击强化') {
+        detailedReport = `肢体锤击强化等级 +${val}。在使用空手、拳套或肢体物理近战攻击时，有 15% 的几率触发重击判定，造成 2.0 倍物理伤害及失衡震退判定。`;
+        // 强化类效果不为负数
+        if (val < 0) val = 0;
+      }
 
       const colIndex = customCardIdx % 7;
       let edgeClass = '';
@@ -9095,6 +9117,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         edgeClass = 'edge-right';
       }
 
+      let traitDesc = "由器官附带的额外功能性机能加成。";
+      if (traitName === '超频爆发') {
+        traitDesc = "开启后每回合消耗 5 点储能，极大幅度提升移动速度、感官反应与物理筋力，可手动随时关闭。";
+      } else if (traitName === '重击强化') {
+        traitDesc = "在使用空手、拳套或直接肢体攻击时，有 15% 几率触发重力锤击，造成双倍物理伤害与短暂失衡。";
+      } else if (traitName === '充能') {
+        traitDesc = "奔跑或移动时，将位移动能自动转化为电力，为具有“储能”上限的机械器官恢复能量。";
+      }
+
       cardsHtml += `
         <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}" style="border-color: #2ea87a40; background: rgba(46,168,122,0.03);">
           <div class="compact-header-vertical" style="color: #2ea87a;">
@@ -9104,7 +9135,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           <div class="compact-detail">
             <div class="compact-attr-name" style="color: #2ea87a; font-weight: 700;">[特性] ${traitName}</div>
             <div class="compact-brief effect-buff" style="color: #2ea87a;">额外效果</div>
-            <div class="compact-desc">由器官附带的额外机能加成。</div>
+            <div class="compact-desc">${traitDesc}</div>
             ${providersHtml}
           </div>
         </div>
