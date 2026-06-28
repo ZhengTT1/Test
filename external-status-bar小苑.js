@@ -7621,7 +7621,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
  * 渲染器官系统 UI（与装备栏风格统一）
  */
 const updateOrganUI = () => {
-  
   if (!$) {
     console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
     return;
@@ -7631,17 +7630,17 @@ const updateOrganUI = () => {
   const organSystem = data?.人物?.器官系统 || {};
   const 器官列表 = organSystem.器官列表 || {};
   const 排斥等级 = organSystem.排斥等级 || 0;
-  const 健康度 = organSystem.健康度 || 100;
+  const 健康度Val = organSystem.健康度 || 100; // 这里的健康度可能是排斥健康的指标
   const 套装 = organSystem.已激活套装 || [];
 
-  // 渲染健康度和排斥等级
+  // 渲染排斥状态
   const $organInfo = $panel.find('#organ-status-info');
   if ($organInfo.length) {
-    const healthColor = 健康度 > 70 ? '#2d6a4f' : (健康度 > 30 ? '#d4a853' : '#c0392b');
+    const healthColor = 健康度Val > 70 ? '#2d6a4f' : (健康度Val > 30 ? '#d4a853' : '#c0392b');
     const rejectColor = 排斥等级 === 0 ? '#2d6a4f' : (排斥等级 < 3 ? '#d4a853' : '#c0392b');
     $organInfo.html(`
       <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; color:var(--text-color); padding: 0 10px;">
-        <span><i class="ri-heart-pulse-line"></i> 健康度: <b style="color:${healthColor}">${健康度}%</b></span>
+        <span><i class="ri-heart-pulse-line"></i> 排斥健康度: <b style="color:${healthColor}">${健康度Val}%</b></span>
         <span><i class="ri-shield-flash-line"></i> 排斥等级: <b style="color:${rejectColor}">${排斥等级}</b></span>
       </div>
     `);
@@ -7658,7 +7657,283 @@ const updateOrganUI = () => {
     }
   }
 
-  // 渲染器官列表
+  // ===== 器官属性网格系统 (像属性点一样正常显示对应属性) =====
+  // 14个器官属性定义，带有默认标准值和图标
+  const attrsDef = [
+    { key: "健康度", name: "健康度", icon: "ri-heart-pulse-line", default: 1 },
+    { key: "视觉", name: "视觉", icon: "ri-eye-line", default: 2 },
+    { key: "坚韧", name: "坚韧", icon: "ri-shield-cross-line", default: 4.5 },
+    { key: "神经传递效率", name: "神经传递效率", icon: "ri-flashlight-line", default: 1 },
+    { key: "血液过滤效率", name: "血液过滤", icon: "ri-drop-line", default: 2 },
+    { key: "解毒效率", name: "解毒效率", icon: "ri-flask-line", default: 1 },
+    { key: "新陈代谢效率", name: "新陈代谢", icon: "ri-speed-up-line", default: 1 },
+    { key: "肺活量", name: "肺活量", icon: "ri-windy-line", default: 2 },
+    { key: "耐力", name: "耐力", icon: "ri-heart-3-line", default: 2 },
+    { key: "消化效率", name: "消化效率", icon: "ri-restaurant-line", default: 1 },
+    { key: "营养获取效率", name: "营养获取", icon: "ri-hand-heart-line", default: 4 },
+    { key: "幸运", name: "幸运", icon: "ri-copper-coin-line", default: 1 },
+    { key: "速度", name: "速度", icon: "ri-run-line", default: 8 },
+    { key: "筋力", name: "筋力", icon: "ri-hand-sanitizer-line", default: 8 }
+  ];
+
+  // 从 organSystem 中读取属性值，支持 "organSystem.属性.xxx" 或 "organSystem.xxx" 或 "data.人物.属性.xxx"
+  const getAttrVal = (key, defaultVal) => {
+    if (organSystem[key] !== undefined) return Number(organSystem[key]);
+    if (organSystem.属性 && organSystem.属性[key] !== undefined) return Number(organSystem.属性[key]);
+    if (data?.人物?.属性 && data?.人物?.属性[key] !== undefined) return Number(data.人物.属性[key]);
+    return defaultVal;
+  };
+
+  // 生成这14个属性的HTML卡片
+  let attrsGridHtml = '<div class="organ-attrs-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 10px; margin-bottom: 15px;">';
+  
+  attrsDef.forEach(attr => {
+    const val = getAttrVal(attr.key, attr.default);
+    let valClass = '';
+    let effectText = '';
+    let effectClass = '';
+    
+    // 动态计算Buff/Debuff效果及样式
+    if (attr.key === '健康度') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) * 100);
+        effectText = val <= 0 ? '死亡' : `生命-${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 20);
+        effectText = `生命+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '坚韧') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) * 20);
+        effectText = `易伤+${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 20);
+        effectText = `防御+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '神经传递效率') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) * 100);
+        effectText = val <= 0 ? '瘫痪' : `迟钝+${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 10);
+        effectText = `敏捷/先攻+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '血液过滤效率') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) / 2 * 100);
+        effectText = `流血/治疗降${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const filterPct = Math.round((val - attr.default) * 10);
+        effectText = `体质+${filterPct}%/再生`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '解毒效率') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        effectText = val <= 0 ? '中毒' : `Buff时间-${(attr.default - val).toFixed(1)}s`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 5);
+        effectText = `Buff时间+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '视觉') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        if (val <= 0) effectText = '致盲';
+        else if (val < 1) effectText = '半盲';
+        else effectText = `感知-${(attr.default - val).toFixed(1)}`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        effectText = `动态视力+${(val - attr.default).toFixed(1)}`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '新陈代谢效率') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) * 100);
+        effectText = val <= 0 ? '无经验/生手' : `经验-${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 10);
+        effectText = `经验+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '肺活量') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) / 2 * 100);
+        effectText = val <= 0 ? '无法呼吸' : `窒息率+${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 20);
+        effectText = `屏息+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '耐力') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        effectText = '体弱debuff';
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 10);
+        effectText = `战续+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '消化效率') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        effectText = val <= 0 ? '持续中毒' : '增益降低/中毒';
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 10);
+        effectText = `抗毒+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '营养获取效率') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((1 - val / attr.default) * 100);
+        effectText = val <= 0 ? '恢复药反噬' : `药效-${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        effectText = `回复量x${(val / attr.default).toFixed(1)}`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '幸运') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        const pct = Math.round((attr.default - val) * 10);
+        effectText = val <= 0 ? '永久劣势' : `厄运率+${pct}%`;
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 5);
+        effectText = `幸运一击+${pct}%`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '速度') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        effectText = val < 1 ? '无法移动' : (val < 4 ? '行动受限' : '移速/先攻降');
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        effectText = `移动${val}m/先攻+${(val / 2).toFixed(1)}`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+    else if (attr.key === '筋力') {
+      if (val < attr.default) {
+        valClass = 'attr-down';
+        effectText = val < 1 ? '完全瘫痪' : (val < 4 ? '禁用重装' : '近战/负重降');
+        effectClass = 'effect-debuff';
+      } else if (val > attr.default) {
+        valClass = 'attr-up';
+        const pct = Math.round((val - attr.default) * 5);
+        effectText = `伤害+${pct}%/负重${val * 10}k`;
+        effectClass = 'effect-buff';
+      } else {
+        effectText = '人类标准';
+        effectClass = 'effect-normal';
+      }
+    }
+
+    attrsGridHtml += `
+      <div class="organ-attr-card" style="background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 48px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+          <span style="color: var(--text-color); font-weight: 500;"><i class="${attr.icon}"></i> ${attr.name}</span>
+          <span class="organ-attr-value ${valClass}" style="font-family: var(--font-tech); font-weight: 700; font-size: 12px;">${val}</span>
+        </div>
+        <div class="organ-attr-effect ${effectClass}" style="font-size: 9px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right;">${effectText}</div>
+      </div>
+    `;
+  });
+  
+  attrsGridHtml += '</div>';
+
+  // 渲染这个属性网格到 UI 上 (插入在 organ-set-info 下面)
+  const $gridContainer = $panel.find('.organ-attrs-grid');
+  if ($gridContainer.length) {
+    $gridContainer.replaceWith(attrsGridHtml);
+  } else {
+    $organSet.after(attrsGridHtml);
+  }
+
+  // ===== 渲染移植器官列表 =====
   const $list = $panel.find('#organ-page-list');
   if ($list.length) {
     $list.empty();
@@ -7667,6 +7942,9 @@ const updateOrganUI = () => {
       $list.html('<div class="traits-empty"><i class="ri-ghost-line"></i> 暂无移植器官</div>');
       return;
     }
+
+    // 在器官列表上方加上一个小副标题，以作区分
+    $list.before('<div class="traits-page-title" id="organ-list-title" style="font-size: 13px; margin: 10px; font-weight: 700;"><i class="ri-shield-user-line"></i> 移植器官明细</div>');
 
     entries.forEach(([slot, organ]) => {
       if (!organ) return;
@@ -7725,6 +8003,13 @@ const updateOrganUI = () => {
     if ($(`#${SCRIPT_ID}-styles`).length) return;
 
     $("head").append(`<style id="${SCRIPT_ID}-styles">
+
+/* 器官属性面板自定义样式 */
+.organ-attr-value.attr-up { color: #2d6a4f !important; }
+.organ-attr-value.attr-down { color: #c0392b !important; }
+.organ-attr-effect.effect-buff { color: #2e7d32 !important; font-weight: 600; }
+.organ-attr-effect.effect-debuff { color: #c62828 !important; font-weight: 600; }
+.organ-attr-effect.effect-normal { color: #888888 !important; }
 /* ========== 悬浮球样式 - 完全复用AppleStyle-Star的Brushed Metal ========== */
 #${SCRIPT_ID}-toggle {
     position: fixed !important;
