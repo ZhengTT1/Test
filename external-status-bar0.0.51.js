@@ -7790,6 +7790,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // First unequip current organ if it exists to avoid overwriting it
     const currentOrgan = data?.人物?.器官系统?.器官列表?.[slotName];
+    const isNativeOrgan = !data?.人物?.器官系统?.器官列表?.[slotName];
     if (currentOrgan && !currentOrgan.空) {
       const 装备列表 = data?.人物?.装备列表 || {};
       let foundKey = null;
@@ -7804,7 +7805,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           path: `/人物/装备列表/${foundKey}/装备箱`,
           value: true
         });
-      } else {
+      } else if (!isNativeOrgan) {
         const newKey = `器官_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
         patches.push({
           op: 'add',
@@ -9130,7 +9131,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         <div class="organ-attr-compact-card custom-attr-card ${edgeClass}" data-attr-key="${k}">
           <div class="compact-header-vertical">
             <i class="${customIcon}"></i>
-            <span class="organ-attr-value ${valClass}" style="font-size: 9.5px;">提供 ${val}</span>
+            <span class="organ-attr-value ${valClass}" style="font-size: 9.5px;">${val}</span>
           </div>
           <div class="compact-detail">
             <div class="compact-attr-name">${k}</div>
@@ -9537,7 +9538,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
     const runOnceOrganSystemInitialization = async () => {
-    const key = `${SCRIPT_ID}-restored-v5`;
+    const key = `${SCRIPT_ID}-restored-v6`;
     if (localStorage.getItem(key)) return;
 
     const data = fetchLatestMvuData();
@@ -9553,7 +9554,189 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       value: {}
     });
 
-    // 2. 补发2个极品器官到装备背包（装备箱：true）
+    // 2. 补发12个原生器官到装备背包（装备箱：true）
+
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生眼球',
+      value: {
+        名称: "原生人类眼球",
+        品质: "普通",
+        描述: "人体原装的眼球器官，提供基础生理功能。",
+        部位: "眼球",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生心脏',
+      value: {
+        名称: "原生人类心脏",
+        品质: "普通",
+        描述: "人体原装的心脏器官，提供基础生理功能。",
+        部位: "心脏",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生肺脏',
+      value: {
+        名称: "原生人类肺脏",
+        品质: "普通",
+        描述: "人体原装的肺脏器官，提供基础生理功能。",
+        部位: "肺脏",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生胃',
+      value: {
+        名称: "原生人类胃",
+        品质: "普通",
+        描述: "人体原装的胃器官，提供基础生理功能。",
+        部位: "胃",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生肠子',
+      value: {
+        名称: "原生人类肠子",
+        品质: "普通",
+        描述: "人体原装的肠子器官，提供基础生理功能。",
+        部位: "肠子",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生阑尾',
+      value: {
+        名称: "原生人类阑尾",
+        品质: "普通",
+        描述: "人体原装的阑尾器官，提供基础生理功能。",
+        部位: "阑尾",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生脊柱',
+      value: {
+        名称: "原生人类脊柱",
+        品质: "普通",
+        描述: "人体原装的脊柱器官，提供基础生理功能。",
+        部位: "脊柱",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生肋骨',
+      value: {
+        名称: "原生人类肋骨",
+        品质: "普通",
+        描述: "人体原装的肋骨器官，提供基础生理功能。",
+        部位: "肋骨",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生肾脏',
+      value: {
+        名称: "原生人类肾脏",
+        品质: "普通",
+        描述: "人体原装的肾脏器官，提供基础生理功能。",
+        部位: "肾脏",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生脾脏',
+      value: {
+        名称: "原生人类脾脏",
+        品质: "普通",
+        描述: "人体原装的脾脏器官，提供基础生理功能。",
+        部位: "脾脏",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生肝脏',
+      value: {
+        名称: "原生人类肝脏",
+        品质: "普通",
+        描述: "人体原装的肝脏器官，提供基础生理功能。",
+        部位: "肝脏",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    patches.push({
+      op: 'add',
+      path: '/人物/装备列表/器官_原生肌肉',
+      value: {
+        名称: "原生人类肌肉",
+        品质: "普通",
+        描述: "人体原装的肌肉器官，提供基础生理功能。",
+        部位: "肌肉",
+        装备箱: true,
+        属性加成: {},
+        特性: [],
+        种族: "",
+        强化等级: 0
+      }
+    });
+    // 3. 补发2个极品器官到装备背包（装备箱：true）
     patches.push({
       op: 'add',
       path: '/人物/装备列表/器官_暴君肌肉',
