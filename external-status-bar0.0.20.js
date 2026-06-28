@@ -7625,18 +7625,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   
   // 寻找适合该插槽的可植入器官
   const defaultOrgans = {
-    "眼球": { 名称: "原生人类眼球", 品质: "普通", 描述: "人体原装视觉感光器官，提供常规视界嗷。" },
-    "心脏": { 名称: "原生人类心脏", 品质: "普通", 描述: "人体原装血液循环泵，源源不断输送能量嗷。" },
-    "肺脏": { 名称: "原生人类肺脏", 品质: "普通", 描述: "人体原装气体交互器官，维持日常呼吸嗷。" },
-    "胃": { 名称: "原生人类胃", 品质: "普通", 描述: "人体原装初步消化器官，分解常规膳食嗷。" },
-    "肠子": { 名称: "原生人类肠道", 品质: "普通", 描述: "人体原装主要吸收器官，吸取营养元素嗷。" },
-    "阑尾": { 名称: "原生人类阑尾", 品质: "普通", 描述: "人体原装免疫辅助器官，虽不起眼但也有些许用处嗷。" },
-    "脊柱": { 名称: "原生人类脊柱", 品质: "普通", 描述: "人体原装躯干支柱与中枢神经通道，维持体态嗷。" },
-    "肋骨": { 名称: "原生人类肋骨", 品质: "普通", 描述: "人体原装胸腔保护骨骼，遮蔽脏器免受直接冲击嗷。" },
-    "肾脏": { 名称: "原生人类肾脏", 品质: "普通", 描述: "人体原装多余水分与毒素排泄器官，平衡内环境嗷。" },
-    "脾脏": { 名称: "原生人类脾脏", 品质: "普通", 描述: "人体原装造血与免疫储血滤血器官，默默守护身体嗷。" },
-    "肝脏": { 名称: "原生人类肝脏", 品质: "普通", 描述: "人体原装代谢解毒核心器官，协调多种生化反应嗷。" },
-    "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
+    "眼球": { 名称: "原生人类眼球", 品质: "普通", 属性加成: { "视觉": 1 }, 描述: "人体原装视觉感光器官，提供常规视界嗷。" },
+    "心脏": { 名称: "原生人类心脏", 品质: "普通", 属性加成: { "健康度": 1 }, 描述: "人体原装血液循环泵，源源不断输送能量嗷。" },
+    "肺脏": { 名称: "原生人类肺脏", 品质: "普通", 属性加成: { "肺活量": 1, "耐力": 1 }, 描述: "人体原装气体交互器官，维持日常呼吸嗷。" },
+    "胃": { 名称: "原生人类胃", 品质: "普通", 属性加成: { "消化效率": 1 }, 描述: "人体原装初步消化器官，分解常规膳食嗷。" },
+    "肠子": { 名称: "原生人类肠道", 品质: "普通", 属性加成: { "营养获取效率": 1 }, 描述: "人体原装主要吸收器官，吸取营养元素嗷。" },
+    "阑尾": { 名称: "原生人类阑尾", 品质: "普通", 属性加成: { "幸运": 1 }, 描述: "人体原装免疫辅助器官，虽不起眼但也有些许用处嗷。" },
+    "脊柱": { 名称: "原生人类脊柱", 品质: "普通", 属性加成: { "坚韧": 0.5, "神经传递效率": 1 }, 描述: "人体原装躯干支柱与中枢神经通道，维持体态嗷。" },
+    "肋骨": { 名称: "原生人类肋骨", 品质: "普通", 属性加成: { "坚韧": 1 }, 描述: "人体原装胸腔保护骨骼，遮蔽脏器免受直接冲击嗷。" },
+    "肾脏": { 名称: "原生人类肾脏", 品质: "普通", 属性加成: { "血液过滤效率": 1 }, 描述: "人体原装多余水分与毒素排泄器官，平衡内环境嗷。" },
+    "脾脏": { 名称: "原生人类脾脏", 品质: "普通", 属性加成: { "新陈代谢效率": 1 }, 描述: "人体原装造血与免疫储血滤血器官，默默守护身体嗷。" },
+    "肝脏": { 名称: "原生人类肝脏", 品质: "普通", 属性加成: { "解毒效率": 1 }, 描述: "人体原装代谢解毒核心器官，协调多种生化反应嗷。" },
+    "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
   };
 
   const findAvailableOrgansForSlot = (slotName, data) => {
@@ -8354,19 +8354,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // ===== 身体移植舱（装备栏人体拓扑图） =====
     const slotsDef = [
-      { key: "眼球", icon: "ri-eye-fill", x: 10, y: 10 },
-      { key: "心脏", icon: "ri-heart-pulse-fill", x: 10, y: 26 },
-      { key: "肺脏", icon: "ri-windy-fill", x: 10, y: 42 },
-      { key: "胃", icon: "ri-restaurant-fill", x: 10, y: 58 },
-      { key: "肠子", icon: "ri-loop-left-line", x: 10, y: 74 },
-      { key: "阑尾", icon: "ri-heart-add-fill", x: 10, y: 90 },
-      
-      { key: "脊柱", icon: "ri-node-tree", x: 90, y: 10 },
-      { key: "肋骨", icon: "ri-split-cells-vertical", x: 90, y: 26 },
-      { key: "肾脏", icon: "ri-drop-fill", x: 90, y: 42 },
-      { key: "脾脏", icon: "ri-shield-user-fill", x: 90, y: 58 },
-      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 90, y: 74 },
-      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 90, y: 90 }
+      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: 10.0 },
+      { key: "心脏", icon: "ri-heart-pulse-fill", x: 69.0, y: 15.1 },
+      { key: "肺脏", icon: "ri-windy-fill", x: 82.9, y: 29.0 },
+      { key: "胃", icon: "ri-restaurant-fill", x: 88.0, y: 48.0 },
+      { key: "肠子", icon: "ri-loop-left-line", x: 82.9, y: 67.0 },
+      { key: "阑尾", icon: "ri-heart-add-fill", x: 69.0, y: 80.9 },
+      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 86.0 },
+      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 31.0, y: 80.9 },
+      { key: "脾脏", icon: "ri-shield-user-fill", x: 17.1, y: 67.0 },
+      { key: "肾脏", icon: "ri-drop-fill", x: 12.0, y: 48.0 },
+      { key: "肋骨", icon: "ri-split-cells-vertical", x: 17.1, y: 29.0 },
+      { key: "脊柱", icon: "ri-node-tree", x: 31.0, y: 15.1 }
     ];
 
     const svgLines = `
@@ -8821,14 +8820,20 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 2px solid #d0d7de;
+    background: rgba(253, 251, 245, 0.4) !important;
+    backdrop-filter: blur(6px) saturate(110%) !important;
+    -webkit-backdrop-filter: blur(6px) saturate(110%) !important;
+    border: 1.5px solid rgba(220, 209, 180, 0.5) !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 3px 8px rgba(90, 70, 50, 0.08) !important;
     z-index: 2;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.organ-gear-slot:hover .organ-gear-circle {
+    transform: scale(1.08);
 }
 
 .organ-gear-circle i {
@@ -8838,8 +8843,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 /* 根据品质和装备状态亮起插槽圈 */
 .organ-gear-slot.has-organ .organ-gear-circle {
-    border-color: #0969da;
-    box-shadow: 0 2px 6px rgba(9,105,218,0.15);
+    border-color: rgba(9, 105, 218, 0.6) !important;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 0 8px rgba(9, 105, 218, 0.3) !important;
 }
 .organ-gear-slot.has-organ .organ-gear-circle i {
     color: #0969da;
