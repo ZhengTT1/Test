@@ -7689,25 +7689,23 @@ const updateOrganUI = () => {
   /**
    * 刷新状态栏数据
    */
-  const refreshStatusBar = () => {
-    const $ = window.jQuery || window.parent?.jQuery;
-    if (!$) {
-        log.warn('jQuery not available, skipping refresh');
-        return;
+const refreshStatusBar = () => {
+  const data = fetchLatestMvuData();
+  if (Object.keys(data).length > 0) {
+    if (data?.人物?.技能树) {
+      syncSkillSlots(data.人物.技能树, data.人物);
     }
-    const data = fetchLatestMvuData();
-    if (Object.keys(data).length > 0) {
-        if (data?.人物?.技能树) {
-            syncSkillSlots(data.人物.技能树, data.人物);
-        }
-        updateStatusBarUI(data);
-        if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
-            updateTraitsPageUI();
-        }
-        if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
-            updateOrganUI();
-        }
+    updateStatusBarUI(data);
+    // 如果特质页面当前可见，同步更新
+    const { $ } = getCore();
+    if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
+      updateTraitsPageUI();
     }
+    // 如果器官页面当前可见，同步更新
+    if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
+      updateOrganUI();
+    }
+  }
 };
 
   // 注入样式 - 完全复用原版状态栏.html的CSS
