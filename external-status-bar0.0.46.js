@@ -7641,6 +7641,14 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
 
+  const guessSlotFromOrganName = (name) => {
+    const slots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱','脑','胆','膀胱','胰腺','生殖'];
+    for (let s of slots) {
+      if (name && name.includes(s)) return s;
+    }
+    return null;
+  };
+
   const getDefaultOrganForSlot = (slotKey, race) => {
     // 阑尾和幸运只有人类有，其他种族默认无阑尾
     if (slotKey === '阑尾') {
@@ -8391,13 +8399,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     return results;
   };
 
-  const guessSlotFromOrganName = (name) => {
-    const slots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱','脑','胆','膀胱','胰腺','生殖'];
-    for (let s of slots) {
-      if (name && name.includes(s)) return s;
-    }
-    return null;
-  };
+
 
   const showOrganItemDetailPopup = (organItem) => {
     const data = fetchLatestMvuData();
