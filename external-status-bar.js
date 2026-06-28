@@ -7734,11 +7734,6 @@ const updateOrganUI = () => {
    * 刷新状态栏数据
    */
 const refreshStatusBar = () => {
-  const { $ } = getCore();
-  if (!$) {
-    log.warn('jQuery not available, skipping refresh');
-    return;
-  }
   const data = fetchLatestMvuData();
   if (Object.keys(data).length > 0) {
     if (data?.人物?.技能树) {
@@ -7746,6 +7741,7 @@ const refreshStatusBar = () => {
     }
     updateStatusBarUI(data);
     // 如果特质页面当前可见，同步更新
+    const { $ } = getCore();
     if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
       updateTraitsPageUI();
     }
@@ -7754,8 +7750,6 @@ const refreshStatusBar = () => {
       updateOrganUI();
     }
   }
-};
-};
 
   // 注入样式 - 完全复用原版状态栏.html的CSS
   const injectStyles = () => {
