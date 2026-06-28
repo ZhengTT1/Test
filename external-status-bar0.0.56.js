@@ -9609,7 +9609,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
     const runOnceOrganSystemInitialization = async () => {
-    const key = `${SCRIPT_ID}-restored-v9`;
+    const key = `${SCRIPT_ID}-restored-v10`;
     if (localStorage.getItem(key)) return;
 
     const data = fetchLatestMvuData();
@@ -9618,12 +9618,29 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     console.log("[小苑调试] 正在自动初始化器官系统与重置/补发器官...");
     const patches = [];
 
-    // 1. 初始化器官列表为空（依赖默认初始器官）
-    patches.push({
-      op: 'replace',
-      path: '/人物/器官系统/器官列表',
-      value: {}
-    });
+    // 0. 确保人物.装备列表存在
+    if (!data.人物.装备列表) {
+      patches.push({
+        op: 'add',
+        path: '/人物/装备列表',
+        value: {}
+      });
+    }
+
+    // 1. 确保器官列表存在 (不覆盖已有数据)
+    if (!data.人物.器官系统) {
+      patches.push({
+        op: 'add',
+        path: '/人物/器官系统',
+        value: { 器官列表: {}, 器官背包: {} }
+      });
+    } else if (!data.人物.器官系统.器官列表) {
+      patches.push({
+        op: 'add',
+        path: '/人物/器官系统/器官列表',
+        value: {}
+      });
+    }
 
     // 2. 补发12个初始器官到装备背包
     const initOrgans = [
@@ -9642,59 +9659,72 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     ];
 
     initOrgans.forEach(o => {
+      const targetKey = `器官_初始${o.key}`;
+      if (!data.人物.装备列表?.[targetKey]) {
+        patches.push({
+          op: 'add',
+          path: `/人物/装备列表/${targetKey}`,
+          value: {
+            名称: o.name,
+            品质: "普通",
+            描述: o.desc,
+            部位: o.key,
+            装备箱: true,
+            属性加成: o.attr,
+            特性: [],
+            标签: ["血肉", "人类"],
+            种族: "",
+            强化等级: 0,
+            初始: true
+          }
+        });
+      }
+    });
+
+    const rareOrgan1 = data.人物.装备列表?.["器官_暴君肌肉"];
+    if (!rareOrgan1) {
       patches.push({
         op: 'add',
-        path: `/人物/装备列表/器官_初始${o.key}`,
+        path: '/人物/装备列表/器官_暴君肌肉',
         value: {
-          名称: o.name,
-          品质: "普通",
-          描述: o.desc,
-          部位: o.key,
+          名称: "暴君活性肌肉",
+          品质: "传说",
+          描述: "富含高能活性纤维的暴君级肌肉组织，爆发力极强。",
+          部位: "肌肉",
           装备箱: true,
-          属性加成: o.attr,
+          属性加成: { 筋力: 4, 速度: 2, "重击强化": 1 },
           特性: [],
-          标签: ["血肉", "人类"],
+          标签: ["血肉", "暴君"],
           种族: "",
-          强化等级: 0,
-          初始: true
+          强化等级: 0
         }
       });
-    });
+    }
+
+    const rareOrgan2 = data.人物.装备列表?.["器官_活性心脏"];
+    if (!rareOrgan2) {
+      patches.push({
+        op: 'add',
+        path: '/人物/装备列表/器官_活性心脏',
+        value: {
+          名称: "活性机械心脏",
+          品质: "史诗",
+          描述: "机械与血肉融合的心脏，泵血量极其惊人。",
+          部位: "心脏",
+          装备箱: true,
+          属性加成: { 筋力: 2, 储能: 20, "超频爆发": 1, "健康度": 1 },
+          特性: [],
+          标签: ["机械", "血肉"],
+          种族: "",
+          强化等级: 0
+        }
+      });
+    }
 
     // 3. 补发2个极品器官（特性已合并入属性加成）
-    patches.push({
-      op: 'add',
-      path: '/人物/装备列表/器官_暴君肌肉',
-      value: {
-        名称: "暴君活性肌肉",
-        品质: "传说",
-        描述: "富含高能活性纤维的暴君级肌肉组织，爆发力极强。",
-        部位: "肌肉",
-        装备箱: true,
-        属性加成: { 筋力: 4, 速度: 2, "重击强化": 1 },
-        特性: [],
-        标签: ["血肉", "暴君"],
-        种族: "",
-        强化等级: 0
-      }
-    });
 
-    patches.push({
-      op: 'add',
-      path: '/人物/装备列表/器官_活性心脏',
-      value: {
-        名称: "活性机械心脏",
-        品质: "史诗",
-        描述: "机械与血肉融合的心脏，泵血量极其惊人。",
-        部位: "心脏",
-        装备箱: true,
-        属性加成: { 筋力: 2, 储能: 20, "超频爆发": 1, "健康度": 1 },
-        特性: [],
-        标签: ["机械", "血肉"],
-        种族: "",
-        强化等级: 0
-      }
-    });
+
+
 
     const success = await applyMvuPatches(patches);
     if (success) {
