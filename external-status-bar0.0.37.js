@@ -7717,6 +7717,42 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const patches = [];
     const baseSlot = String(slotName || '').split('_')[0];
 
+    // First unequip current organ if it exists to avoid overwriting it
+    const currentOrgan = data?.人物?.器官系统?.器官列表?.[slotName];
+    if (currentOrgan && !currentOrgan.空) {
+      const 装备列表 = data?.人物?.装备列表 || {};
+      let foundKey = null;
+      Object.entries(装备列表).forEach(([key, eq]) => {
+        if (eq && eq.名称 === currentOrgan.名称 && eq.装备箱 === false) {
+          foundKey = key;
+        }
+      });
+      if (foundKey) {
+        patches.push({
+          op: 'replace',
+          path: `/人物/装备列表/${foundKey}/装备箱`,
+          value: true
+        });
+      } else {
+        const newKey = `器官_${Date.now()}`;
+        patches.push({
+          op: 'add',
+          path: `/人物/装备列表/${newKey}`,
+          value: {
+            名称: currentOrgan.名称,
+            品质: currentOrgan.品质 || '普通',
+            描述: currentOrgan.描述 || '从躯体卸下的器官',
+            部位: baseSlot,
+            装备箱: true,
+            属性加成: currentOrgan.属性加成 || {},
+            特性: currentOrgan.特性 || [],
+            种族: currentOrgan.种族 || '',
+            强化等级: currentOrgan.强化等级 || 0
+          }
+        });
+      }
+    }
+
     patches.push({
       op: 'replace',
       path: `/人物/器官系统/器官列表/${slotName}`,
@@ -7770,7 +7806,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const success = await applyMvuPatches(patches);
     if (success) {
-      showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 槽位嗷`);
+      showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 槽位`);
       updateOrganUI();
       setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
@@ -8293,10 +8329,24 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     ];
 
     const getAttrVal = (key, defaultVal) => {
-      // 计算无器官时的基础值 = defaultVal - 所有原生器官对该属性的加成之和
+      // 获取所有槽位展开后的实例
+      const expandedSlots = [];
+      slotsDef.forEach(s => {
+        const count = s.count || 1;
+        if (count > 1) {
+          for (let i = 1; i <= count; i++) {
+            expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
+          }
+        } else {
+          expandedSlots.push({ key: s.key, baseKey: s.key });
+        }
+      });
+
+      // 计算无器官时的基础值 = defaultVal - 所有展开后槽位的原生器官对该属性的加成之和
       let nativeBonusSum = 0;
-      Object.values(defaultOrgans).forEach(org => {
-        if (org.属性加成 && org.属性加成[key] !== undefined) {
+      expandedSlots.forEach(slot => {
+        const org = defaultOrgans[slot.baseKey];
+        if (org && org.属性加成 && org.属性加成[key] !== undefined) {
           nativeBonusSum += Number(org.属性加成[key]);
         }
       });
@@ -8304,16 +8354,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
       // 累加当前实际装备/原生的器官加成
       let activeBonusSum = 0;
-      const slotKeys = ["眼球", "心脏", "肺脏", "胃", "肠子", "阑尾", "肌肉", "肝脏", "脾脏", "肾脏", "肋骨", "脊柱"];
-      slotKeys.forEach(slotKey => {
-        const organ = 器官列表[slotKey];
+      expandedSlots.forEach(slot => {
+        const organ = 器官列表[slot.key];
         const isEmpty = !!organ && organ.空;
         const isNative = !organ;
         const isEquipped = !!organ && !organ.空;
         
         let activeOrgan = null;
         if (isNative) {
-          activeOrgan = defaultOrgans[slotKey];
+          activeOrgan = defaultOrgans[slot.baseKey];
         } else if (isEquipped) {
           activeOrgan = organ;
         }
@@ -8335,21 +8384,57 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     attrsDef.forEach((attr, idxCard) => {
       const val = getAttrVal(attr.key, attr.default);
       
-      let providers = [];
-      const slotKeys = ["眼球", "心脏", "肺脏", "胃", "肠子", "阑尾", "肌肉", "肝脏", "脾脏", "肾脏", "肋骨", "脊柱"];
-      slotKeys.forEach(slotKey => {
-        const organ = 器官列表[slotKey] || defaultOrgans[slotKey];
-        if (organ && organ.属性加成 && organ.属性加成[attr.key] !== undefined) {
-          providers.push({
-            name: organ.名称.replace("原生人类", "原生"),
-            val: organ.属性加成[attr.key]
-          });
+      const expandedSlots = [];
+      slotsDef.forEach(s => {
+        const count = s.count || 1;
+        if (count > 1) {
+          for (let i = 1; i <= count; i++) {
+            expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
+          }
+        } else {
+          expandedSlots.push({ key: s.key, baseKey: s.key });
         }
       });
+
+      let providers = [];
+      const groupedProviders = {};
+      
+      expandedSlots.forEach(slot => {
+        const organ = 器官列表[slot.key];
+        const isEmpty = !!organ && organ.空;
+        const isNative = !organ;
+        const isEquipped = !!organ && !organ.空;
+        
+        let activeOrgan = null;
+        if (isNative) {
+          activeOrgan = defaultOrgans[slot.baseKey];
+        } else if (isEquipped) {
+          activeOrgan = organ;
+        }
+        
+        if (activeOrgan && activeOrgan.属性加成 && activeOrgan.属性加成[attr.key] !== undefined) {
+          const val = Number(activeOrgan.属性加成[attr.key]);
+          if (val !== 0) {
+            const groupName = slot.baseKey;
+            if (!groupedProviders[groupName]) {
+              groupedProviders[groupName] = 0;
+            }
+            groupedProviders[groupName] += val;
+          }
+        }
+      });
+      
+      Object.entries(groupedProviders).forEach(([name, sumVal]) => {
+        providers.push({
+          name: name,
+          val: sumVal
+        });
+      });
+
       let providersHtml = '';
       if (providers.length > 0) {
         providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-          来源: ${providers.map(p => `${p.name} (+${p.val})`).join(', ')}
+          来源: ${providers.map(p => `${p.name}+${p.val}`).join(', ')}
         </div>`;
       }
 
