@@ -8360,36 +8360,36 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const svgLines = `
       <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
         <!-- 外接圆 -->
-        <circle cx="50" cy="50" r="38" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+        <circle cx="50" cy="50" r="38" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
         <!-- 外接正方形 -->
-        <rect x="12" y="12" width="76" height="76" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+        <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
         <!-- 对角线和水平垂直辅助线，增加达芬奇手稿风格 -->
-        <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
-        <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
+        <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
+        <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
         
         <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
         
         <!-- 姿态1：直立十字人体 -->
         <!-- 头部 -->
-        <circle cx="50" cy="17" r="3.2" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
+        <circle cx="50" cy="17" r="3.2" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
         <!-- 脖子 -->
-        <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(36, 41, 47, 0.15)" />
+        <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(90, 70, 50, 0.25)" />
         <!-- 身体躯干 -->
-        <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
+        <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
         <!-- 直立水平双臂 -->
-        <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 左臂 -->
-        <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 右臂 -->
+        <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 左臂 -->
+        <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 右臂 -->
         <!-- 直立垂直双腿 -->
-        <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 左腿 -->
-        <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" /> <!-- 右腿 -->
+        <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 左腿 -->
+        <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 右腿 -->
 
         <!-- 姿态2：大字形展开人体 -->
         <!-- 展开斜向上双臂 -->
-        <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" /> <!-- 左斜臂 -->
-        <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" /> <!-- 右斜臂 -->
+        <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" /> <!-- 左斜臂 -->
+        <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" /> <!-- 右斜臂 -->
         <!-- 展开斜向下双腿 -->
-        <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" /> <!-- 左斜腿 -->
-        <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" /> <!-- 右斜腿 -->
+        <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" /> <!-- 左斜腿 -->
+        <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" /> <!-- 右斜腿 -->
       </svg>
     `;
 
@@ -8405,28 +8405,28 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;` : ''}">
         <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
           <!-- 外接圆 -->
-          <circle cx="50" cy="50" r="38" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+          <circle cx="50" cy="50" r="38" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
           <!-- 外接正方形 -->
-          <rect x="12" y="12" width="76" height="76" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.5" fill="none" />
+          <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
           <!-- 对角线和水平垂直辅助线 -->
-          <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
-          <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(36, 41, 47, 0.08)" stroke-width="0.4" stroke-dasharray="1 1" />
+          <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
+          <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
           
           <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
           <!-- 姿态1：直立十字人体 -->
-          <circle cx="50" cy="17" r="3.2" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
-          <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(36, 41, 47, 0.15)" />
-          <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.25)" stroke-width="0.4" />
-          <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
-          <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(36, 41, 47, 0.15)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
-          <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
-          <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(36, 41, 47, 0.13)" stroke="rgba(36, 41, 47, 0.2)" stroke-width="0.4" />
+          <circle cx="50" cy="17" r="3.2" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
+          <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(90, 70, 50, 0.25)" />
+          <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
+          <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+          <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+          <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+          <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
 
           <!-- 姿态2：大字形展开人体 -->
-          <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" />
-          <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(36, 41, 47, 0.1)" stroke="rgba(36, 41, 47, 0.15)" stroke-width="0.4" />
-          <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" />
-          <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(36, 41, 47, 0.08)" stroke="rgba(36, 41, 47, 0.12)" stroke-width="0.4" />
+          <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
+          <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
+          <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
+          <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
         </svg>
     `;
 
@@ -8534,20 +8534,20 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 
 
-/* ========== 生物/器官系统雅致白色风格主题 ========== */
+/* ========== 生物/器官系统古典做旧羊皮纸风格主题 ========== */
 #view-organ {
-    background: #ffffff !important;
-    border: 1px solid #d0d7de !important;
+    background: radial-gradient(circle, #fcfaf2 0%, #f3eacb 100%) !important;
+    border: 1px solid #dcd1b4 !important;
     border-radius: 8px;
     padding: 12px;
-    color: #24292f !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    color: #4a3c31 !important;
+    box-shadow: 0 2px 8px rgba(90, 70, 50, 0.08);
 }
 
 #view-organ .traits-page-title {
-    color: #24292f !important;
+    color: #4a3c31 !important;
     font-weight: 700;
-    border-bottom: 1px solid #d0d7de;
+    border-bottom: 1px solid #dcd1b4;
     padding-bottom: 6px;
 }
 
@@ -10153,7 +10153,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     aspect-ratio: 1 / 1;
     margin: 0 auto 15px;
     background-color: var(--bg-color);
-    
+    background-image: url('https://rpg.bolt.qzz.io/background/29l6g5.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
