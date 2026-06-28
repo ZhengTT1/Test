@@ -7663,6 +7663,24 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     return defaultOrgans[slotKey] || { 空: true, 名称: `[${slotKey}]` };
   };
 
+  const getNormalizedOrgan = (organObj) => {
+    if (!organObj || organObj.空) return organObj;
+    const organ = JSON.parse(JSON.stringify(organObj));
+    if (organ.特性) {
+      const traitsToMove = ['超频爆发', '超载爆发', '重击强化'];
+      traitsToMove.forEach(t => {
+        if (organ.特性.includes(t)) {
+          if (!organ.属性加成) organ.属性加成 = {};
+          if (organ.属性加成[t] === undefined) {
+            organ.属性加成[t] = 1;
+          }
+          organ.特性 = organ.特性.filter(x => x !== t);
+        }
+      });
+    }
+    return organ;
+  };
+
   const getOrganIconClass = (slotName, organName) => {
     const slotMap = {
       "眼球": "ri-eye-fill",
@@ -9003,9 +9021,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       
       let activeOrgan = null;
       if (isNative) {
-        activeOrgan = getDefaultOrganForSlot(slot.baseKey, race);
+        activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race));
       } else if (isEquipped) {
-        activeOrgan = organ;
+        activeOrgan = getNormalizedOrgan(organ);
       }
       
       if (activeOrgan && !activeOrgan.空) {
@@ -9047,9 +9065,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         
         let activeOrgan = null;
         if (isNative) {
-          activeOrgan = getDefaultOrganForSlot(slot.baseKey, race);
+          activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race));
         } else if (isEquipped) {
-          activeOrgan = organ;
+          activeOrgan = getNormalizedOrgan(organ);
         }
         
         if (activeOrgan && !activeOrgan.空 && activeOrgan.属性加成 && activeOrgan.属性加成[k] !== undefined) {
@@ -9104,15 +9122,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
       let customIcon = 'ri-pulse-line';
       if (k === '储能') customIcon = 'ri-battery-charge-line';
-      else if (k === '充能') customIcon = 'ri-flashlight-line';
-      else if (k === '超频爆发' || k === '超载爆发') customIcon = 'ri-bolt-line';
+      else if (k === '充能') customIcon = 'ri-water-flash-line';
+      else if (k === '超频爆发' || k === '超载爆发') customIcon = 'ri-flashlight-line';
       else if (k === '重击强化') customIcon = 'ri-hammer-line';
 
       cardsHtml += `
         <div class="organ-attr-compact-card custom-attr-card ${edgeClass}" data-attr-key="${k}">
           <div class="compact-header-vertical">
             <i class="${customIcon}"></i>
-            <span class="organ-attr-value ${valClass}">${val}</span>
+            <span class="organ-attr-value ${valClass}" style="font-size: 9.5px;">提供 ${val}</span>
           </div>
           <div class="compact-detail">
             <div class="compact-attr-name">${k}</div>
