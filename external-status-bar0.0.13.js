@@ -8650,9 +8650,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     aspect-ratio: 1 / 1;
     margin: 0 auto 15px;
     background-color: #f6f8fa;
-    background-image: url('https://rpg.bolt.qzz.io/background/29l6g5.webp');
-    background-size: contain;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Vitruvian_man_by_Leonardo_da_Vinci.png/480px-Vitruvian_man_by_Leonardo_da_Vinci.png');
+    background-size: 95% contain;
     background-position: center center;
+    background-repeat: no-repeat;
     background-repeat: no-repeat;
     border-radius: 8px;
     border: 1px solid #d0d7de;
@@ -10056,7 +10057,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     aspect-ratio: 1 / 1;
     margin: 0 auto 15px;
     background-color: var(--bg-color);
-    background-image: url('https://rpg.bolt.qzz.io/background/29l6g5.webp');
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Vitruvian_man_by_Leonardo_da_Vinci.png/480px-Vitruvian_man_by_Leonardo_da_Vinci.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
