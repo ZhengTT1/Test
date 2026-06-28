@@ -7823,53 +7823,57 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const data = fetchLatestMvuData();
     const available = findAvailableOrgansForSlot(slotName, data);
     const currentEquipped = data?.人物?.器官系统?.器官列表?.[slotName];
-    const isCustom = !!currentEquipped;
+    const isCustom = !!currentEquipped && !(currentEquipped.名称 || '').includes('原生');
     const displayOrgan = isCustom ? currentEquipped : defaultOrgans[slotName];
 
+    // 采用与原版装备弹窗完全一致的 fusion-popup-overlay 结构，挂载在 panel 内部确保一致的层级和置顶
     let html = `
-      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay organ-popup">
-        <div class="fusion-card organ-theme-card">
-          <div class="f-header">
-            <span class="f-title"><i class="ri-body-scan-line"></i> 器官移植中心 - ${slotName}</span>
-            <button class="f-close"><i class="ri-close-line"></i></button>
+      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
+        <div class="fusion-card organ-theme-card" style="--quality-color: ${isCustom ? '#0969da' : '#57606a'};">
+          <button class="popup-close"><i class="ri-close-line"></i></button>
+          <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
+            <div class="f-meta-row" style="font-size: 10px; color: #57606a; text-transform: uppercase;">
+              <span class="f-type">// 器官移植中心</span>
+            </div>
+            <div class="f-title-row" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+              <span class="f-name" style="font-size: 14px; font-weight: 700; color: #24292f;">${slotName}部位</span>
+            </div>
           </div>
-          <div class="f-body">
-    `;
+          <div class="f-body" style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <div class="current-organ-display">
+              <div class="section-title" style="font-size: 11px; font-weight: 600; color: #57606a; margin-bottom: 6px;">当前装配</div>
+              <div class="organ-display-card ${isCustom ? 'custom-equipped' : 'native-equipped'}" style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px 12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="organ-display-name" style="font-size: 12px; font-weight: 700; color: #24292f;">${displayOrgan.名称}</span>
+                  ${isCustom ? `<button class="btn-organ-action btn-organ-unequip" data-slot="${slotName}">剥离还原</button>` : `<span class="native-badge">原生自带</span>`}
+                </div>
+                <div class="organ-display-desc" style="font-size: 10.5px; color: #57606a; margin-top: 6px; line-height: 1.4;">${displayOrgan.描述 || '无描述'}</div>
+              </div>
+            </div>
 
-    html += `
-      <div class="current-organ-display">
-        <div class="section-title">当前装配器官</div>
-        <div class="organ-display-card ${isCustom ? 'custom-equipped' : 'native-equipped'}">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="organ-display-name">${displayOrgan.名称}</span>
-            ${isCustom ? `<button class="btn-organ-action btn-organ-unequip" data-slot="${slotName}">剥离还原</button>` : `<span class="native-badge">原生自带</span>`}
-          </div>
-          <div class="organ-display-desc">${displayOrgan.描述 || '无描述'}</div>
-        </div>
-      </div>
+            <div class="candidate-section-title" style="font-size: 11px; font-weight: 600; color: #57606a; margin-top: 4px; border-top: 1px solid #f0f2f5; padding-top: 8px;">器官背包候补</div>
     `;
-
-    html += `<div class="candidate-section-title">器官背包候选</div>`;
 
     if (available.length === 0) {
       html += `
-        <div class="empty-candidate-hint">
-          <i class="ri-heart-add-line"></i>
-          <div>暂无匹配 [${slotName}] 的多余备用器官配件嗷</div>
+        <div class="empty-candidate-hint" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; font-size: 11px; color: #8c959f; text-align: center; gap: 6px;">
+          <i class="ri-heart-add-line" style="font-size: 20px; color: #afb8c1;"></i>
+          <div>暂无匹配 [${slotName}] 的备用器官配件嗷</div>
         </div>
       `;
     } else {
-      html += `<div class="organ-candidates-list">`;
+      html += `<div class="organ-candidates-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 4px;">`;
       available.forEach((item, idx) => {
         html += `
-          <div class="organ-candidate-card">
-            <div class="candidate-header">
-              <span class="candidate-name">${item.name}</span>
-              <span class="candidate-quality tag-${item.quality === '稀有' || item.quality === '史诗' ? 'positive' : 'neutral'}">${item.quality}</span>
+          <div class="organ-candidate-card" style="border: 1px solid #d0d7de; background: #ffffff; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 5px;">
+            <div class="candidate-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="candidate-name" style="font-size: 12px; font-weight: 700; color: #24292f;">${item.name}</span>
+              <span class="candidate-quality" style="font-size: 10px; color: #0969da; font-weight: 600;">${item.quality}</span>
             </div>
-            <div class="candidate-desc">${item.desc}</div>
-            <div class="candidate-action-row">
-              <button class="btn-organ-action btn-organ-equip" data-idx="${idx}">替换接入</button>
+            <div class="candidate-desc" style="font-size: 10.5px; color: #57606a; line-height: 1.3;">${item.desc}</div>
+            <div class="candidate-action-row" style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button class="btn-organ-action btn-organ-equip" data-idx="${idx}" style="background: #0969da; color: white; border: 1px solid #0969da; padding: 3px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 600; cursor: pointer;">替换接入</button>
             </div>
           </div>
         `;
@@ -7884,12 +7888,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     `;
 
     $(`#${SCRIPT_ID}-popup`).remove();
-    $('body').append(html);
+    $(`#${SCRIPT_ID}-panel`).append(html); // 挂载至 panel 确保与装备弹窗层级完全一致
     
     const $popup = $(`#${SCRIPT_ID}-popup`);
-    $popup.find('.f-close').on('click', () => $popup.remove());
     
-    $popup.find('.btn-organ-equip').on('click', function() {
+    // 绑定关闭事件（点击空白处或关闭按钮）
+    $popup.on('click', function (e) {
+      if (e.target === this || $(e.target).closest('.popup-close').length) {
+        $(this).remove();
+      }
+    });
+    
+    $popup.find('.btn-organ-equip').on('click', function(e) {
+      e.stopPropagation();
       const idx = $(this).data('idx');
       const targetOrgan = available[idx];
       if (targetOrgan) {
@@ -7898,7 +7909,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       }
     });
 
-    $popup.find('.btn-organ-unequip').on('click', function() {
+    $popup.find('.btn-organ-unequip').on('click', function(e) {
+      e.stopPropagation();
       $popup.remove();
       unequipOrganFromSlot(slotName);
     });
@@ -8374,10 +8386,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         else if (organ.品质 === '诅诅' || organ.品质 === '诅咒') qClass = 'quality-cursed';
       }
 
-      const displayName = isEquipped ? `${organ.名称}${organLevel}` : `人类${s.key}`;
+      // 如果器官名称里含有“原生”，或者不是自定义移植的，就只显示“人类XX”
+      const isNative = !器官列表[s.key] || (organ.名称 || '').includes('原生');
+      const displayName = isNative ? `人类${s.key}` : `${organ.名称}${organLevel}`;
 
       slotsHtml += `
-        <div class="organ-gear-slot ${isEquipped ? 'has-organ' : 'empty-organ'} ${qClass}" 
+        <div class="organ-gear-slot ${isEquipped && !isNative ? 'has-organ' : 'empty-organ'} ${qClass}" 
              style="top: ${s.y}%; left: ${s.x}%;" 
              data-slot-key="${s.key}">
           <div class="organ-gear-circle">
@@ -8765,200 +8779,28 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 
-/* 器官移植中心弹窗美化及置顶层级 */
-.organ-popup {
-    position: fixed !important; /* 置于可视窗口最上层 */
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0, 0, 0, 0.45) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 10000000 !important; /* 绝对最高层级置顶 */
-    backdrop-filter: blur(3px);
-}
 
-.organ-theme-card {
+/* 器官移植中心弹窗美化 */
+#${SCRIPT_ID}-popup .organ-theme-card {
     background: #ffffff !important;
     border: 1px solid #d0d7de !important;
     border-radius: 12px !important;
     width: 90% !important;
     max-width: 340px !important;
-    max-height: 85vh !important;
-    overflow-y: auto !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
     color: #24292f !important;
-    display: flex !important;
-    flex-direction: column !important;
+    padding: 16px !important;
 }
 
-.organ-theme-card .f-header {
-    padding: 10px 14px !important;
-    background: #f6f8fa !important;
-    border-bottom: 1px solid #d0d7de !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-}
-
-.organ-theme-card .f-title {
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    color: #24292f !important;
-}
-
-.organ-theme-card .f-close {
-    background: transparent !important;
-    border: none !important;
-    cursor: pointer !important;
-    font-size: 15px !important;
-    color: #57606a !important;
-}
-
-.organ-theme-card .f-body {
-    padding: 14px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-}
-
-.organ-theme-card .section-title, 
-.organ-theme-card .candidate-section-title {
-    font-size: 10.5px !important;
-    font-weight: 600 !important;
-    color: #57606a !important;
-    text-transform: uppercase !important;
-    margin-bottom: 5px !important;
-    border-bottom: 1px solid #f0f2f5;
-    padding-bottom: 3px;
-}
-
-.organ-display-card {
-    border-radius: 8px !important;
-    padding: 10px 12px !important;
-    background: #f6f8fa !important;
-    border: 1px solid #d0d7de !important;
-}
-
-.organ-display-card.custom-equipped {
-    border-left: 3px solid #0969da !important;
-}
-
-.organ-display-card.native-equipped {
-    border-left: 3px solid #57606a !important;
-}
-
-.organ-display-name {
-    font-size: 11.5px !important;
-    font-weight: 700 !important;
-    color: #24292f !important;
-}
-
-.native-badge {
-    font-size: 9.5px !important;
-    background: #eaeef2 !important;
-    color: #57606a !important;
-    padding: 1.5px 5px !important;
-    border-radius: 4px !important;
-    font-weight: 600 !important;
-}
-
-.organ-display-desc {
-    font-size: 10px !important;
-    color: #57606a !important;
-    margin-top: 5px !important;
-    line-height: 1.35 !important;
-}
-
-.organ-candidates-list {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    max-height: 180px !important;
-    overflow-y: auto !important;
-}
-
-.organ-candidate-card {
-    border: 1px solid #d0d7de !important;
-    background: #ffffff !important;
-    border-radius: 8px !important;
-    padding: 8px 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 4px !important;
-}
-
-.candidate-header {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center;
-}
-
-.candidate-name {
-    font-size: 11.5px !important;
-    font-weight: 700 !important;
-    color: #24292f !important;
-}
-
-.candidate-desc {
-    font-size: 10px !important;
-    color: #57606a !important;
-    line-height: 1.3 !important;
-}
-
-.candidate-action-row {
-    display: flex !important;
-    justify-content: flex-end !important;
-}
-
-.btn-organ-action {
-    font-size: 10px !important;
-    padding: 3px 8px !important;
-    border-radius: 5px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    border: 1px solid #d0d7de !important;
-    transition: all 0.15s ease !important;
-}
-
-.btn-organ-unequip {
-    background: #ffffff !important;
-    color: #cf222e !important;
-    border-color: #d0d7de !important;
-}
-
-.btn-organ-unequip:hover {
-    background: #ffebe9 !important;
-    border-color: #cf222e !important;
-}
-
-.btn-organ-equip {
-    background: #0969da !important;
-    color: #ffffff !important;
-    border-color: #0969da !important;
-}
-
-.btn-organ-equip:hover {
-    background: #0c56b8 !important;
-}
-
-.empty-candidate-hint {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 15px 10px !important;
-    font-size: 10.5px !important;
-    color: #57606a !important;
-    text-align: center !important;
-    gap: 5px !important;
-}
-
-.empty-candidate-hint i {
-    font-size: 18px !important;
-    color: #afb8c1 !important;
+#${SCRIPT_ID}-popup .organ-theme-card .popup-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #57606a;
 }
 
 /* ========== 悬浮球样式 - 完全复用AppleStyle-Star的Brushed Metal ========== */
