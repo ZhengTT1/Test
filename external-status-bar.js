@@ -9,6 +9,7 @@
 // ==/UserScript==
 !(function () {
   "use strict";
+  let $ = null;
 
   const SCRIPT_ID = "rpg_status_bar";
   const STORAGE_KEY = "rpg_status_bar_pos";
@@ -39,13 +40,14 @@
   const getCore = () => {
     try {
       const win = window.parent || window;
-      const $ = window.jQuery || win.jQuery;
-      return { window: win, $, getDB: () => win.AutoCardUpdaterAPI || window.AutoCardUpdaterAPI };
+      const jQueryInstance = window.jQuery || win.jQuery;
+      return { window: win, $: jQueryInstance, getDB: () => win.AutoCardUpdaterAPI || window.AutoCardUpdaterAPI };
     } catch (e) {
       return { window: window, $: window.jQuery, getDB: () => window.AutoCardUpdaterAPI };
     }
   };
-  const { $ } = getCore();
+  $ = getCore().$;
+  
 
   // 战斗中检测：从MVU变量获取 战斗.是否战斗中
   const isInBattle = () => {
@@ -2340,7 +2342,7 @@ ${lockedSkillsJson}
    * @param {string} containerId - 容器元素ID
    */
   const renderSkillTreePreview = (mvuSkillTree, containerId) => {
-    const { $ } = getCore();
+    
     const $container = $(`#${containerId}`);
     $container.empty().addClass('skill-tree-layout');
 
@@ -2475,7 +2477,7 @@ ${lockedSkillsJson}
    * 显示提示
    */
   const showToast = (type, message, duration = 2200) => {
-    const { $ } = getCore();
+    
     const $panel = $(`#${SCRIPT_ID}-panel`);
     if (!$panel.length) { log[type === 'error' ? 'error' : 'info'](message); return; }
     const icons = { success: 'ri-check-line', error: 'ri-close-circle-line', warning: 'ri-error-warning-line', info: 'ri-information-line' };
@@ -2503,7 +2505,7 @@ ${lockedSkillsJson}
    * @param {Function} onConfirm - 点击确定后的回调
    */
   const showPanelConfirm = (msg, onConfirm) => {
-    const { $ } = getCore();
+    
     $(`#${SCRIPT_ID}-panel > .rpg-confirm-overlay`).remove();
     const html = `
       <div class="rpg-confirm-overlay">
@@ -2636,7 +2638,7 @@ ${lockedSkillsJson}
 
   // 检测并加载header背景图片
   const loadHeaderBackground = () => {
-    const { $ } = getCore();
+    
     const $header = $(`#${SCRIPT_ID}-panel header`);
     if (!$header.length) return;
 
@@ -2675,7 +2677,7 @@ ${lockedSkillsJson}
   const state = {
     current: "collapsed",
     setState: (newState) => {
-      const { $ } = getCore();
+      
       const panel = $(`#${SCRIPT_ID}-panel`);
       if (newState === "expanded") {
         syncPanelTheme();
@@ -2694,7 +2696,7 @@ ${lockedSkillsJson}
 
   // 清理/卸载功能
   const cleanup = () => {
-    const { $ } = getCore();
+    
     log.info("开始清理...");
 
     // 清理所有 setInterval / setTimeout（描边动画等）
@@ -2826,7 +2828,7 @@ ${lockedSkillsJson}
    * @param {object} data - 详情数据
    */
   const showDetailPopup = (type, slotName, data) => {
-    const { $ } = getCore();
+    
 
     // 移除已存在的弹窗
     $(`#${SCRIPT_ID}-popup`).remove();
@@ -3107,7 +3109,7 @@ ${lockedSkillsJson}
     });
   };
   const showComboSkillPicker = (slotMetaRaw, replaceSkillName = '') => {
-    const { $ } = getCore();
+    
     const data = fetchLatestMvuData();
     const slotMeta = parseSlotMeta(slotMetaRaw);
     if (!slotMeta || !slotMeta.comboSlot) return;
@@ -3793,7 +3795,7 @@ ${lockedSkillsJson}
    * @param {object} 种族棋子收藏 - 已收藏的种族棋子对象
    */
   const showRaceChessPopup = (种族棋子收藏) => {
-    const { $ } = getCore();
+    
     const data = fetchLatestMvuData();
     if (isAmberSwordWorldView(data)) return;
 
@@ -3868,7 +3870,7 @@ ${lockedSkillsJson}
    * 显示末日时钟弹窗（大明志异）
    */
   const showDoomClockPopup = (data) => {
-    const { $ } = getCore();
+    
     if (!isDaMingWorldView(data)) return;
     $(`#${SCRIPT_ID}-popup`).remove();
 
@@ -4231,7 +4233,7 @@ ${lockedSkillsJson}
   };
 
   const showEquipmentShopPopup = async () => {
-    const { $ } = getCore();
+    
     $(`#${SCRIPT_ID}-popup`).remove();
 
     const currentRP = parseInt(fetchLatestMvuData()?.人物?.RP, 10) || 0;
@@ -4578,7 +4580,7 @@ ${lockedSkillsJson}
 
   // 特质商店内自定义确认弹窗
   const showShopConfirm = (msg, onConfirm) => {
-    const { $ } = getCore();
+    
     $(`#${SCRIPT_ID}-popup .ts-confirm`).remove();
     const html = `
       <div class="ts-confirm">
@@ -4836,7 +4838,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
   const showTraitShopPopup = () => {
-    const { $ } = getCore();
+    
     $(`#${SCRIPT_ID}-popup`).remove();
 
     const data = fetchLatestMvuData();
@@ -5011,7 +5013,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     // ========== AI客制化特质生成 ==========
     // 渲染命运之轮结果卡片（复用：首次生成 & 重新打开弹窗恢复缓存）
     const renderFateCards = (traits) => {
-      const { $ } = getCore();
+      
       const $results = $(`#${SCRIPT_ID}-popup .ts-ai-results`);
       const $btn = $(`#${SCRIPT_ID}-popup .ts-ai-generate`);
       const cardsHtml = traits.map((t, i) => {
@@ -5216,7 +5218,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
    * @param {object} equipData - 装备数据
    */
   const showEquipBoxPopup = (equipKey, equipData) => {
-    const { $ } = getCore();
+    
 
     // 移除已存在的弹窗
     $(`#${SCRIPT_ID}-popup`).remove();
@@ -5351,7 +5353,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
    * @param {object} data - 装备数据
    */
   const showEquippedPopup = (type, slotName, data) => {
-    const { $ } = getCore();
+    
     const currentData = fetchLatestMvuData();
     const hideWeaponLevel = isAmberSwordWorldView(currentData);
 
@@ -6390,7 +6392,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
    */
   const updateStatusBarUI = (data) => {
     if (!data) return;
-    const { $ } = getCore();
+    
     const $panel = $(`#${SCRIPT_ID}-panel`);
 
     log.debug('更新状态栏UI，数据:', data);
@@ -7097,7 +7099,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
   const renderDifficultyPanel = (data) => {
-    const { $ } = getCore();
+    
     const $panel = $(`#${SCRIPT_ID}-panel`);
     const 倍率 = data?.系统配置?.敌人倍率 || getDiffPresetData('easy');
     const charLevel = Math.max(1, Number(data?.人物?.等级) || 1);
@@ -7195,7 +7197,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
    * 更新技能树UI
    */
   const updateSkillTreeUI = (data) => {
-    const { $ } = getCore();
+    
     const $panel = $(`#${SCRIPT_ID}-panel`);
     const skillTree = data?.人物?.技能树 || {};
     const skillList = skillTree.技能列表 || {};
@@ -7538,7 +7540,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   const defaultTagStyle = { cls: 'tag-extra', color: '#636e72' };
 
   const updateTraitsPageUI = () => {
-    const { $ } = getCore();
+    
     const $panel = $(`#${SCRIPT_ID}-panel`);
     const data = fetchLatestMvuData();
     const 人物 = data?.人物 || {};
@@ -7593,7 +7595,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
   // 仪表盘特质摘要（简洁版）
   const updateTraitsSummary = (data) => {
-    const { $ } = getCore();
+    
     const $panel = $(`#${SCRIPT_ID}-panel`);
     const 人物 = data?.人物 || {};
     const 特质 = 人物.特质 || {};
@@ -7619,7 +7621,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
  * 渲染器官系统 UI（与装备栏风格统一）
  */
 const updateOrganUI = () => {
-  const { $ } = getCore();
+  
   if (!$) {
     console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
     return;
@@ -7706,7 +7708,7 @@ const updateOrganUI = () => {
       }
       updateStatusBarUI(data);
       // 如果特质页面当前可见，同步更新
-      const { $ } = getCore();
+      
       if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
         updateTraitsPageUI();
       }
@@ -7718,7 +7720,7 @@ const updateOrganUI = () => {
 
   // 注入样式 - 完全复用原版状态栏.html的CSS
   const injectStyles = () => {
-    const { $ } = getCore();
+    
     if ($(`#${SCRIPT_ID}-styles`).length) return;
 
     $("head").append(`<style id="${SCRIPT_ID}-styles">
@@ -12926,7 +12928,7 @@ const updateOrganUI = () => {
 
   // 初始化
   const init = () => {
-    const { $ } = getCore();
+    
     if (!$) {
       log.error("jQuery 未找到，等待重试...");
       setTimeout(init, 500);
@@ -13872,7 +13874,7 @@ ultimate = 显示终结组</pre>
     };
 
     const renderRegenModeUI = (isBreakLimit, isGenerating = false) => {
-      const { $ } = getCore();
+      
       const $panel = $(`#${SCRIPT_ID}-panel`);
       $panel.find('#regen-use-preset-worldbook').prop('checked', !!isBreakLimit).prop('disabled', !!isGenerating);
       $panel.find('#regen-mode-name').text(isBreakLimit ? '破限模式' : '标准模式');
@@ -13893,7 +13895,7 @@ ultimate = 显示终结组</pre>
 
     // 从状态恢复弹窗UI
     const restoreRegenUI = () => {
-      const { $ } = getCore();
+      
       const $panel = $(`#${SCRIPT_ID}-panel`);
       $panel.find('#regen-class-name').val(regenState.formData.className);
       $panel.find('#regen-weapon').val(regenState.formData.weapon);
@@ -13924,7 +13926,7 @@ ultimate = 显示终结组</pre>
 
     // 保存表单到状态
     const saveRegenForm = () => {
-      const { $ } = getCore();
+      
       const $panel = $(`#${SCRIPT_ID}-panel`);
       regenState.formData.className = $panel.find('#regen-class-name').val() || '';
       regenState.formData.combatStyle = $panel.find('.regen-tag.active').attr('data-style') || '';
@@ -14663,7 +14665,7 @@ ultimate = 显示终结组</pre>
 
   // 卸载时清理（和仿手机.js一样）
   try {
-    const { $ } = getCore();
+    
     if ($) {
       $(window).on('unload', () => {
         cleanup();
