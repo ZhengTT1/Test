@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RPG 状态栏
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.0
 // @description  RPG状态栏悬浮球 - Brushed Metal风格
 // @author       Niccole
 // @match        */*
@@ -2517,7 +2517,7 @@ ${lockedSkillsJson}
           </div>
         </div>
       </div>`;
-    $(`#${SCRIPT_ID}-panel`).append(html);
+    $('body').append(html);
     const $overlay = $(`#${SCRIPT_ID}-panel > .rpg-confirm-overlay`);
     $overlay.on('click', function (e) { if (e.target === this) $(this).remove(); });
     $overlay.find('.rpg-confirm-no').on('click', () => $overlay.remove());
@@ -8365,7 +8365,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     slotsDef.forEach(s => {
       const organ = 器官列表[s.key] || defaultOrgans[s.key];
       const isEquipped = !!器官列表[s.key];
-      const organName = organ.名称;
       const organLevel = (isEquipped && organ.强化等级 > 0) ? ` +${organ.强化等级}` : "";
       
       let qClass = 'quality-default';
@@ -8375,16 +8374,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         else if (organ.品质 === '诅诅' || organ.品质 === '诅咒') qClass = 'quality-cursed';
       }
 
+      const displayName = isEquipped ? `${organ.名称}${organLevel}` : `人类${s.key}`;
+
       slotsHtml += `
-        <div class="organ-gear-slot pos-align-${s.align} ${isEquipped ? 'has-organ' : 'empty-organ'} ${qClass}" 
+        <div class="organ-gear-slot ${isEquipped ? 'has-organ' : 'empty-organ'} ${qClass}" 
              style="top: ${s.y}%; left: ${s.x}%;" 
              data-slot-key="${s.key}">
           <div class="organ-gear-circle">
             <i class="${s.icon}"></i>
           </div>
           <div class="organ-gear-label-box">
-            <span class="organ-gear-title">${s.key}</span>
-            <span class="organ-gear-val-name">[${organName}${organLevel}]</span>
+            <span class="organ-gear-val-name">${displayName}</span>
           </div>
         </div>
       `;
@@ -8764,18 +8764,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     text-overflow: ellipsis;
 }
 
+
 /* 器官移植中心弹窗美化及置顶层级 */
 .organ-popup {
-    position: absolute !important; /* 跟随 Panel 进行定位确保置顶 */
+    position: fixed !important; /* 置于可视窗口最上层 */
     top: 0 !important;
     left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: 100vw !important;
+    height: 100vh !important;
     background: rgba(0, 0, 0, 0.45) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    z-index: 999999 !important; /* 超高置顶 */
+    z-index: 10000000 !important; /* 绝对最高层级置顶 */
     backdrop-filter: blur(3px);
 }
 
@@ -8785,7 +8786,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     border-radius: 12px !important;
     width: 90% !important;
     max-width: 340px !important;
-    max-height: 85% !important;
+    max-height: 85vh !important;
     overflow-y: auto !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
     color: #24292f !important;
