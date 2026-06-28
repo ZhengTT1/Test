@@ -8330,24 +8330,24 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // ===== 身体移植舱（装备栏人体拓扑图） =====
     const slotsDef = [
-      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: 5.0 },
-      { key: "心脏", icon: "ri-heart-pulse-fill", x: 72.0, y: 10.9 },
-      { key: "肺脏", icon: "ri-windy-fill", x: 88.1, y: 27.0 },
-      { key: "胃", icon: "ri-restaurant-fill", x: 94.0, y: 49.0 },
-      { key: "肠子", icon: "ri-loop-left-line", x: 88.1, y: 71.0 },
-      { key: "阑尾", icon: "ri-heart-add-fill", x: 72.0, y: 87.1 },
-      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 93.0 },
-      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 28.0, y: 87.1 },
-      { key: "脾脏", icon: "ri-shield-user-fill", x: 11.9, y: 71.0 },
-      { key: "肾脏", icon: "ri-drop-fill", x: 6.0, y: 49.0 },
-      { key: "肋骨", icon: "ri-split-cells-vertical", x: 11.9, y: 27.0 },
-      { key: "脊柱", icon: "ri-node-tree", x: 28.0, y: 10.9 }
+      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: 7.0 },
+      { key: "心脏", icon: "ri-heart-pulse-fill", x: 72.0, y: 12.9 },
+      { key: "肺脏", icon: "ri-windy-fill", x: 88.1, y: 29.0 },
+      { key: "胃", icon: "ri-restaurant-fill", x: 94.0, y: 51.0 },
+      { key: "肠子", icon: "ri-loop-left-line", x: 88.1, y: 73.0 },
+      { key: "阑尾", icon: "ri-heart-add-fill", x: 72.0, y: 89.1 },
+      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 95.0 },
+      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 28.0, y: 89.1 },
+      { key: "脾脏", icon: "ri-shield-user-fill", x: 11.9, y: 73.0 },
+      { key: "肾脏", icon: "ri-drop-fill", x: 6.0, y: 51.0 },
+      { key: "肋骨", icon: "ri-split-cells-vertical", x: 11.9, y: 29.0 },
+      { key: "脊柱", icon: "ri-node-tree", x: 28.0, y: 12.9 }
     ];
 
     const svgLines = `
-      <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 1%; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+      <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
         <!-- 外接圆 -->
-        <circle cx="50" cy="49" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
+        <circle cx="50" cy="51" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
         <!-- 外接正方形 -->
         <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
         <!-- 对角线和水平垂直辅助线，增加达芬奇手稿风格 -->
@@ -8389,10 +8389,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           <span id="organ-bg-reset" style="cursor: pointer; color: #cf222e; font-weight: 600; display: ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'inline-flex' : 'none'}; align-items: center; gap: 2px;"><i class="ri-refresh-line"></i> 重置</span>
         </div>
       </div>
-      <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center calc(50% + 1px); background-repeat: no-repeat;` : ''}">
+      <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;` : ''}">
         <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
           <!-- 外接圆 -->
-          <circle cx="50" cy="49" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
+          <circle cx="50" cy="51" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
           <!-- 外接正方形 -->
           <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
           <!-- 对角线和水平垂直辅助线 -->
@@ -8767,10 +8767,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     max-width: 380px;
     aspect-ratio: 1 / 1;
     margin: 0 auto 15px;
-    background-color: #f6f8fa;
+    background-color: #e5d7b5;
     
     background-size: 100% 100%;
-    background-position: center calc(50% + 1px);
+    background-position: center center;
     background-repeat: no-repeat;
     background-repeat: no-repeat;
     border-radius: 8px;
