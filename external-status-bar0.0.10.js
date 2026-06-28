@@ -8342,58 +8342,72 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // ===== 身体移植舱（装备栏人体拓扑图） =====
     const slotsDef = [
-      { key: "眼球", icon: "ri-eye-fill", x: 15, y: 14, align: 'left' },
-      { key: "心脏", icon: "ri-heart-pulse-fill", x: 10, y: 28, align: 'left' },
-      { key: "肺脏", icon: "ri-windy-fill", x: 7, y: 42, align: 'left' },
-      { key: "胃", icon: "ri-restaurant-fill", x: 7, y: 56, align: 'left' },
-      { key: "肠子", icon: "ri-loop-left-line", x: 10, y: 70, align: 'left' },
-      { key: "阑尾", icon: "ri-heart-add-fill", x: 15, y: 84, align: 'left' },
+      { key: "眼球", icon: "ri-eye-fill", x: 16, y: 12 },
+      { key: "心脏", icon: "ri-heart-pulse-fill", x: 16, y: 26 },
+      { key: "肺脏", icon: "ri-windy-fill", x: 16, y: 40 },
+      { key: "胃", icon: "ri-restaurant-fill", x: 16, y: 54 },
+      { key: "肠子", icon: "ri-loop-left-line", x: 16, y: 68 },
+      { key: "阑尾", icon: "ri-heart-add-fill", x: 16, y: 82 },
       
-      { key: "脊柱", icon: "ri-node-tree", x: 85, y: 14, align: 'right' },
-      { key: "肋骨", icon: "ri-split-cells-vertical", x: 90, y: 28, align: 'right' },
-      { key: "肾脏", icon: "ri-drop-fill", x: 93, y: 42, align: 'right' },
-      { key: "脾脏", icon: "ri-shield-user-fill", x: 93, y: 56, align: 'right' },
-      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 90, y: 70, align: 'right' },
-      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 85, y: 84, align: 'right' }
+      { key: "脊柱", icon: "ri-node-tree", x: 84, y: 12 },
+      { key: "肋骨", icon: "ri-split-cells-vertical", x: 84, y: 26 },
+      { key: "肾脏", icon: "ri-drop-fill", x: 84, y: 40 },
+      { key: "脾脏", icon: "ri-shield-user-fill", x: 84, y: 54 },
+      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 84, y: 68 },
+      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 84, y: 82 }
     ];
 
     const svgLines = `
       <svg class="organ-lines-svg" viewBox="0 0 100 100">
-        <path d="M 22 14 L 38 14 L 50 12" />
-        <circle cx="50" cy="12" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 左列器官连线与落点 -->
+        <!-- 眼球 -> 头部眼睛 -->
+        <path d="M 16 12 L 35 12 L 48 12" />
+        <circle cx="48" cy="12" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 78 14 L 62 14 L 50 18" />
-        <circle cx="50" cy="18" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 心脏 -> 左胸腔 -->
+        <path d="M 16 26 L 35 26 L 47 30" />
+        <circle cx="47" cy="30" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 17 28 L 35 28 L 46 30" />
-        <circle cx="46" cy="30" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 肺脏 -> 胸腔偏上两侧 -->
+        <path d="M 16 40 L 35 40 L 45 36" />
+        <circle cx="45" cy="36" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 83 28 L 65 28 L 54 32" />
-        <circle cx="54" cy="32" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 胃 -> 偏左腹部 -->
+        <path d="M 16 54 L 35 54 L 46 50" />
+        <circle cx="46" cy="50" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 14 42 L 32 42 L 44 34" />
-        <circle cx="44" cy="34" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 肠子 -> 下腹中部 -->
+        <path d="M 16 68 L 35 68 L 50 66" />
+        <circle cx="50" cy="66" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 86 42 L 68 42 L 52 54" />
-        <circle cx="52" cy="54" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 阑尾 -> 右下腹 -->
+        <path d="M 16 82 L 35 82 L 47 72" />
+        <circle cx="47" cy="72" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 14 56 L 32 56 L 46 48" />
-        <circle cx="46" cy="48" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 右列器官连线与落点 -->
+        <!-- 脊柱 -> 脊髓中轴 -->
+        <path d="M 84 12 L 65 12 L 50 24" />
+        <circle cx="50" cy="24" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 86 56 L 68 56 L 53 48" />
-        <circle cx="53" cy="48" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 肋骨 -> 胸骨肋骨 -->
+        <path d="M 84 26 L 65 26 L 52 34" />
+        <circle cx="52" cy="34" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 17 70 L 35 70 L 50 62" />
-        <circle cx="50" cy="62" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 肾脏 -> 后腰两侧 -->
+        <path d="M 84 40 L 65 40 L 53 54" />
+        <circle cx="53" cy="54" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 83 70 L 65 70 L 47 44" />
-        <circle cx="47" cy="44" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 脾脏 -> 左肋深部 -->
+        <path d="M 84 54 L 65 54 L 53 46" />
+        <circle cx="53" cy="46" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 22 84 L 38 84 L 52 70" />
-        <circle cx="52" cy="70" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 肝脏 -> 右上腹 -->
+        <path d="M 84 68 L 65 68 L 48 46" />
+        <circle cx="48" cy="46" r="0.8" fill="#ff4d4d" class="animate-pulse" />
         
-        <path d="M 78 84 L 62 84 L 46 80" />
-        <circle cx="46" cy="80" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        <!-- 肌肉 -> 腿部/大腿肌群 -->
+        <path d="M 84 82 L 65 82 L 56 78" />
+        <circle cx="56" cy="78" r="0.8" fill="#ff4d4d" class="animate-pulse" />
       </svg>
     `;
 
