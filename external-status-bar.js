@@ -13531,9 +13531,7 @@ const updateOrganUI = (data) => {
           </div>
         </div>
       </div>
-  </div>
-</div>
-    );
+    `);
 
     const $btn = $(`#${SCRIPT_ID}-toggle`);
     const $panel = $(`#${SCRIPT_ID}-panel`);
