@@ -8023,8 +8023,34 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     attrsGridHtml += `<div class="organ-attrs-grid">`;
     
     let cardsHtml = '';
-    attrsDef.forEach(attr => {
+    attrsDef.forEach((attr, idxCard) => {
       const val = getAttrVal(attr.key, attr.default);
+      
+      let providers = [];
+      const slotKeys = ["眼球", "心脏", "肺脏", "胃", "肠子", "阑尾", "肌肉", "肝脏", "脾脏", "肾脏", "肋骨", "脊柱"];
+      slotKeys.forEach(slotKey => {
+        const organ = 器官列表[slotKey] || defaultOrgans[slotKey];
+        if (organ && organ.属性加成 && organ.属性加成[attr.key] !== undefined) {
+          providers.push({
+            name: organ.名称.replace("原生人类", "原生"),
+            val: organ.属性加成[attr.key]
+          });
+        }
+      });
+      let providersHtml = '';
+      if (providers.length > 0) {
+        providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
+          来源: ${providers.map(p => `${p.name} (+${p.val})`).join(', ')}
+        </div>`;
+      }
+
+      const colIndex = idxCard % 7;
+      let edgeClass = '';
+      if (colIndex === 0 || colIndex === 1) {
+        edgeClass = 'edge-left';
+      } else if (colIndex === 5 || colIndex === 6) {
+        edgeClass = 'edge-right';
+      }
 
       let valClass = '';
       let effectText = '';
@@ -8297,7 +8323,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 
       cardsHtml += `
-        <div class="organ-attr-compact-card" data-attr-key="${attr.key}">
+        <div class="organ-attr-compact-card ${edgeClass}" data-attr-key="${attr.key}">
           <div class="compact-header-vertical">
             <i class="${attr.icon}"></i>
             <span class="organ-attr-value ${valClass}">${val}</span>
@@ -8306,6 +8332,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             <div class="compact-attr-name">${attr.name}</div>
             <div class="compact-brief ${effectClass}">${effectText}</div>
             <div class="compact-desc">${detailedReport}</div>
+            ${providersHtml}
           </div>
         </div>
       `;
@@ -8650,7 +8677,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 .organ-attr-value {
     font-family: var(--font-tech);
     font-weight: 700;
-    font-size: 10px;
+    font-size: 11px;
     color: #24292f;
     line-height: 1.1;
     text-align: center;
@@ -8690,9 +8717,25 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     opacity: 1;
     transform: translate(-50%, 0);
 }
+.organ-attr-compact-card.edge-left .compact-detail {
+    left: 0 !important;
+    transform: translate(0, -6px) !important;
+}
+.organ-attr-compact-card:hover.edge-left .compact-detail {
+    transform: translate(0, 0) !important;
+}
+.organ-attr-compact-card.edge-right .compact-detail {
+    left: auto !important;
+    right: 0 !important;
+    transform: translate(0, -6px) !important;
+}
+.organ-attr-compact-card:hover.edge-right .compact-detail {
+    transform: translate(0, 0) !important;
+}
+
 
 .compact-attr-name {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: #24292f;
     margin-bottom: 3px;
@@ -8701,7 +8744,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .compact-brief {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
     margin-bottom: 2px;
 }
@@ -8719,7 +8762,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .compact-desc {
-    font-size: 9px;
+    font-size: 10px;
     color: #665b49;
     line-height: 1.25;
     word-break: break-all;
