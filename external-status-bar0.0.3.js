@@ -7929,7 +7929,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     attrsGridHtml += `<button class="btn-toggle-attrs" style="font-size:10px; background:#f6f8fa; border:1px solid #d0d7de; color:#24292f; padding:2px 8px; border-radius:4px; cursor:pointer; font-weight:600;">${showAllAttrs ? '精简显示' : '全部展开'}</button>`;
     attrsGridHtml += '</div>';
     
-    attrsGridHtml += '<div class="organ-attrs-grid">';
+    attrsGridHtml += `<div class="organ-attrs-grid ${showAllAttrs ? 'layout-all-expanded' : ''}">`;
     
     let cardsHtml = '';
     attrsDef.forEach(attr => {
@@ -8458,20 +8458,26 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 /* 4列排列，方便容纳紧凑的图标竖卡片 */
+/* 7列排列，方便容纳极小图标竖卡片 */
 .organ-attrs-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
     margin-bottom: 15px;
 }
 
-/* 默认只显示图标和数值的竖直小卡片 */
+/* 一键全部展开时改回 2 列布局，方便文字完整显示 */
+.organ-attrs-grid.layout-all-expanded {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* 默认只显示图标和数值的极小竖直卡片 */
 .organ-attr-compact-card {
     background: #ffffff;
     border: 1px solid #d0d7de;
     border-radius: 6px;
-    padding: 6px 4px;
-    min-height: 58px;
+    padding: 4px 2px;
+    min-height: 46px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8489,20 +8495,23 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     width: 100%;
 }
 
 .compact-header-vertical i {
-    font-size: 18px;
+    font-size: 15px;
     color: #57606a;
 }
 
 .organ-attr-value {
     font-family: var(--font-tech);
     font-weight: 700;
-    font-size: 11px;
+    font-size: 10px;
     color: #24292f;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .organ-attr-value.attr-up {
@@ -8552,9 +8561,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     line-height: 1.3;
 }
 
-/* 当卡片被展开时，使其横跨 2 列，防止排版挤压 */
+/* 单张卡片在7列布局下展开时，跨 3 列展示文字 */
 .organ-attr-compact-card.expanded {
-    grid-column: span 2;
+    grid-column: span 3;
+    align-items: flex-start;
+    padding: 8px 10px;
+}
+
+/* 在一键全部展开模式下（网格已是2列），卡片跨 1 列即可 */
+.organ-attrs-grid.layout-all-expanded .organ-attr-compact-card.expanded {
+    grid-column: span 1;
     align-items: flex-start;
     padding: 8px 10px;
 }
@@ -8568,7 +8584,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .organ-attr-compact-card.expanded .compact-header-vertical i {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .organ-slots-header {
