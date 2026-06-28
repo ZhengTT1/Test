@@ -7764,7 +7764,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const success = await applyMvuPatches(patches);
     if (success) {
-      showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 曹位嗷`);
+      showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 槽位嗷`);
       updateOrganUI();
     }
   };
