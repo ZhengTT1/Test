@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RPG 状态栏
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.0
 // @description  RPG状态栏悬浮球 - Brushed Metal风格
 // @author       Niccole
 // @match        */*
@@ -7624,6 +7624,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   // ===== 脆骨症器官系统核心辅助函数 =====
   
   // 寻找适合该插槽的可植入器官
+  
+  // ===== 脆骨症器官系统核心辅助函数 (无重复安全版) =====
   const findAvailableOrgansForSlot = (slotName, data) => {
     const results = [];
     const 装备列表 = data?.人物?.装备列表 || {};
@@ -7669,7 +7671,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     return results;
   };
 
-  // 移植器官接入
   const equipOrganToSlot = async (slotName, organItem) => {
     const data = fetchLatestMvuData();
     const patches = [];
@@ -7717,7 +7718,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     }
   };
 
-  // 剥离器官卸下
   const unequipOrganFromSlot = async (slotName) => {
     const data = fetchLatestMvuData();
     const organ = data?.人物?.器官系统?.器官列表?.[slotName];
@@ -8124,49 +8124,93 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       $organSet.after(attrsGridHtml);
     }
 
+    // ===== 身体移植舱（装备栏人体拓扑图） =====
     const slotsDef = [
-      { key: "心脏", name: "心脏", icon: "ri-heart-pulse-fill" },
-      { key: "眼球", name: "眼球", icon: "ri-eye-fill" },
-      { key: "脊柱", name: "脊柱", icon: "ri-node-tree" },
-      { key: "肋骨", name: "肋骨", icon: "ri-split-cells-vertical" },
-      { key: "肾脏", name: "肾脏", icon: "ri-drop-fill" },
-      { key: "肝脏", name: "肝脏", icon: "ri-contrast-drop-2-fill" },
-      { key: "脾脏", name: "脾脏", icon: "ri-shield-user-fill" },
-      { key: "肺脏", name: "肺脏", icon: "ri-windy-fill" },
-      { key: "肌肉", name: "肌肉", icon: "ri-hand-sanitizer-fill" },
-      { key: "肠子", name: "肠子", icon: "ri-loop-left-line" },
-      { key: "胃", name: "胃", icon: "ri-restaurant-fill" },
-      { key: "阑尾", name: "阑尾", icon: "ri-heart-add-fill" }
+      { key: "眼球", icon: "ri-eye-fill", x: 15, y: 14, align: 'left' },
+      { key: "心脏", icon: "ri-heart-pulse-fill", x: 10, y: 28, align: 'left' },
+      { key: "肺脏", icon: "ri-windy-fill", x: 7, y: 42, align: 'left' },
+      { key: "胃", icon: "ri-restaurant-fill", x: 7, y: 56, align: 'left' },
+      { key: "肠子", icon: "ri-loop-left-line", x: 10, y: 70, align: 'left' },
+      { key: "阑尾", icon: "ri-heart-add-fill", x: 15, y: 84, align: 'left' },
+      
+      { key: "脊柱", icon: "ri-node-tree", x: 85, y: 14, align: 'right' },
+      { key: "肋骨", icon: "ri-split-cells-vertical", x: 90, y: 28, align: 'right' },
+      { key: "肾脏", icon: "ri-drop-fill", x: 93, y: 42, align: 'right' },
+      { key: "脾脏", icon: "ri-shield-user-fill", x: 93, y: 56, align: 'right' },
+      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 90, y: 70, align: 'right' },
+      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 85, y: 84, align: 'right' }
     ];
 
+    // 预定义的解剖靶点连线
+    const svgLines = `
+      <svg class="organ-lines-svg" viewBox="0 0 100 100">
+        <path d="M 22 14 L 38 14 L 50 12" />
+        <circle cx="50" cy="12" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 78 14 L 62 14 L 50 18" />
+        <circle cx="50" cy="18" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 17 28 L 35 28 L 46 30" />
+        <circle cx="46" cy="30" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 83 28 L 65 28 L 54 32" />
+        <circle cx="54" cy="32" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 14 42 L 32 42 L 44 34" />
+        <circle cx="44" cy="34" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 86 42 L 68 42 L 52 54" />
+        <circle cx="52" cy="54" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 14 56 L 32 56 L 46 48" />
+        <circle cx="46" cy="48" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 86 56 L 68 56 L 53 48" />
+        <circle cx="53" cy="48" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 17 70 L 35 70 L 50 62" />
+        <circle cx="50" cy="62" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 83 70 L 65 70 L 47 44" />
+        <circle cx="47" cy="44" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 22 84 L 38 84 L 52 70" />
+        <circle cx="52" cy="70" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+        
+        <path d="M 78 84 L 62 84 L 46 80" />
+        <circle cx="46" cy="80" r="0.8" fill="#ff4d4d" class="animate-pulse" />
+      </svg>
+    `;
+
     let slotsHtml = `
-      <div class="organ-slots-header"><i class="ri-shield-user-line"></i> 身体移植舱 (点击器官格以移植替换)</div>
-      <div class="organ-slots-grid">
+      <div class="organ-slots-header"><i class="ri-heart-pulse-fill"></i> 身体移植舱 (点击部位以移植替换)</div>
+      <div class="visual-organ-container">
+        ${svgLines}
     `;
 
     slotsDef.forEach(s => {
       const organ = 器官列表[s.key];
       const isEquipped = !!organ;
-      const organName = isEquipped ? organ.名称 : "人类标准";
-      const organQuality = isEquipped ? (organ.品质 || "普通") : "初始";
+      const organName = isEquipped ? organ.名称 : "空";
       const organLevel = (isEquipped && organ.强化等级 > 0) ? ` +${organ.强化等级}` : "";
       
       let qClass = 'quality-default';
       if (isEquipped) {
         if (organ.品质 === '稀有' || organ.品质 === '史诗') qClass = 'quality-rare';
         else if (organ.品质 === '传说' || organ.品质 === '神话') qClass = 'quality-legendary';
-        else if (organ.品质 === '诅诅' || organ.品质 === '诅咒') qClass = 'quality-cursed';
+        else if (organ.品质 === '诅咒') qClass = 'quality-cursed';
       }
 
       slotsHtml += `
-        <div class="organ-slot-slot-card ${isEquipped ? 'has-organ' : 'empty-organ'} ${qClass}" data-slot-key="${s.key}">
-          <div class="organ-slot-slot-icon">
+        <div class="organ-gear-slot pos-align-${s.align} ${isEquipped ? 'has-organ' : 'empty-organ'} ${qClass}" 
+             style="top: ${s.y}%; left: ${s.x}%;" 
+             data-slot-key="${s.key}">
+          <div class="organ-gear-circle">
             <i class="${s.icon}"></i>
           </div>
-          <div class="organ-slot-slot-info">
-            <div class="slot-title">${s.key}</div>
-            <div class="slot-organ-name">${organName}${organLevel}</div>
-            <div class="slot-organ-quality">${organQuality}</div>
+          <div class="organ-gear-label-box">
+            <span class="organ-gear-title">${s.key}</span>
+            <span class="organ-gear-val-name">[${organName}${organLevel}]</span>
           </div>
         </div>
       `;
@@ -8176,7 +8220,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const $list = $panel.find('#organ-page-list');
     if ($list.length) {
       $list.html(slotsHtml);
-      $list.find('.organ-slot-slot-card').off('click').on('click', function() {
+      $list.find('.organ-gear-slot').off('click').on('click', function() {
         const slotKey = $(this).data('slot-key');
         showOrganSelectPopup(slotKey);
       });
@@ -8184,10 +8228,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
 
-  /**
-   * 刷新状态栏数据
-   */
-  const refreshStatusBar = () => {
+const refreshStatusBar = () => {
     console.log("[小苑调试] refreshStatusBar 正在执行...");
     const data = fetchLatestMvuData();
     if (Object.keys(data).length > 0) {
@@ -8212,6 +8253,441 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if ($(`#${SCRIPT_ID}-styles`).length) return;
 
     $("head").append(`<style id="${SCRIPT_ID}-styles">
+
+/* ========== 生物/器官系统血肉风格主题 (人体装备栏样式) ========== */
+#view-organ {
+    background: radial-gradient(circle, #250a0a 0%, #110303 100%) !important;
+    border: 1px solid #5c1818 !important;
+    border-radius: 8px;
+    padding: 10px;
+    color: #ffcccc !important;
+    box-shadow: inset 0 0 15px rgba(192, 57, 43, 0.2);
+}
+
+#view-organ .traits-page-title {
+    color: #ff4d4d !important;
+    text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+    font-weight: 700;
+}
+
+.organ-status-header-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 13px;
+    background: rgba(192, 57, 43, 0.1);
+    border: 1px solid #4a1212;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #ffb3b3;
+}
+
+.organ-set-active-row {
+    margin-bottom: 12px;
+    font-size: 12px;
+    padding: 6px 12px;
+    background: rgba(142, 68, 173, 0.15);
+    border: 1px solid #6c3483;
+    border-radius: 6px;
+    color: #e8dbfc;
+}
+
+.organ-set-active-row.empty {
+    color: #888;
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.05);
+}
+
+.organ-set-chip {
+    background: #8e44ad;
+    color: white;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.organ-attrs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.organ-attr-card {
+    background: rgba(30, 8, 8, 0.6);
+    border: 1px solid #3d1010;
+    border-radius: 6px;
+    padding: 6px 8px;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+
+.organ-attr-card:hover {
+    border-color: #7d1c1c;
+    background: rgba(45, 12, 12, 0.7);
+    box-shadow: 0 0 8px rgba(192, 57, 43, 0.3);
+}
+
+.organ-attr-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #ffcccc;
+}
+
+.organ-attr-value {
+    font-family: var(--font-tech);
+    font-weight: 700;
+    font-size: 12px;
+    color: #ffb3b3;
+}
+
+.organ-attr-value.attr-up {
+    color: #2ecc71 !important;
+}
+
+.organ-attr-value.attr-down {
+    color: #e74c3c !important;
+}
+
+.organ-attr-effect {
+    font-size: 9px;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+.organ-attr-effect.effect-buff {
+    color: #2ecc71 !important;
+    font-weight: 600;
+}
+
+.organ-attr-effect.effect-debuff {
+    color: #e74c3c !important;
+    font-weight: 600;
+}
+
+.organ-attr-effect.effect-normal {
+    color: #7f8c8d !important;
+}
+
+.organ-slots-header {
+    font-size: 13px;
+    margin: 15px 0 10px 0;
+    font-weight: 700;
+    color: #ff4d4d;
+    border-bottom: 1px solid #4a1212;
+    padding-bottom: 4px;
+}
+
+.visual-organ-container {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 15px;
+    background-color: #120303;
+    background-image: url('https://rpg.bolt.qzz.io/background/29l6g5.webp');
+    background-size: 70% auto;
+    background-position: center 10%;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    border: 1px solid #3d1010;
+    overflow: hidden;
+}
+
+.organ-lines-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.organ-lines-svg path {
+    fill: none;
+    stroke: rgba(192, 57, 43, 0.4);
+    stroke-width: 0.75px;
+    stroke-dasharray: 2 1.5;
+}
+
+.organ-gear-slot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: transform 0.2s;
+}
+
+.organ-gear-slot:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+.organ-gear-slot:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.organ-gear-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #250a0a;
+    border: 2px solid #5c1818;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 8px rgba(192,57,43,0.3);
+    z-index: 2;
+}
+
+.organ-gear-circle i {
+    font-size: 14px;
+    color: #ff4d4d;
+}
+
+.organ-gear-label-box {
+    position: absolute;
+    background: rgba(20, 5, 5, 0.85);
+    border: 1px solid rgba(192, 57, 43, 0.3);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 9px;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    white-space: nowrap;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.pos-align-left {
+    flex-direction: row;
+}
+.pos-align-left .organ-gear-label-box {
+    left: 20px;
+}
+
+.pos-align-right {
+    flex-direction: row-reverse;
+}
+.pos-align-right .organ-gear-label-box {
+    right: 20px;
+}
+
+.organ-gear-title {
+    color: #ff8080;
+    font-weight: 700;
+}
+
+.organ-gear-val-name {
+    color: #ffffff;
+    max-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.organ-gear-slot.quality-default .organ-gear-circle {
+    border-color: #5c1818;
+}
+.organ-gear-slot.quality-rare .organ-gear-circle {
+    border-color: #2ecc71;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+}
+.organ-gear-slot.quality-rare .organ-gear-circle i {
+    color: #2ecc71;
+}
+.organ-gear-slot.quality-legendary .organ-gear-circle {
+    border-color: #e67e22;
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.6);
+}
+.organ-gear-slot.quality-legendary .organ-gear-circle i {
+    color: #e67e22;
+}
+.organ-gear-slot.quality-cursed .organ-gear-circle {
+    border-color: #9b59b6;
+    box-shadow: 0 0 10px rgba(155, 89, 182, 0.6);
+}
+.organ-gear-slot.quality-cursed .organ-gear-circle i {
+    color: #9b59b6;
+}
+
+.organ-gear-slot.empty-organ .organ-gear-circle {
+    border-color: #444444;
+    background: #111111;
+    box-shadow: none;
+}
+.organ-gear-slot.empty-organ .organ-gear-circle i {
+    color: #666666;
+}
+.organ-gear-slot.empty-organ .organ-gear-val-name {
+    color: #555555;
+}
+
+.organ-theme-card {
+    background: #140505 !important;
+    border: 2px solid #5c1818 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(192, 57, 43, 0.3) !important;
+    color: #ffcccc !important;
+}
+
+.organ-theme-card .f-header {
+    border-bottom: 1px solid #4a1212 !important;
+}
+
+.organ-theme-card .f-title {
+    color: #ff4d4d !important;
+}
+
+.organ-theme-card .f-close {
+    color: #ffb3b3 !important;
+}
+
+.organ-theme-card .section-title, 
+.organ-theme-card .candidate-section-title {
+    font-size: 11px;
+    color: #ff8080;
+    margin: 8px 0 5px 0;
+    font-weight: 600;
+}
+
+.organ-display-card {
+    background: rgba(30, 8, 8, 0.8);
+    border: 1px solid #5c1818;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.organ-display-name {
+    font-weight: 700;
+    color: #ff4d4d;
+    font-size: 12px;
+}
+
+.organ-display-desc {
+    font-size: 10px;
+    color: #b39999;
+    margin-top: 4px;
+}
+
+.organ-candidate-card {
+    background: rgba(20, 5, 5, 0.6);
+    border: 1px solid #3d1010;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.organ-candidate-card:hover {
+    border-color: #8e1d1d;
+    background: rgba(35, 8, 8, 0.8);
+}
+
+.candidate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.candidate-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffcccc;
+}
+
+.candidate-quality {
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.candidate-quality.tag-positive {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+.candidate-desc {
+    font-size: 10px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.candidate-action-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.btn-organ-action {
+    border: none;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-organ-unequip {
+    background: #7d1c1c;
+    color: #ffcccc;
+    border: 1px solid #9e2b2b;
+}
+
+.btn-organ-unequip:hover {
+    background: #b32424;
+    box-shadow: 0 0 6px rgba(179, 36, 36, 0.5);
+}
+
+.btn-organ-equip {
+    background: #1b4332;
+    color: #d8f3dc;
+    border: 1px solid #2d6a4f;
+}
+
+.btn-organ-equip:hover {
+    background: #2d6a4f;
+    box-shadow: 0 0 6px rgba(45, 106, 79, 0.5);
+}
+
+.empty-candidate-hint {
+    text-align: center;
+    padding: 20px 10px;
+    color: #555;
+    font-size: 11px;
+}
+
+.empty-candidate-hint i {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+@keyframes organ-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.animate-pulse {
+    animation: organ-pulse 2s infinite ease-in-out;
+}
 
 /* ========== 生物/器官系统血肉风格主题 ========== */
 #view-organ {
