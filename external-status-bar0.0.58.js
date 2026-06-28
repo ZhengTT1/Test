@@ -9083,7 +9083,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const activeTraits = {}; 
     const setCounts = {};
     const baseAttrKeys = new Set(attrsDef.map(a => a.key));
-    const race = data?.人物?.种族 || '';
 
     expandedSlots.forEach(slot => {
       const organ = 器官列表[slot.key];
