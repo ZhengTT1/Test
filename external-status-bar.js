@@ -6952,9 +6952,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 /**
  * 渲染器官系统 UI
  */
-const updateOrganUI = (data) => {
+/**
+ * 渲染器官系统 UI（自动获取最新数据）
+ */
+const updateOrganUI = () => {
   const { $ } = getCore();
   const $panel = $(`#${SCRIPT_ID}-panel`);
+  const data = fetchLatestMvuData();  // 强制获取最新数据
   const organSystem = data?.人物?.器官系统 || {};
   const 器官列表 = organSystem.器官列表 || {};
   const 排斥等级 = organSystem.排斥等级 || 0;
@@ -6975,7 +6979,7 @@ const updateOrganUI = (data) => {
     return;
   }
 
-  // 按部位分组显示
+  // 按部位分组显示（同现有逻辑）
   const groupOrder = ['循环', '感官', '骨骼', '内脏', '肌肉'];
   const grouped = {};
   entries.forEach(([name, organ]) => {
@@ -6987,10 +6991,8 @@ const updateOrganUI = (data) => {
   groupOrder.forEach(part => {
     const items = grouped[part] || [];
     if (items.length === 0) return;
-
     const partIcons = { 循环: '❤️', 感官: '👁️', 骨骼: '🦴', 内脏: '🧫', 肌肉: '💪' };
     const icon = partIcons[part] || '🧬';
-
     let rowHtml = `<div class="organ-group"><div class="organ-group-title">${icon} ${part}</div><div class="organ-group-grid">`;
     items.forEach(organ => {
       const qualityColor = getQualityColor(organ.品质 || '普通');
@@ -6999,7 +7001,6 @@ const updateOrganUI = (data) => {
         .join(' ');
       const traitText = (organ.特性 || []).slice(0, 2).join('、');
       const hasSkill = organ.技能 && organ.技能.名称;
-
       rowHtml += `
         <div class="organ-card" data-organ-name="${organ.name}" style="border-color: ${qualityColor}; background: ${qualityColor}08;">
           <div class="organ-card-header">
@@ -13724,9 +13725,15 @@ const updateOrganUI = (data) => {
         // Switch to Quests Tab
         refreshStatusBar();
       }
-	  if (normalizedTabIndex === 5) {
-	updateOrganUI(fetchLatestMvuData());
-	}
+	 if (normalizedTabIndex === 5) {
+    // 先确保数据最新，再渲染
+    refreshStatusBar();      // 同步其他数据
+	// 如果当前器官视图是激活的，刷新它
+if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
+    updateOrganUI();
+}
+    updateOrganUI();         // 现在无参，内部自行获取
+}
 
       // 恢复目标tab的滚动位置
       const savedPos = _panelTabState.scrollPositions[normalizedTabIndex] || 0;
