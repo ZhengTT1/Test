@@ -8432,6 +8432,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     $("head").append(`<style id="${SCRIPT_ID}-styles">
 
 
+
 /* ========== 生物/器官系统雅致白色风格主题 ========== */
 #view-organ {
     background: #ffffff !important;
@@ -8498,7 +8499,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     padding-bottom: 4px;
 }
 
-/* 4列排列，方便容纳紧凑的图标竖卡片 */
 /* 7列排列，方便容纳极小图标竖卡片 */
 .organ-attrs-grid {
     display: grid;
@@ -8675,6 +8675,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     position: absolute;
     transform: translate(-50%, -50%);
     display: flex;
+    flex-direction: column; /* 垂直分布：标签在图标上方 */
     align-items: center;
     cursor: pointer;
     z-index: 5;
@@ -8738,63 +8739,44 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     color: #eb5757;
 }
 
+/* 文字标签统一浮在圆圈图标正上方 */
 .organ-gear-label-box {
-    position: absolute;
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid #d0d7de;
     border-radius: 12px;
-    padding: 3px 10px;
-    font-size: 10px;
+    padding: 2px 8px;
+    margin-bottom: 4px; /* 离下方圆圈距离 */
+    font-size: 9.5px;
     display: flex;
-    flex-direction: row;
-    gap: 4px;
     white-space: nowrap;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     pointer-events: none;
     z-index: 1;
-}
-
-.pos-align-left {
-    flex-direction: row;
-}
-.pos-align-left .organ-gear-label-box {
-    left: 24px;
-}
-
-.pos-align-right {
-    flex-direction: row-reverse;
-}
-.pos-align-right .organ-gear-label-box {
-    right: 24px;
-}
-
-.organ-gear-title {
-    color: #24292f;
-    font-weight: 600;
+    order: -1; /* 保证排在圆圈图标前面(即上方) */
 }
 
 .organ-gear-val-name {
-    color: #57606a;
-    max-width: 70px;
+    color: #24292f;
+    font-weight: 600;
+    max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-
 /* 器官移植中心弹窗美化及置顶层级 */
 .organ-popup {
-    position: fixed !important;
+    position: absolute !important; /* 跟随 Panel 进行定位确保置顶 */
     top: 0 !important;
     left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
+    width: 100% !important;
+    height: 100% !important;
     background: rgba(0, 0, 0, 0.45) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    z-index: 999999 !important; /* 超高置顶层级 */
-    backdrop-filter: blur(4px);
+    z-index: 999999 !important; /* 超高置顶 */
+    backdrop-filter: blur(3px);
 }
 
 .organ-theme-card {
@@ -8802,8 +8784,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     border: 1px solid #d0d7de !important;
     border-radius: 12px !important;
     width: 90% !important;
-    max-width: 380px !important;
-    max-height: 80vh !important;
+    max-width: 340px !important;
+    max-height: 85% !important;
     overflow-y: auto !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
     color: #24292f !important;
@@ -8812,7 +8794,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .organ-theme-card .f-header {
-    padding: 12px 16px !important;
+    padding: 10px 14px !important;
     background: #f6f8fa !important;
     border-bottom: 1px solid #d0d7de !important;
     display: flex !important;
@@ -8821,7 +8803,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .organ-theme-card .f-title {
-    font-size: 13px !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
     color: #24292f !important;
 }
@@ -8830,12 +8812,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     background: transparent !important;
     border: none !important;
     cursor: pointer !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     color: #57606a !important;
 }
 
 .organ-theme-card .f-body {
-    padding: 16px !important;
+    padding: 14px !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
@@ -8843,11 +8825,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 .organ-theme-card .section-title, 
 .organ-theme-card .candidate-section-title {
-    font-size: 11px !important;
+    font-size: 10.5px !important;
     font-weight: 600 !important;
     color: #57606a !important;
     text-transform: uppercase !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 5px !important;
     border-bottom: 1px solid #f0f2f5;
     padding-bottom: 3px;
 }
@@ -8868,32 +8850,32 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .organ-display-name {
-    font-size: 12px !important;
+    font-size: 11.5px !important;
     font-weight: 700 !important;
     color: #24292f !important;
 }
 
 .native-badge {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
     background: #eaeef2 !important;
     color: #57606a !important;
-    padding: 2px 6px !important;
+    padding: 1.5px 5px !important;
     border-radius: 4px !important;
     font-weight: 600 !important;
 }
 
 .organ-display-desc {
-    font-size: 10.5px !important;
+    font-size: 10px !important;
     color: #57606a !important;
-    margin-top: 6px !important;
-    line-height: 1.4 !important;
+    margin-top: 5px !important;
+    line-height: 1.35 !important;
 }
 
 .organ-candidates-list {
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
-    max-height: 220px !important;
+    max-height: 180px !important;
     overflow-y: auto !important;
 }
 
@@ -8901,10 +8883,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     border: 1px solid #d0d7de !important;
     background: #ffffff !important;
     border-radius: 8px !important;
-    padding: 10px !important;
+    padding: 8px 10px !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 5px !important;
+    gap: 4px !important;
 }
 
 .candidate-header {
@@ -8914,13 +8896,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .candidate-name {
-    font-size: 12px !important;
+    font-size: 11.5px !important;
     font-weight: 700 !important;
     color: #24292f !important;
 }
 
 .candidate-desc {
-    font-size: 10.5px !important;
+    font-size: 10px !important;
     color: #57606a !important;
     line-height: 1.3 !important;
 }
@@ -8931,9 +8913,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .btn-organ-action {
-    font-size: 10.5px !important;
-    padding: 4px 10px !important;
-    border-radius: 6px !important;
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+    border-radius: 5px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     border: 1px solid #d0d7de !important;
@@ -8966,15 +8948,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 20px 10px !important;
-    font-size: 11px !important;
+    padding: 15px 10px !important;
+    font-size: 10.5px !important;
     color: #57606a !important;
     text-align: center !important;
-    gap: 6px !important;
+    gap: 5px !important;
 }
 
 .empty-candidate-hint i {
-    font-size: 20px !important;
+    font-size: 18px !important;
     color: #afb8c1 !important;
 }
 
