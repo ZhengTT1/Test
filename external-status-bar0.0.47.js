@@ -7649,6 +7649,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     return null;
   };
 
+  const stripNativePrefix = (name) => {
+    if (!name) return '';
+    return name.replace(/^原生/, '');
+  };
+
   const getDefaultOrganForSlot = (slotKey, race) => {
     // 阑尾和幸运只有人类有，其他种族默认无阑尾
     if (slotKey === '阑尾') {
