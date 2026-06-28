@@ -7631,7 +7631,67 @@ const updateOrganUI = () => {
   const 健康度 = organSystem.健康度 || 100;
   const 套装 = organSystem.已激活套装 || [];
 
-  // ... 你完整的 updateOrganUI 实现（包括状态栏更新、卡片渲染等） ...
+  // 渲染健康度和排斥等级
+  const $organInfo = $panel.find('#organ-status-info');
+  if ($organInfo.length) {
+    const healthColor = 健康度 > 70 ? '#2d6a4f' : (健康度 > 30 ? '#d4a853' : '#c0392b');
+    const rejectColor = 排斥等级 === 0 ? '#2d6a4f' : (排斥等级 < 3 ? '#d4a853' : '#c0392b');
+    $organInfo.html(`
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; color:var(--text-color); padding: 0 10px;">
+        <span><i class="ri-heart-pulse-line"></i> 健康度: <b style="color:${healthColor}">${健康度}%</b></span>
+        <span><i class="ri-shield-flash-line"></i> 排斥等级: <b style="color:${rejectColor}">${排斥等级}</b></span>
+      </div>
+    `);
+  }
+
+  // 渲染套装
+  const $organSet = $panel.find('#organ-set-info');
+  if ($organSet.length) {
+    if (套装 && 套装.length > 0) {
+      const setHtml = 套装.map(s => `<span class="trait-tag tag-positive" style="background:#8e44ad">${s}</span>`).join('');
+      $organSet.html(`<div style="margin-bottom:10px; font-size:12px; padding: 0 10px;">已激活套装: ${setHtml}</div>`);
+    } else {
+      $organSet.html('<div style="margin-bottom:10px; font-size:12px; color:#888; padding: 0 10px;">无激活套装</div>');
+    }
+  }
+
+  // 渲染器官列表
+  const $list = $panel.find('#organ-page-list');
+  if ($list.length) {
+    $list.empty();
+    const entries = Object.entries(器官列表);
+    if (entries.length === 0) {
+      $list.html('<div class="traits-empty"><i class="ri-ghost-line"></i> 暂无移植器官</div>');
+      return;
+    }
+
+    entries.forEach(([slot, organ]) => {
+      if (!organ) return;
+      const name = organ.名称 || '未知器官';
+      const quality = organ.品质 || '普通';
+      const desc = organ.描述 || '无描述';
+      const level = organ.强化等级 || 0;
+      
+      let qualityClass = 'tag-neutral';
+      if (quality === '稀有' || quality === '史诗') qualityClass = 'tag-positive';
+      else if (quality === '传说' || quality === '神话') qualityClass = 'tag-neutral';
+      else if (quality === '诅咒') qualityClass = 'tag-negative';
+
+      const levelBadge = level > 0 ? ` <span style="color:#e74c3c; font-weight:bold;">+${level}</span>` : '';
+
+      $list.append(`
+        <div class="trait-card-v2">
+          <div class="trait-card-v2-top">
+            <span class="trait-card-v2-name">${slot}: ${name}${levelBadge}</span>
+            <div class="trait-card-v2-tags">
+              <span class="trait-tag ${qualityClass}">${quality}</span>
+            </div>
+          </div>
+          <div class="trait-card-v2-desc">${desc}</div>
+        </div>
+      `);
+    });
+  }
 };
 
   /**
@@ -7648,6 +7708,9 @@ const updateOrganUI = () => {
       const { $ } = getCore();
       if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
         updateTraitsPageUI();
+      }
+      if ($(`#${SCRIPT_ID}-panel #view-organ`).hasClass('active')) {
+        updateOrganUI();
       }
     }
   };
@@ -13288,6 +13351,18 @@ const updateOrganUI = () => {
                 <div class="diff-tiers" id="diff-tiers-body"></div>
               </div>
             </div>
+            <div id="view-organ" class="view-section">
+              <div class="traits-page">
+                <div class="traits-page-header">
+                  <div class="traits-page-title"><i class="ri-body-scan-line"></i> 器官移植系统</div>
+                </div>
+                <div id="organ-status-info"></div>
+                <div id="organ-set-info"></div>
+                <div class="traits-list" id="organ-page-list">
+                  <div class="traits-empty"><i class="ri-ghost-line"></i> 暂无移植器官</div>
+                </div>
+              </div>
+            </div>
             <div style="height: 100px;"></div>
           </main>
           <div class="floating-menu">
@@ -13296,6 +13371,7 @@ const updateOrganUI = () => {
             <div class="menu-item" data-tab="2">❖</div>
             <div class="menu-item" data-tab="3">✦</div>
             <div class="menu-item" data-tab="4">⚙</div>
+            <div class="menu-item" data-tab="5">🫀</div>
           </div>
         </div>
       </div>
@@ -13479,6 +13555,7 @@ const updateOrganUI = () => {
       else if (normalizedTabIndex === 2) $panel.find("#view-inventory").addClass("active");
       else if (normalizedTabIndex === 3) $panel.find("#view-skills").addClass("active");
       else if (normalizedTabIndex === 4) $panel.find("#view-quests").addClass("active");
+      else if (normalizedTabIndex === 5) $panel.find("#view-organ").addClass("active");
 
       if (normalizedTabIndex === 1) {
         // Switch to Traits Tab
@@ -13491,6 +13568,10 @@ const updateOrganUI = () => {
       if (normalizedTabIndex === 4) {
         // Switch to Quests Tab
         refreshStatusBar();
+      }
+      if (normalizedTabIndex === 5) {
+        // Switch to Organ Tab
+        updateOrganUI();
       }
 
       // 恢复目标tab的滚动位置
