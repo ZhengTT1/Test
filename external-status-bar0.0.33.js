@@ -7826,6 +7826,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
   const showOrganSelectPopup = (slotName, initialSelectedSubKey = null) => {
+    const qualityColors = { '稀有': '#9b51e0', '史诗': '#9b51e0', '传说': '#f2994a', '神话': '#f2994a', '诅诅': '#eb5757', '诅咒': '#eb5757', '普通': '#57606a' };
     const data = fetchLatestMvuData();
     const parts = String(slotName || '').split('_');
     const baseSlot = parts[0] || slotName;
