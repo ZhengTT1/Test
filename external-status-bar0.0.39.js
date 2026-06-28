@@ -7931,7 +7931,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       return statHtml;
     };
 
-    // Sub-slots cards rendering using grid classes
+    // Sub-slots cards rendering
     let cardsHtml = '<div class="sub-slots-container">';
     for (let i = 1; i <= count; i++) {
       const subKey = count > 1 ? `${baseSlot}_${i}` : baseSlot;
@@ -7944,64 +7944,58 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       const isSelected = (selectedSubKey === subKey);
       const borderCol = isSelected ? '#0969da' : '#d0d7de';
       const borderStyle = isSelected 
-        ? `border: 2px solid ${borderCol}; box-shadow: 0 0 6px rgba(9, 105, 218, 0.45); padding: 7px 8px;` 
-        : `border: 1px solid ${borderCol}; padding: 8px;`;
+        ? `border: 2px solid ${borderCol}; box-shadow: 0 0 6px rgba(9, 105, 218, 0.45); padding: 3px 2px;` 
+        : `border: 1px solid ${borderCol}; padding: 4px 2px;`;
 
       let displayTitle = count > 1 ? `${baseSlot} #${i}` : `${baseSlot}`;
       let displayOrganName = isEmpty ? '空置插槽' : (isNative ? `原生${baseSlot}` : organ.名称);
       let qColor = isNative ? '#8c8c8c' : (isEquipped ? (qualityColors[organ.品质] || '#57606a') : '#afb8c1');
 
-      const colIndex = (i - 1) % 4;
-      let edgeClass = '';
-      if (count > 1) {
-        if (colIndex === 0) edgeClass = 'edge-left';
-        else if (colIndex === 3 || i === count) edgeClass = 'edge-right';
-      }
-
-      // Tooltip html
-      let tooltipHtml = `<div class="sub-slot-tooltip" style="display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); width: 220px; background: rgba(36, 41, 47, 0.98); border: 1px solid rgba(255,255,255,0.15); color: #f6f8fa; border-radius: 8px; padding: 10px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35); z-index: 110; font-size: 10px; pointer-events: none; line-height: 1.4;">`;
-      tooltipHtml += `<div style="font-weight: 700; font-size: 12px; color: ${qColor}; margin-bottom: 4px;">${displayOrganName}</div>`;
-      tooltipHtml += `<div style="color: #8c959f; font-size: 9px; margin-bottom: 6px;">部位: ${baseSlot} | 品质: ${isNative ? '普通' : (organ?.品质 || '普通')}</div>`;
+      // Tooltip HTML content to be loaded dynamically
+      let tooltipContent = `<div style="font-weight: 700; font-size: 12px; color: ${qColor}; margin-bottom: 4px;">${displayOrganName}</div>`;
+      tooltipContent += `<div style="color: #8c959f; font-size: 9px; margin-bottom: 6px;">部位: ${baseSlot} | 品质: ${isNative ? '普通' : (organ?.品质 || '普通')}</div>`;
       if (organ) {
-        tooltipHtml += `<div style="color: #d0d7de; font-style: italic; margin-bottom: 6px;">${organ.描述 || '无描述'}</div>`;
+        tooltipContent += `<div style="color: #d0d7de; font-style: italic; margin-bottom: 6px;">${organ.描述 || '无描述'}</div>`;
         const bonus = organ.属性加成 || {};
         const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
         if (bonusEntries.length > 0) {
-          tooltipHtml += `<div style="font-weight: 600; color: #58a6ff; margin-top: 4px;">[属性加成]</div>`;
+          tooltipContent += `<div style="font-weight: 600; color: #58a6ff; margin-top: 4px;">[属性加成]</div>`;
           bonusEntries.forEach(([k, v]) => {
-            tooltipHtml += `<div style="margin-left: 4px;">· ${k} ${v > 0 ? '+' : ''}${v}</div>`;
+            tooltipContent += `<div style="margin-left: 4px;">· ${k} ${v > 0 ? '+' : ''}${v}</div>`;
           });
         }
         const traits = organ.特性 || [];
         if (traits.length > 0) {
-          tooltipHtml += `<div style="font-weight: 600; color: #3fb950; margin-top: 4px;">[特性]</div>`;
+          tooltipContent += `<div style="font-weight: 600; color: #3fb950; margin-top: 4px;">[特性]</div>`;
           traits.forEach(t => {
-            tooltipHtml += `<div style="margin-left: 4px;">· ${t}</div>`;
+            tooltipContent += `<div style="margin-left: 4px;">· ${t}</div>`;
           });
         }
         if (organ.套装) {
-          tooltipHtml += `<div style="font-weight: 600; color: #d29922; margin-top: 4px;">[套装: ${organ.套装}]</div>`;
+          tooltipContent += `<div style="font-weight: 600; color: #d29922; margin-top: 4px;">[套装: ${organ.套装}]</div>`;
         }
       }
-      tooltipHtml += `</div>`;
+      
+      // Escape single/double quotes to safely put in attribute
+      const escapedTooltip = tooltipContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
       cardsHtml += `
-        <div class="sub-slot-card ${isSelected ? 'selected' : ''} ${edgeClass}" 
+        <div class="sub-slot-card ${isSelected ? 'selected' : ''}" 
              style="${borderStyle}"
-             data-sub-key="${subKey}">
-          ${tooltipHtml}
-          <div style="font-size: 10px; color: #57606a; font-weight: 600;">${displayTitle}</div>
-          <div class="card-icon" style="color: ${qColor}; font-size: 20px; margin: 4px 0;">
+             data-sub-key="${subKey}"
+             data-tooltip-html="${escapedTooltip}">
+          ${isEquipped ? `
+            <button class="btn-sub-unequip" data-sub-key="${subKey}" 
+                    style="position: absolute; top: 1px; right: 1px; background: none; border: none; padding: 2px; color: #cf222e; cursor: pointer; font-size: 10px; line-height: 1; z-index: 10;" 
+                    title="卸下">
+              <i class="ri-close-circle-fill"></i>
+            </button>
+          ` : ''}
+          <div style="font-size: 8.5px; color: #57606a; font-weight: 600; line-height: 1;">${displayTitle}</div>
+          <div class="card-icon" style="color: ${qColor}; font-size: 14px; margin: 2px 0; line-height: 1;">
             <i class="${s?.icon || 'ri-heart-fill'}"></i>
           </div>
-          <div class="card-name" style="font-size: 10px; color: ${qColor}; font-weight: 700; text-align: center; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 6px;">${displayOrganName}</div>
-          <div class="card-action" style="display: flex; gap: 4px; width: 100%;">
-            ${isEmpty ? `
-              <button class="btn-sub-select" style="flex: 1; background: #0969da; color: white; border: none; padding: 2px 4px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 600;">选择</button>
-            ` : `
-              <button class="btn-sub-unequip" data-sub-key="${subKey}" style="flex: 1; background: #cf222e; color: white; border: none; padding: 2px 4px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 600;">卸下</button>
-            `}
-          </div>
+          <div class="card-name" style="font-size: 9px; color: ${qColor}; font-weight: 700; text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">${displayOrganName}</div>
         </div>
       `;
     }
@@ -8009,8 +8003,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     let html = `
       <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
-        <div class="fusion-card organ-theme-card" style="width: 440px; --quality-color: #0969da;">
+        <div class="fusion-card organ-theme-card" style="width: 440px; --quality-color: #0969da; position: relative;">
           <button class="popup-close"><i class="ri-close-line"></i></button>
+          
+          <!-- Shared tooltip element container to prevent overflow and scroll clipping -->
+          <div id="organ-shared-tooltip" style="display: none; position: absolute; width: 220px; background: rgba(36, 41, 47, 0.98); border: 1px solid rgba(255,255,255,0.15); color: #f6f8fa; border-radius: 8px; padding: 10px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35); z-index: 200; font-size: 10px; pointer-events: none; line-height: 1.4; word-break: break-all;"></div>
+          
           <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
             <div class="f-meta-row" style="font-size: 10px; color: #57606a; text-transform: uppercase;">
               <span class="f-type">// 躯体器官管理</span>
@@ -8044,21 +8042,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         const qColor = qualityColors[item.quality] || '#57606a';
         const level = item.level > 0 ? ` +${item.level}` : '';
 
-        const colIndex = idx % 6;
-        let edgeClass = '';
-        if (colIndex === 0) edgeClass = 'edge-left';
-        else if (colIndex === 5 || idx === available.length - 1) edgeClass = 'edge-right';
-
-        let candidateTooltipHtml = `<div class="candidate-tooltip" style="display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); width: 220px; background: rgba(36, 41, 47, 0.98); border: 1px solid rgba(255,255,255,0.15); color: #f6f8fa; border-radius: 8px; padding: 10px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35); z-index: 120; font-size: 10px; pointer-events: none; line-height: 1.4;">`;
-        candidateTooltipHtml += `<div style="font-weight: 700; font-size: 12px; color: ${qColor}; margin-bottom: 4px;">${item.name}${level}</div>`;
-        candidateTooltipHtml += `<div style="color: #8c959f; font-size: 9px; margin-bottom: 6px;">品质: ${item.quality}</div>`;
-        candidateTooltipHtml += `<div style="color: #d0d7de; font-style: italic; margin-bottom: 6px;">${item.desc || '无描述'}</div>`;
-        candidateTooltipHtml += buildOrganStatsHtml(item.data);
-        candidateTooltipHtml += `</div>`;
+        // Dynamic candidate tooltip HTML
+        let candidateTooltipContent = `<div style="font-weight: 700; font-size: 12px; color: ${qColor}; margin-bottom: 4px;">${item.name}${level}</div>`;
+        candidateTooltipContent += `<div style="color: #8c959f; font-size: 9px; margin-bottom: 6px;">品质: ${item.quality}</div>`;
+        candidateTooltipContent += `<div style="color: #d0d7de; font-style: italic; margin-bottom: 6px;">${item.desc || '无描述'}</div>`;
+        candidateTooltipContent += buildOrganStatsHtml(item.data);
+        
+        const escapedCandidateTooltip = candidateTooltipContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
         html += `
-          <div class="organ-candidate-card-grid ${edgeClass}" data-idx="${idx}">
-            ${candidateTooltipHtml}
+          <div class="organ-candidate-card-grid" data-idx="${idx}" data-tooltip-html="${escapedCandidateTooltip}">
             <span class="candidate-icon" style="color: ${qColor}; font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center;">
               ${GameIcons.icon('organ')}
             </span>
@@ -8087,34 +8080,36 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       }
     });
 
-    // CSS Tooltip style addition
+    // Style adjustments for compact grid (physiological evaluation look-alike)
     if (!$('#sub-slot-tooltip-css').length) {
       $('head').append(`
         <style id="sub-slot-tooltip-css">
           .sub-slots-container {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr) !important;
-            gap: 8px !important;
+            gap: 6px !important;
             margin-bottom: 12px !important;
             width: 100% !important;
           }
           .sub-slot-card {
             position: relative;
             width: 100% !important;
-            height: 110px !important;
-            border-radius: 8px !important;
+            height: 52px !important;
+            border-radius: 6px !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: space-between !important;
+            justify-content: center !important;
             align-items: center !important;
             background: #fff !important;
             cursor: pointer !important;
-            transition: all 0.2s ease !important;
+            transition: all 0.15s ease !important;
             box-sizing: border-box !important;
+            padding: 4px 2px !important;
           }
-          .sub-slot-card:hover .sub-slot-tooltip { display: block !important; }
-          .sub-slot-card.edge-left .sub-slot-tooltip { left: 0 !important; transform: translateX(0) !important; }
-          .sub-slot-card.edge-right .sub-slot-tooltip { left: auto !important; right: 0 !important; transform: translateX(0) !important; }
+          .sub-slot-card:hover {
+            border-color: #0969da !important;
+            box-shadow: 0 0 0 1px #0969da !important;
+          }
           
           .organ-candidates-grid {
             display: grid !important;
@@ -8141,16 +8136,54 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             aspect-ratio: 1 !important;
             box-sizing: border-box !important;
           }
-          .organ-candidate-card-grid:hover { border-color: #0969da !important; box-shadow: 0 0 4px rgba(9,105,218,0.3) !important; }
-          .organ-candidate-card-grid:hover .candidate-tooltip { display: block !important; }
-          .organ-candidate-card-grid.edge-left .candidate-tooltip { left: 0 !important; transform: translateX(0) !important; }
-          .organ-candidate-card-grid.edge-right .candidate-tooltip { left: auto !important; right: 0 !important; transform: translateX(0) !important; }
+          .organ-candidate-card-grid:hover { 
+            border-color: #0969da !important; 
+            box-shadow: 0 0 0 1px #0969da !important;
+          }
         </style>
       `);
     }
 
+    // Dynamic non-clipping tooltip position engine on hover
+    $popup.on('mouseenter', '.sub-slot-card, .organ-candidate-card-grid', function() {
+      const content = $(this).attr('data-tooltip-html');
+      if (!content) return;
+      const $tooltip = $('#organ-shared-tooltip');
+      $tooltip.html(content).show();
+
+      const cardOffset = $(this).offset();
+      const popupOffset = $popup.find('.fusion-card').offset();
+
+      const cardHeight = $(this).outerHeight();
+      const cardWidth = $(this).outerWidth();
+      const tooltipWidth = $tooltip.outerWidth();
+      const tooltipHeight = $tooltip.outerHeight();
+      const popupWidth = $popup.find('.fusion-card').outerWidth();
+      const popupHeight = $popup.find('.fusion-card').outerHeight();
+
+      // Top aligned (above card)
+      let top = cardOffset.top - popupOffset.top - tooltipHeight - 8;
+      let left = cardOffset.left - popupOffset.left + (cardWidth - tooltipWidth) / 2;
+
+      // Bound safety constraints to stay within the 440px popup width
+      if (left < 10) {
+        left = 10;
+      }
+      if (left + tooltipWidth > popupWidth - 10) {
+        left = popupWidth - tooltipWidth - 10;
+      }
+      // If it would go above the top padding of popup, render below card instead
+      if (top < 10) {
+        top = cardOffset.top - popupOffset.top + cardHeight + 8;
+      }
+
+      $tooltip.css({ top: top + 'px', left: left + 'px' });
+    }).on('mouseleave', '.sub-slot-card, .organ-candidate-card-grid', function() {
+      $('#organ-shared-tooltip').hide();
+    });
+
     // Click card to select slot
-    $popup.find('.sub-slot-card').on('click', function(e) {
+    $popup.on('click', '.sub-slot-card', function(e) {
       if ($(e.target).closest('.btn-sub-unequip').length) return;
       const subKey = $(this).data('sub-key');
       selectedSubKey = subKey;
@@ -8158,26 +8191,20 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       $popup.find('.sub-slot-card').removeClass('selected').css({
         'border': '1px solid #d0d7de',
         'box-shadow': 'none',
-        'padding': '8px'
+        'padding': '4px 2px'
       });
       $(this).addClass('selected').css({
         'border': '2px solid #0969da',
         'box-shadow': '0 0 6px rgba(9, 105, 218, 0.45)',
-        'padding': '7px 8px'
+        'padding': '3px 2px'
       });
 
       const slotIdxLabel = subKey.includes('_') ? `${baseSlot} #${subKey.split('_')[1]}` : baseSlot;
       $popup.find('.candidate-section-title b').text(slotIdxLabel);
     });
 
-    // Wire up select button click
-    $popup.find('.btn-sub-select').on('click', function(e) {
-      e.stopPropagation();
-      $(this).closest('.sub-slot-card').trigger('click');
-    });
-
     // Click unequip
-    $popup.find('.btn-sub-unequip').on('click', async function(e) {
+    $popup.on('click', '.btn-sub-unequip', async function(e) {
       e.stopPropagation();
       const subKey = $(this).data('sub-key');
       $popup.remove();
@@ -8185,7 +8212,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     });
 
     // Click candidate to equip
-    $popup.find('.organ-candidate-card-grid').on('click', async function(e) {
+    $popup.on('click', '.organ-candidate-card-grid', async function(e) {
       e.stopPropagation();
       const idx = $(this).data('idx');
       const targetOrgan = available[idx];
@@ -8261,9 +8288,32 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
   const showOrganItemDetailPopup = (organItem) => {
-    const slotName = organItem.data?.部位 || guessSlotFromOrganName(organItem.name);
     const data = fetchLatestMvuData();
-    const currentEquipped = data?.人物?.器官系统?.器官列表?.[slotName];
+    const organSystem = data?.push ? {} : (data?.人物?.器官系统 || {});
+    const 器官列表 = organSystem.器官列表 || {};
+
+    const baseSlot = organItem.data?.部位 || guessSlotFromOrganName(organItem.name);
+    
+    // Resolve correct target sub-slot name for multi-slot categories
+    let slotName = baseSlot;
+    if (baseSlot) {
+      const s = slotsDef.find(x => x.key === baseSlot);
+      const count = s ? (s.count || 1) : 1;
+      if (count > 1) {
+        let targetSubKey = null;
+        for (let i = 1; i <= count; i++) {
+          const subKey = `${baseSlot}_${i}`;
+          const organInList = 器官列表[subKey];
+          if (!organInList || organInList.空) {
+            targetSubKey = subKey;
+            break;
+          }
+        }
+        slotName = targetSubKey || `${baseSlot}_1`;
+      }
+    }
+
+    const currentEquipped = 器官列表[slotName];
     const slotOccupied = !!currentEquipped && !currentEquipped.空;
 
     const buildOrganStatsHtml = (organ) => {
@@ -8328,7 +8378,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     });
   };
 
-    const slotsDef = [
+  const slotsDef = [
     { key: "眼球", count: 2, icon: "ri-eye-fill", x: 50.0, y: 7.0 },
     { key: "心脏", count: 1, icon: "ri-heart-pulse-fill", x: 72.0, y: 12.9 },
     { key: "肺脏", count: 2, icon: "ri-windy-fill", x: 88.1, y: 29.0 },
@@ -8482,7 +8532,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         if (activeOrgan && activeOrgan.属性加成 && activeOrgan.属性加成[attr.key] !== undefined) {
           const val = Number(activeOrgan.属性加成[attr.key]);
           if (val !== 0) {
-            const groupName = slot.baseKey;
+            const groupName = isEquipped ? activeOrgan.名称 : `原生[${slot.baseKey}]`;
             if (!groupedProviders[groupName]) {
               groupedProviders[groupName] = 0;
             }
@@ -9096,7 +9146,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
     const runOnceOrganSystemInitialization = async () => {
-    const key = `${SCRIPT_ID}-restored-v4`;
+    const key = `${SCRIPT_ID}-restored-v5`;
     if (localStorage.getItem(key)) return;
 
     const data = fetchLatestMvuData();
