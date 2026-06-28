@@ -7826,6 +7826,33 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const isCustom = !!currentEquipped && !(currentEquipped.名称 || '').includes('原生');
     const displayOrgan = isCustom ? currentEquipped : defaultOrgans[slotName];
 
+    const buildOrganStatsHtml = (organ) => {
+      let statHtml = '';
+      if (!organ) return statHtml;
+      
+      // 读取器官身上的属性加成
+      const bonus = organ.属性加成 || organ.data?.属性加成 || {};
+      const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
+      if (bonusEntries.length > 0) {
+        statHtml += '<div class="organ-display-bonus" style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">';
+        bonusEntries.forEach(([k, v]) => {
+          statHtml += `<span class="f-bonus-tag" style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600; font-style:normal;">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`;
+        });
+        statHtml += '</div>';
+      }
+
+      // 读取器官身上的特性
+      const traits = organ.特性 || organ.data?.特性 || [];
+      if (traits.length > 0) {
+        statHtml += '<div class="organ-display-traits" style="display:flex; flex-direction:column; gap:2px; margin-top:6px; font-size:10px; color:#57606a;">';
+        traits.forEach(t => {
+          statHtml += `<div><i class="ri-shield-flash-line" style="color:#1a7f37; margin-right:3px;"></i>${t}</div>`;
+        });
+        statHtml += '</div>';
+      }
+      return statHtml;
+    };
+
     // 采用与原版装备弹窗完全一致的 fusion-popup-overlay 结构，挂载在 panel 内部确保一致的层级和置顶
     let html = `
       <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
@@ -7849,6 +7876,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
                   ${isCustom ? `<button class="btn-organ-action btn-organ-unequip" data-slot="${slotName}">剥离还原</button>` : `<span class="native-badge">原生自带</span>`}
                 </div>
                 <div class="organ-display-desc" style="font-size: 10.5px; color: #57606a; margin-top: 6px; line-height: 1.4;">${displayOrgan.描述 || '无描述'}</div>
+                ${buildOrganStatsHtml(displayOrgan)}
               </div>
             </div>
 
@@ -7872,6 +7900,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
               <span class="candidate-quality" style="font-size: 10px; color: #0969da; font-weight: 600;">${item.quality}</span>
             </div>
             <div class="candidate-desc" style="font-size: 10.5px; color: #57606a; line-height: 1.3;">${item.desc}</div>
+            ${buildOrganStatsHtml(item.data)}
             <div class="candidate-action-row" style="display: flex; justify-content: flex-end; margin-top: 4px;">
               <button class="btn-organ-action btn-organ-equip" data-idx="${idx}" style="background: #0969da; color: white; border: 1px solid #0969da; padding: 3px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 600; cursor: pointer;">替换接入</button>
             </div>
