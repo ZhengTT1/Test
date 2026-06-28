@@ -8600,6 +8600,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     }
     const $panel = $(`#${SCRIPT_ID}-panel`);
     const data = fetchLatestMvuData();
+    const race = data?.人物?.种族 || '';
     const organSystem = data?.人物?.器官系统 || {};
     const 器官列表 = organSystem.器官列表 || {};
     const 排斥等级 = organSystem.排斥等级 || 0;
@@ -8658,7 +8659,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
       });
 
-      const race = data?.人物?.种族 || '';
       let nativeBonusSum = 0;
       expandedSlots.forEach(slot => {
         const org = getDefaultOrganForSlot(slot.baseKey, race);
