@@ -7934,9 +7934,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     let cardsHtml = '';
     attrsDef.forEach(attr => {
       const val = getAttrVal(attr.key, attr.default);
-      const isChanged = val !== attr.default;
-
-      if (!showAllAttrs && !isChanged) return;
 
       let valClass = '';
       let effectText = '';
@@ -8226,7 +8223,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if (cardsHtml === '') {
       cardsHtml = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 12px; color: #57606a; font-size: 11px; background: #f6f8fa; border: 1px dashed #d0d7de; border-radius: 6px;">
-          <i class="ri-shield-check-line" style="color:#2ea87a; margin-right:4px;"></i> 所有生理机能处于标准状态 (点击显示全部以查看数值)
+          <i class="ri-shield-check-line" style="color:#2ea87a; margin-right:4px;"></i> 所有生理机能处于标准状态
         </div>
       `;
     }
