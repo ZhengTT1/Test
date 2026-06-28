@@ -6950,15 +6950,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     log.info('状态栏UI更新完成');
   };
 /**
- * 渲染器官系统 UI
- */
-/**
- * 渲染器官系统 UI（自动获取最新数据）
+ * 渲染器官系统 UI（与装备栏风格统一）
  */
 const updateOrganUI = () => {
   const { $ } = getCore();
+  if (!$) {
+    console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
+    return;
+  }
+
   const $panel = $(`#${SCRIPT_ID}-panel`);
-  const data = fetchLatestMvuData();  // 强制获取最新数据
+  const data = fetchLatestMvuData();
   const organSystem = data?.人物?.器官系统 || {};
   const 器官列表 = organSystem.器官列表 || {};
   const 排斥等级 = organSystem.排斥等级 || 0;
@@ -6971,6 +6973,10 @@ const updateOrganUI = () => {
   $panel.find('#organ-set-bonus').text(套装.length ? 套装.join('、') : '无');
 
   const $grid = $panel.find('#organ-grid');
+  if (!$grid.length) {
+    console.warn('[RPG StatusBar] #organ-grid not found');
+    return;
+  }
   $grid.empty();
 
   const entries = Object.entries(器官列表);
@@ -6988,6 +6994,7 @@ const updateOrganUI = () => {
     grouped[part].push({ name, ...organ });
   });
 
+  let html = '';
   groupOrder.forEach(part => {
     const items = grouped[part] || [];
     if (items.length === 0) return;
@@ -6995,7 +7002,7 @@ const updateOrganUI = () => {
     const partIcons = { 循环: '❤️', 感官: '👁️', 骨骼: '🦴', 内脏: '🧫', 肌肉: '💪' };
     const icon = partIcons[part] || '🧬';
 
-    let rowHtml = `<div class="organ-group"><div class="organ-group-title">${icon} ${part}</div><div class="organ-group-grid">`;
+    html += `<div class="organ-group"><div class="organ-group-title">${icon} ${part}</div><div class="organ-group-grid">`;
     items.forEach(organ => {
       const qualityColor = getQualityColor(organ.品质 || '普通');
       const attrText = Object.entries(organ.属性 || {})
@@ -7004,7 +7011,7 @@ const updateOrganUI = () => {
       const traitText = (organ.特性 || []).slice(0, 2).join('、');
       const hasSkill = organ.技能 && organ.技能.名称;
 
-      rowHtml += `
+      html += `
         <div class="organ-card" data-organ-name="${organ.name}" style="border-color: ${qualityColor}; background: ${qualityColor}08;">
           <div class="organ-card-header">
             <span class="organ-name" style="color: ${qualityColor};">${organ.name}</span>
@@ -7017,6 +7024,43 @@ const updateOrganUI = () => {
         </div>
       `;
     });
+    html += `</div></div>`;
+  });
+
+  $grid.html(html);
+
+  // 绑定器官卡片点击事件（详情弹窗）
+  $grid.find('.organ-card').off('click').on('click', function() {
+    const organName = $(this).attr('data-organ-name');
+    if (!organName) return;
+    const organ = 器官列表[organName];
+    if (!organ) return;
+
+    // 复用 Fusion 风格弹窗
+    const content = `
+      <div class="f-header">
+        <div class="f-meta-row">
+          <span class="f-quality" style="background:${getQualityColor(organ.品质)}; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">${organ.品质 || '普通'}</span>
+          <span class="f-type">// ${organ.部位 || '器官'}</span>
+        </div>
+        <div class="f-title-row">
+          <span class="f-name" style="background:${getQualityColor(organ.品质)}; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">${organName}</span>
+        </div>
+      </div>
+      <div class="f-content">
+        <div class="f-data-group">
+          <div class="f-data-row"><span class="f-data-label">种族</span><span class="f-data-val">${organ.种族 || '人类'}</span></div>
+          ${Object.entries(organ.属性 || {}).map(([k,v]) => `<div class="f-data-row"><span class="f-data-label">${k}</span><span class="f-data-val val-positive">+${v}</span></div>`).join('')}
+        </div>
+        ${(organ.特性 || []).length ? `<div class="f-section-title"><i class="ri-sparkling-line"></i> 特性</div><div class="f-effect-box">${organ.特性.join('、')}</div>` : ''}
+        ${organ.技能 ? `<div class="f-section-title"><i class="ri-flashlight-line"></i> 技能</div><div class="f-effect-box"><b>${organ.技能.名称}</b><br>${organ.技能.描述 || ''}<br><span style="color:#636e72;font-size:0.8rem;">剩余 ${organ.技能.剩余次数 ?? 0}/${organ.技能.最大次数 ?? 0} 次</span></div>` : ''}
+      </div>
+    `;
+
+    // 利用现有的弹窗函数
+    showDetailPopup('organ', organName, { ...organ, 名称: organName });
+  });
+};
     rowHtml += `</div></div>`;
     $grid.append(rowHtml);
   });
@@ -7690,6 +7734,11 @@ const updateOrganUI = () => {
    * 刷新状态栏数据
    */
 const refreshStatusBar = () => {
+  const { $ } = getCore();
+  if (!$) {
+    log.warn('jQuery not available, skipping refresh');
+    return;
+  }
   const data = fetchLatestMvuData();
   if (Object.keys(data).length > 0) {
     if (data?.人物?.技能树) {
@@ -7697,7 +7746,6 @@ const refreshStatusBar = () => {
     }
     updateStatusBarUI(data);
     // 如果特质页面当前可见，同步更新
-    const { $ } = getCore();
     if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
       updateTraitsPageUI();
     }
@@ -7706,6 +7754,7 @@ const refreshStatusBar = () => {
       updateOrganUI();
     }
   }
+};
 };
 
   // 注入样式 - 完全复用原版状态栏.html的CSS
