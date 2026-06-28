@@ -7690,8 +7690,7 @@ const updateOrganUI = () => {
    * 刷新状态栏数据
    */
   const refreshStatusBar = () => {
-    const core = getCore();
-    const $ = core.$;
+    const $ = window.jQuery || window.parent?.jQuery;
     if (!$) {
         log.warn('jQuery not available, skipping refresh');
         return;
