@@ -7701,6 +7701,7 @@ const updateOrganUI = () => {
    * 刷新状态栏数据
    */
   const refreshStatusBar = () => {
+    console.log("[小苑调试] refreshStatusBar 正在执行...");
     const data = fetchLatestMvuData();
     if (Object.keys(data).length > 0) {
       if (data?.人物?.技能树) {
@@ -12928,6 +12929,7 @@ const updateOrganUI = () => {
 
   // 初始化
   const init = () => {
+    console.log("[小苑调试] RPG 状态栏 init 开始执行...");
     
     if (!$) {
       log.error("jQuery 未找到，等待重试...");
