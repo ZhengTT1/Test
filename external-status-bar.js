@@ -7692,10 +7692,7 @@ const updateOrganUI = (data) => {
         syncSkillSlots(data.人物.技能树, data.人物);
       }
       updateStatusBarUI(data);
-	  // 如果器官标签页当前可见，刷新器官视图
-if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
-  updateOrganUI(data);
-}
+
       // 如果特质页面当前可见，同步更新
       const { $ } = getCore();
       if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
@@ -13496,6 +13493,32 @@ if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
                 <div class="diff-tiers" id="diff-tiers-body"></div>
               </div>
             </div>
+			   <!-- ===== 器官系统视图（移到 main 内部） ===== -->
+            <div id="view-organs" class="view-section">
+              <div class="organ-container">
+                <div class="organ-status-bar">
+                  <div class="organ-stat">
+                    <span class="organ-stat-label">🧬 排斥等级</span>
+                    <span class="organ-stat-value" id="organ-rejection">0</span>
+                  </div>
+                  <div class="organ-stat">
+                    <span class="organ-stat-label">❤️ 健康度</span>
+                    <span class="organ-stat-value" id="organ-health">100%</span>
+                  </div>
+                  <div class="organ-stat">
+                    <span class="organ-stat-label">⚡ 套装</span>
+                    <span class="organ-stat-value" id="organ-set-bonus">无</span>
+                  </div>
+                </div>
+                <div class="organ-grid" id="organ-grid">
+                  <!-- 由 JS 动态渲染 -->
+                </div>
+                <div class="organ-actions">
+                  <button class="organ-action-btn" id="organ-add-btn"><i class="ri-add-line"></i> 移植器官</button>
+                  <button class="organ-action-btn" id="organ-clear-btn"><i class="ri-delete-bin-line"></i> 清空所有</button>
+                </div>
+              </div>
+            </div>
             <div style="height: 100px;"></div>
           </main>
           <div class="floating-menu">
@@ -13508,33 +13531,6 @@ if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
           </div>
         </div>
       </div>
-	  <!-- ===== 器官系统视图 ===== -->
-	<div id="view-organs" class="view-section">
-		<div class="organ-container">
-		<!-- 状态栏 -->
-			<div class="organ-status-bar">
-				<div class="organ-stat">
-					<span class="organ-stat-label">🧬 排斥等级</span>
-					<span class="organ-stat-value" id="organ-rejection">0</span>
-				</div>
-			<div class="organ-stat">
-				<span class="organ-stat-label">❤️ 健康度</span>
-				<span class="organ-stat-value" id="organ-health">100%</span>
-			</div>
-			<div class="organ-stat">
-				<span class="organ-stat-label">⚡ 套装</span>
-				<span class="organ-stat-value" id="organ-set-bonus">无</span>
-			</div>
-		</div>
-    <!-- 器官网格 -->
-    <div class="organ-grid" id="organ-grid">
-      <!-- 由 JS 动态渲染 -->
-    </div>
-    <!-- 操作按钮 -->
-    <div class="organ-actions">
-      <button class="organ-action-btn" id="organ-add-btn"><i class="ri-add-line"></i> 移植器官</button>
-      <button class="organ-action-btn" id="organ-clear-btn"><i class="ri-delete-bin-line"></i> 清空所有</button>
-    </div>
   </div>
 </div>
     `);
