@@ -73,6 +73,7 @@
   // SVG 路径数据映射 - 在此填充各图标的 path data
   const SVG_PATHS = {
     // === 武器 ===
+    organ: 'M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z',
     weapon: 'M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75.063-.062c21.827 21.93 44.04 43.923 66.405 66.25-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53 68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593-43.852-43.8-86.462-85.842-130.125-125.47-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562 56.81-56.812 13.22 13.187-56.438 56.44 24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906 200.56 200.53a402.965 402.965 0 0 1-13.405 13.032L148.875 153.53l13.22-13.186zm-76.69 113.28-28.5 28.532 68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717 28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313 17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594-15.068-18.587-28.38-38.758-39.5-60.625z', // crossed-swords: 交叉双剑
 
     // === 防具 ===
@@ -7914,16 +7915,23 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     } else {
       html += `<div class="organ-candidates-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 4px;">`;
       available.forEach((item, idx) => {
+        const qColor = qualityColors[item.quality] || '#57606a';
+        const level = item.level > 0 ? ` +${item.level}` : '';
         html += `
-          <div class="organ-candidate-card" style="border: 1px solid #d0d7de; background: #ffffff; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 5px;">
-            <div class="candidate-header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="candidate-name" style="font-size: 12px; font-weight: 700; color: #24292f;">${item.name}</span>
-              <span class="candidate-quality" style="font-size: 10px; color: #0969da; font-weight: 600;">${item.quality}</span>
+          <div class="organ-candidate-card" style="border: 1px solid #d0d7de; border-left: 4px solid ${qColor} !important; background: #ffffff; border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 6px;">
+            <div class="candidate-icon" style="color: ${qColor}; width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+              ${GameIcons.icon('organ')}
             </div>
-            <div class="candidate-desc" style="font-size: 10.5px; color: #57606a; line-height: 1.3;">${item.desc}</div>
-            ${buildOrganStatsHtml(item.data)}
-            <div class="candidate-action-row" style="display: flex; justify-content: flex-end; margin-top: 4px;">
-              <button class="btn-organ-action btn-organ-equip" data-idx="${idx}" style="background: #0969da; color: white; border: 1px solid #0969da; padding: 3px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 600; cursor: pointer;">替换接入</button>
+            <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+              <div class="candidate-header" style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                <span class="candidate-name" style="font-size: 12px; font-weight: 700; color: #24292f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}${level}</span>
+                <span class="candidate-quality" style="font-size: 9.5px; color: ${qColor}; font-weight: 700; background: ${qColor}10; padding: 1px 5px; border-radius: 3px;">${item.quality}</span>
+              </div>
+              <div class="candidate-desc" style="font-size: 10px; color: #57606a; line-height: 1.3; word-break: break-all;">${item.desc || '无描述'}</div>
+              ${buildOrganStatsHtml(item.data)}
+              <div class="candidate-action-row" style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                <button class="btn-organ-action btn-organ-equip" data-idx="${idx}" style="background: #0969da; color: white; border: none; padding: 3px 10px; border-radius: 4px; font-size: 10.5px; cursor: pointer; font-weight: 600;">装配</button>
+              </div>
             </div>
           </div>
         `;
@@ -7968,6 +7976,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
   const findAllBackpackOrgans = (data) => {
     const results = [];
+    const validOrganSlots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱','脑','胆','膀胱','胰腺','生殖'];
+    
     // 1. 扫描器官背包
     const 器官背包 = data?.人物?.器官系统?.器官背包 || data?.人物?.背包?.器官 || {};
     Object.entries(器官背包).forEach(([key, eq]) => {
@@ -8004,7 +8014,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     Object.entries(装备列表).forEach(([key, eq]) => {
       if (!eq) return;
       const isUnequipped = eq.装备箱 === true;
-      const isOrgan = String(eq.名称 || '').includes('器官') || String(eq.类型 || '').includes('器官') || !!eq.部位;
+      const isOrgan = String(eq.名称 || '').includes('器官') || String(eq.类型 || '').includes('器官') || (eq.部位 && validOrganSlots.includes(String(eq.部位).trim()));
       if (isUnequipped && isOrgan) {
         results.push({
           source: 'equip',
@@ -8149,10 +8159,36 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     ];
 
     const getAttrVal = (key, defaultVal) => {
-      if (organSystem[key] !== undefined) return Number(organSystem[key]);
-      if (organSystem.属性 && organSystem.属性[key] !== undefined) return Number(organSystem.属性[key]);
-      if (data?.人物?.属性 && data?.人物?.属性[key] !== undefined) return Number(data.人物.属性[key]);
-      return defaultVal;
+      // 计算无器官时的基础值 = defaultVal - 所有原生器官对该属性的加成之和
+      let nativeBonusSum = 0;
+      Object.values(defaultOrgans).forEach(org => {
+        if (org.属性加成 && org.属性加成[key] !== undefined) {
+          nativeBonusSum += Number(org.属性加成[key]);
+        }
+      });
+      let baseVal = defaultVal - nativeBonusSum;
+
+      // 累加当前实际装备/原生的器官加成
+      let activeBonusSum = 0;
+      const slotKeys = ["眼球", "心脏", "肺脏", "胃", "肠子", "阑尾", "肌肉", "肝脏", "脾脏", "肾脏", "肋骨", "脊柱"];
+      slotKeys.forEach(slotKey => {
+        const organ = 器官列表[slotKey];
+        const isEmpty = !!organ && organ.空;
+        const isNative = !organ;
+        const isEquipped = !!organ && !organ.空;
+        
+        let activeOrgan = null;
+        if (isNative) {
+          activeOrgan = defaultOrgans[slotKey];
+        } else if (isEquipped) {
+          activeOrgan = organ;
+        }
+        
+        if (activeOrgan && activeOrgan.属性加成 && activeOrgan.属性加成[key] !== undefined) {
+          activeBonusSum += Number(activeOrgan.属性加成[key]);
+        }
+      });
+      return baseVal + activeBonusSum;
     };
 
     let attrsGridHtml = '<div class="organ-attrs-header-bar">';
@@ -8664,12 +8700,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           allBackpackOrgans.forEach((item, idx) => {
             const color = qualityColors[item.quality] || '#57606a';
             const slotGuess = item.data?.部位 || guessSlotFromOrganName(item.name) || '通用';
-            const level = item.level > 0 ? ` <span style="color:#cf222e; font-weight:700;">+${item.level}</span>` : '';
+            const level = item.level > 0 ? ` +${item.level}` : '';
             backpackHtml += `
-              <div class="organ-backpack-item" data-bp-idx="${idx}" 
-                   style="background: ${color}08; border: 1px solid ${color}40; border-radius: 6px; padding: 6px 4px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 3px;">
-                <span style="font-size: 9.5px; font-weight: 700; color: ${color}; line-height: 1.2; word-break: break-all;">${item.name}${level}</span>
-                <span style="font-size: 8.5px; color: #8c8c8c; background: rgba(255,255,255,0.7); padding: 0 4px; border-radius: 3px;">[${slotGuess}]</span>
+              <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
+                   style="border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
+                <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                  ${GameIcons.icon('organ')}
+                </span>
+                <span class="inv-item-name" style="color: ${color}; font-size: 9px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;">${item.name}${level}</span>
+                <span style="font-size: 8px; color: #8c8c8c; background: rgba(255,255,255,0.7); padding: 0 4px; border-radius: 3px;">[${slotGuess}]</span>
               </div>
             `;
           });
@@ -15340,7 +15379,8 @@ ultimate = 显示终结组</pre>
       isGenerating: false,
       timerInterval: null,
       seconds: 0,
-      formData: { className: '', combatStyle: '', weapon: '', classStyle: '', flavor: '', usePresetAndWorldbook: false },
+      formData: { className: '', combatStyle: '', organ: 'M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z',
+    weapon: '', classStyle: '', flavor: '', usePresetAndWorldbook: false },
       error: '',
       hasOpened: false  // 是否曾经打开过（区分首次打开和恢复）
     };
