@@ -7948,7 +7948,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         : `border: 1px solid ${borderCol}; padding: 4px 2px;`;
 
       let displayTitle = count > 1 ? `${baseSlot} #${i}` : `${baseSlot}`;
-      let displayOrganName = isEmpty ? '空置插槽' : (isNative ? `原生${baseSlot}` : organ.名称);
+      let displayOrganName = isEmpty ? '空置插槽' : stripNativePrefix(isNative ? baseSlot : organ.名称);
       let qColor = isNative ? '#8c8c8c' : (isEquipped ? (qualityColors[organ.品质] || '#57606a') : '#afb8c1');
 
       // Tooltip HTML content to be loaded dynamically
