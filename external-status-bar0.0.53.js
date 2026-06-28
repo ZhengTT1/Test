@@ -7626,18 +7626,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   
   // 寻找适合该插槽的可植入器官
   const defaultOrgans = {
-    "眼球": { 名称: "原生人类眼球", 品质: "普通", 属性加成: { "视觉": 1 }, 描述: "人体原装视觉感光器官，提供常规视界嗷。" },
-    "心脏": { 名称: "原生人类心脏", 品质: "普通", 属性加成: { "健康度": 1 }, 描述: "人体原装血液循环泵，源源不断输送能量嗷。" },
-    "肺脏": { 名称: "原生人类肺脏", 品质: "普通", 属性加成: { "肺活量": 1, "耐力": 1 }, 描述: "人体原装气体交互器官，维持日常呼吸嗷。" },
-    "胃": { 名称: "原生人类胃", 品质: "普通", 属性加成: { "消化效率": 1 }, 描述: "人体原装初步消化器官，分解常规膳食嗷。" },
-    "肠子": { 名称: "原生人类肠道", 品质: "普通", 属性加成: { "营养获取效率": 1 }, 描述: "人体原装主要吸收器官，吸取营养元素嗷。" },
-    "阑尾": { 名称: "原生人类阑尾", 品质: "普通", 属性加成: { "幸运": 1 }, 描述: "人体原装免疫辅助器官，虽不起眼但也有些许用处嗷。" },
-    "脊柱": { 名称: "原生人类脊柱", 品质: "普通", 属性加成: { "坚韧": 0.5, "神经传递效率": 1 }, 描述: "人体原装躯干支柱与中枢神经通道，维持体态嗷。" },
-    "肋骨": { 名称: "原生人类肋骨", 品质: "普通", 属性加成: { "坚韧": 1 }, 描述: "人体原装胸腔保护骨骼，遮蔽脏器免受直接冲击嗷。" },
-    "肾脏": { 名称: "原生人类肾脏", 品质: "普通", 属性加成: { "血液过滤效率": 1 }, 描述: "人体原装多余水分与毒素排泄器官，平衡内环境嗷。" },
-    "脾脏": { 名称: "原生人类脾脏", 品质: "普通", 属性加成: { "新陈代谢效率": 1 }, 描述: "人体原装造血与免疫储血滤血器官，默默守护身体嗷。" },
-    "肝脏": { 名称: "原生人类肝脏", 品质: "普通", 属性加成: { "解毒效率": 1 }, 描述: "人体原装代谢解毒核心器官，协调多种生化反应嗷。" },
-    "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
+    "眼球": { 名称: "原生人类眼球", 品质: "普通", 属性加成: { "视觉": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装视觉感光器官，提供常规视界嗷。" },
+    "心脏": { 名称: "原生人类心脏", 品质: "普通", 属性加成: { "健康度": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装血液循环泵，源源不断输送能量嗷。" },
+    "肺脏": { 名称: "原生人类肺脏", 品质: "普通", 属性加成: { "肺活量": 1, "耐力": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装气体交互器官，维持日常呼吸嗷。" },
+    "胃": { 名称: "原生人类胃", 品质: "普通", 属性加成: { "消化效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装初步消化器官，分解常规膳食嗷。" },
+    "肠子": { 名称: "原生人类肠道", 品质: "普通", 属性加成: { "营养获取效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装主要吸收器官，吸取营养元素嗷。" },
+    "阑尾": { 名称: "原生人类阑尾", 品质: "普通", 属性加成: { "幸运": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装免疫辅助器官，虽不起眼但也有些许用处嗷。" },
+    "脊柱": { 名称: "原生人类脊柱", 品质: "普通", 属性加成: { "坚韧": 0.5, "神经传递效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装躯干支柱与中枢神经通道，维持体态嗷。" },
+    "肋骨": { 名称: "原生人类肋骨", 品质: "普通", 属性加成: { "坚韧": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装胸腔保护骨骼，遮蔽脏器免受直接冲击嗷。" },
+    "肾脏": { 名称: "原生人类肾脏", 品质: "普通", 属性加成: { "血液过滤效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装多余水分与毒素排泄器官，平衡内环境嗷。" },
+    "脾脏": { 名称: "原生人类脾脏", 品质: "普通", 属性加成: { "新陈代谢效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装造血与免疫储血滤血器官，默默守护身体嗷。" },
+    "肝脏": { 名称: "原生人类肝脏", 品质: "普通", 属性加成: { "解毒效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装代谢解毒核心器官，协调多种生化反应嗷。" },
+    "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
   };
 
 
@@ -7790,7 +7790,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // First unequip current organ if it exists to avoid overwriting it
     // 初始器官不在器官列表中，需要从默认配置读取
-    const baseSlot = String(slotName || '').split('_')[0];
     const race = data?.人物?.种族 || '';
     const currentOrgan = data?.人物?.器官系统?.器官列表?.[slotName] || getDefaultOrganForSlot(baseSlot, race);
     if (currentOrgan && !currentOrgan.空) {
@@ -7820,6 +7819,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             装备箱: true,
             属性加成: currentOrgan.属性加成 || {},
             特性: currentOrgan.特性 || [],
+            标签: currentOrgan.标签 || [],
             种族: currentOrgan.种族 || '',
             强化等级: currentOrgan.强化等级 || 0
           }
@@ -7837,6 +7837,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         强化等级: organItem.level,
         属性加成: organItem.data.属性加成 || {},
         特性: organItem.data.特性 || [],
+        标签: organItem.data.标签 || [],
         种族: organItem.data.种族 || ''
       }
     });
@@ -7926,6 +7927,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           装备箱: true,
           属性加成: organ.属性加成 || {},
           特性: organ.特性 || [],
+          标签: organ.标签 || [],
           种族: organ.种族 || ''
         }
       });
@@ -7972,6 +7974,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const buildOrganStatsHtml = (organ) => {
       let statHtml = '';
       if (!organ) return statHtml;
+      
+      // Render Tags
+      const tags = organ.标签 || organ.data?.标签 || [];
+      if (tags.length > 0) {
+        statHtml += '<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:3px;">';
+        tags.forEach(t => {
+          statHtml += `<span style="font-size:9px; background:rgba(9,105,218,0.08); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 4px; border-radius:3px; font-weight:600;">${t}</span>`;
+        });
+        statHtml += '</div>';
+      }
+
       const bonus = organ.属性加成 || organ.data?.属性加成 || {};
       const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
       
@@ -8040,6 +8053,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       tooltipContent += `<div style="color: #8c959f; font-size: 9px; margin-bottom: 6px;">部位: ${baseSlot} | 品质: ${isNative ? '普通' : (organ?.品质 || '普通')}</div>`;
       if (organ) {
         tooltipContent += `<div style="color: #d0d7de; font-style: italic; margin-bottom: 6px;">${organ.描述 || '无描述'}</div>`;
+        
+        const tags = organ.标签 || [];
+        if (tags.length > 0) {
+          tooltipContent += `<div style="margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 3px;">`;
+          tags.forEach(tag => {
+            tooltipContent += `<span style="font-size:8.5px; background:rgba(56,139,253,0.15); color:#58a6ff; border:1px solid rgba(56,139,253,0.4); padding:0px 4px; border-radius:3px; font-weight:600;">${tag}</span>`;
+          });
+          tooltipContent += `</div>`;
+        }
+
         const bonus = organ.属性加成 || {};
         const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
         if (bonusEntries.length > 0) {
@@ -9540,7 +9563,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   };
 
     const runOnceOrganSystemInitialization = async () => {
-    const key = `${SCRIPT_ID}-restored-v7`;
+    const key = `${SCRIPT_ID}-restored-v9`;
     if (localStorage.getItem(key)) return;
 
     const data = fetchLatestMvuData();
@@ -9584,6 +9607,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           装备箱: true,
           属性加成: o.attr,
           特性: [],
+          标签: ["血肉", "人类"],
           种族: "",
           强化等级: 0,
           初始: true
@@ -9603,6 +9627,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         装备箱: true,
         属性加成: { 筋力: 4, 速度: 2, "重击强化": 1 },
         特性: [],
+        标签: ["血肉", "暴君"],
         种族: "",
         强化等级: 0
       }
@@ -9619,6 +9644,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         装备箱: true,
         属性加成: { 筋力: 2, 储能: 20, "超频爆发": 1 },
         特性: [],
+        标签: ["机械", "血肉"],
         种族: "",
         强化等级: 0
       }
