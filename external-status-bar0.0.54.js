@@ -2518,7 +2518,7 @@ ${lockedSkillsJson}
           </div>
         </div>
       </div>`;
-    $('body').append(html);
+    $(`#${SCRIPT_ID}-panel`).append(html);
     const $overlay = $(`#${SCRIPT_ID}-panel > .rpg-confirm-overlay`);
     $overlay.on('click', function (e) { if (e.target === this) $(this).remove(); });
     $overlay.find('.rpg-confirm-no').on('click', () => $overlay.remove());
