@@ -8357,59 +8357,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 90, y: 90 }
     ];
 
-    const svgLines = `
-      <svg class="organ-lines-svg" viewBox="0 0 100 100">
-        <!-- 左列器官连线与落点 -->
-        <!-- 眼球 -> 头部眼睛 -->
-        <path d="M 10 10 L 35 10 L 48 12" />
-        <circle cx="48" cy="12" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 心脏 -> 左胸腔 -->
-        <path d="M 10 26 L 35 26 L 47 30" />
-        <circle cx="47" cy="30" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 肺脏 -> 胸腔偏上两侧 -->
-        <path d="M 10 42 L 35 42 L 45 36" />
-        <circle cx="45" cy="36" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 胃 -> 偏左腹部 -->
-        <path d="M 10 58 L 35 58 L 46 50" />
-        <circle cx="46" cy="50" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 肠子 -> 下腹中部 -->
-        <path d="M 10 74 L 35 74 L 50 66" />
-        <circle cx="50" cy="66" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 阑尾 -> 右下腹 -->
-        <path d="M 10 90 L 35 90 L 47 72" />
-        <circle cx="47" cy="72" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 右列器官连线与落点 -->
-        <!-- 脊柱 -> 脊髓中轴 -->
-        <path d="M 90 10 L 65 10 L 50 24" />
-        <circle cx="50" cy="24" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 肋骨 -> 胸骨肋骨 -->
-        <path d="M 90 26 L 65 26 L 52 34" />
-        <circle cx="52" cy="34" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 肾脏 -> 后腰两侧 -->
-        <path d="M 90 42 L 65 42 L 53 54" />
-        <circle cx="53" cy="54" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 脾脏 -> 左肋深部 -->
-        <path d="M 90 58 L 65 58 L 53 46" />
-        <circle cx="53" cy="46" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 肝脏 -> 右上腹 -->
-        <path d="M 90 74 L 65 74 L 48 46" />
-        <circle cx="48" cy="46" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-        
-        <!-- 肌肉 -> 腿部/大腿肌群 -->
-        <path d="M 90 90 L 65 90 L 56 78" />
-        <circle cx="56" cy="78" r="0.8" fill="#ff4d4d" class="animate-pulse" />
-      </svg>
-    `;
+    const svgLines = "";
 
     let slotsHtml = `
       <div class="organ-slots-header"><i class="ri-heart-pulse-fill"></i> 身体移植舱 (点击部位以移植替换)</div>
