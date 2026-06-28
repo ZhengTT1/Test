@@ -73,7 +73,6 @@
   // SVG 路径数据映射 - 在此填充各图标的 path data
   const SVG_PATHS = {
     // === 武器 ===
-    organ: 'M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z',
     weapon: 'M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75.063-.062c21.827 21.93 44.04 43.923 66.405 66.25-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53 68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593-43.852-43.8-86.462-85.842-130.125-125.47-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562 56.81-56.812 13.22 13.187-56.438 56.44 24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906 200.56 200.53a402.965 402.965 0 0 1-13.405 13.032L148.875 153.53l13.22-13.186zm-76.69 113.28-28.5 28.532 68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717 28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313 17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594-15.068-18.587-28.38-38.758-39.5-60.625z', // crossed-swords: 交叉双剑
 
     // === 防具 ===
@@ -2518,7 +2517,7 @@ ${lockedSkillsJson}
           </div>
         </div>
       </div>`;
-    $('body').append(html);
+    $(`#${SCRIPT_ID}-panel`).append(html);
     const $overlay = $(`#${SCRIPT_ID}-panel > .rpg-confirm-overlay`);
     $overlay.on('click', function (e) { if (e.target === this) $(this).remove(); });
     $overlay.find('.rpg-confirm-no').on('click', () => $overlay.remove());
@@ -7625,57 +7624,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   // ===== 脆骨症器官系统核心辅助函数 =====
   
   // 寻找适合该插槽的可植入器官
-  const defaultOrgans = {
-    "眼球": { 名称: "原生人类眼球", 品质: "普通", 属性加成: { "视觉": 1 }, 描述: "人体原装视觉感光器官，提供常规视界嗷。" },
-    "心脏": { 名称: "原生人类心脏", 品质: "普通", 属性加成: { "健康度": 1 }, 描述: "人体原装血液循环泵，源源不断输送能量嗷。" },
-    "肺脏": { 名称: "原生人类肺脏", 品质: "普通", 属性加成: { "肺活量": 1, "耐力": 1 }, 描述: "人体原装气体交互器官，维持日常呼吸嗷。" },
-    "胃": { 名称: "原生人类胃", 品质: "普通", 属性加成: { "消化效率": 1 }, 描述: "人体原装初步消化器官，分解常规膳食嗷。" },
-    "肠子": { 名称: "原生人类肠道", 品质: "普通", 属性加成: { "营养获取效率": 1 }, 描述: "人体原装主要吸收器官，吸取营养元素嗷。" },
-    "阑尾": { 名称: "原生人类阑尾", 品质: "普通", 属性加成: { "幸运": 1 }, 描述: "人体原装免疫辅助器官，虽不起眼但也有些许用处嗷。" },
-    "脊柱": { 名称: "原生人类脊柱", 品质: "普通", 属性加成: { "坚韧": 0.5, "神经传递效率": 1 }, 描述: "人体原装躯干支柱与中枢神经通道，维持体态嗷。" },
-    "肋骨": { 名称: "原生人类肋骨", 品质: "普通", 属性加成: { "坚韧": 1 }, 描述: "人体原装胸腔保护骨骼，遮蔽脏器免受直接冲击嗷。" },
-    "肾脏": { 名称: "原生人类肾脏", 品质: "普通", 属性加成: { "血液过滤效率": 1 }, 描述: "人体原装多余水分与毒素排泄器官，平衡内环境嗷。" },
-    "脾脏": { 名称: "原生人类脾脏", 品质: "普通", 属性加成: { "新陈代谢效率": 1 }, 描述: "人体原装造血与免疫储血滤血器官，默默守护身体嗷。" },
-    "肝脏": { 名称: "原生人类肝脏", 品质: "普通", 属性加成: { "解毒效率": 1 }, 描述: "人体原装代谢解毒核心器官，协调多种生化反应嗷。" },
-    "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
-  };
-
-  // 任意器官都可以装配到任意位置（更接近饰品的特性），仅筛选出"器官"类型的备用件
   const findAvailableOrgansForSlot = (slotName, data) => {
     const results = [];
-    const validOrganSlots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱'];
-    
-    // 扫描器官背包
-    const 器官背包 = data?.人物?.器官系统?.器官背包 || data?.人物?.背包?.器官 || {};
-    Object.entries(器官背包).forEach(([key, eq]) => {
-      if (!eq) return;
-      // 仅要求它是器官 (部位在合法槽位列表内 或 类型/名称包含"器官")
-      const isOrgan = validOrganSlots.includes(String(eq.部位 || '').trim()) || 
-                      String(eq.名称 || '').includes('器官') || 
-                      String(eq.类型 || '').includes('器官');
-      if (isOrgan) {
-        results.push({
-          source: 'organpack',
-          key: key,
-          name: eq.名称 || key,
-          quality: eq.品质 || '普通',
-          desc: eq.描述 || '无描述',
-          level: eq.强化等级 || 0,
-          data: eq
-        });
-      }
-    });
-
-    // 扫描装备箱
     const 装备列表 = data?.人物?.装备列表 || {};
     Object.entries(装备列表).forEach(([key, eq]) => {
       if (!eq) return;
       const isUnequipped = eq.装备箱 === true;
-      const isOrgan = String(eq.名称 || '').includes('器官') || 
-                      String(eq.类型 || '').includes('器官') ||
-                      validOrganSlots.includes(String(eq.部位 || '').trim());
+      const isMatchSlot = String(eq.部位).trim() === slotName || String(eq.名称).includes(slotName);
+      const isOrgan = String(eq.名称).includes('器官') || String(eq.类型).includes('器官') || isMatchSlot;
       
-      if (isUnequipped && isOrgan) {
+      if (isUnequipped && isMatchSlot && isOrgan) {
         results.push({
           source: 'equip',
           key: key,
@@ -7688,7 +7646,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       }
     });
 
-    // 扫描道具背包
     const 道具 = data?.人物?.背包?.道具 || {};
     Object.entries(道具).forEach(([name, item]) => {
       if (!item) return;
@@ -7712,10 +7669,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     return results;
   };
 
+  // 移植器官接入
   const equipOrganToSlot = async (slotName, organItem) => {
     const data = fetchLatestMvuData();
     const patches = [];
-    const baseSlot = String(slotName || '').split('_')[0];
 
     patches.push({
       op: 'replace',
@@ -7751,42 +7708,25 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           value: currentQty - 1
         });
       }
-    } else if (organItem.source === 'organpack') {
-      const currentQty = parseInt(organItem.data.数量 || organItem.data.count, 10) || 1;
-      const packPath = data?.人物?.器官系统?.器官背包 ? `/人物/器官系统/器官背包/${organItem.key}` : `/人物/背包/器官/${organItem.key}`;
-      if (currentQty <= 1) {
-        patches.push({
-          op: 'remove',
-          path: packPath
-        });
-      } else {
-        patches.push({
-          op: 'replace',
-          path: `${packPath}/数量`,
-          value: currentQty - 1
-        });
-      }
     }
 
     const success = await applyMvuPatches(patches);
     if (success) {
-      showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 槽位嗷`);
+      showToast('success', `移植成功：已将 [${organItem.name}] 接入 [${slotName}] 槽位嗷`);
       updateOrganUI();
-      setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
   };
 
+  // 剥离器官卸下
   const unequipOrganFromSlot = async (slotName) => {
     const data = fetchLatestMvuData();
-    const baseSlot = String(slotName || '').split('_')[0];
-    const organ = data?.人物?.器官系统?.器官列表?.[slotName] || defaultOrgans[baseSlot];
-    if (!organ || organ.空) return;
+    const organ = data?.人物?.器官系统?.器官列表?.[slotName];
+    if (!organ) return;
 
     const patches = [];
     patches.push({
-      op: 'replace',
-      path: `/人物/器官系统/器官列表/${slotName}`,
-      value: { 空: true, 名称: `[${slotName}]` }
+      op: 'remove',
+      path: `/人物/器官系统/器官列表/${slotName}`
     });
 
     const 装备列表 = data?.人物?.装备列表 || {};
@@ -7811,8 +7751,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         value: {
           名称: organ.名称,
           品质: organ.品质 || '普通',
-          描述: organ.描述 || '从躯体卸下的器官',
-          部位: baseSlot,
+          描述: organ.描述 || '剥离下的器官',
+          部位: slotName,
           装备箱: true,
           属性加成: organ.属性加成 || {},
           特性: organ.特性 || [],
@@ -7823,198 +7763,69 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const success = await applyMvuPatches(patches);
     if (success) {
-      showToast('success', `剥离成功：已将 [${organ.名称}] 从 [${slotName}] 槽位剥离并放入背包嗷`);
+      showToast('success', `剥离成功：已将 [${organ.名称}] 从 [${slotName}] 槽位剥离嗷`);
       updateOrganUI();
-      setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
   };
 
-  const showOrganSelectPopup = (slotName, initialSelectedSubKey = null) => {
-    const qualityColors = { '稀有': '#9b51e0', '史诗': '#9b51e0', '传说': '#f2994a', '神话': '#f2994a', '诅诅': '#eb5757', '诅咒': '#eb5757', '普通': '#57606a' };
+  const showOrganSelectPopup = (slotName) => {
     const data = fetchLatestMvuData();
-    const parts = String(slotName || '').split('_');
-    const baseSlot = parts[0] || slotName;
-
-    const s = slotsDef.find(x => x.key === baseSlot);
-    const count = s ? (s.count || 1) : 1;
-    const organSystem = data?.人物?.器官系统 || {};
-    const 器官列表 = organSystem.器官列表 || {};
-
-    // Determine selectedSubKey
-    let selectedSubKey = initialSelectedSubKey;
-    if (!selectedSubKey) {
-      for (let i = 1; i <= count; i++) {
-        const subKey = count > 1 ? `${baseSlot}_${i}` : baseSlot;
-        const organInList = 器官列表[subKey];
-        if (!organInList || organInList.空) {
-          selectedSubKey = subKey;
-          break;
-        }
-      }
-      if (!selectedSubKey) {
-        selectedSubKey = count > 1 ? `${baseSlot}_1` : baseSlot;
-      }
-    }
-
-    // Candidates
-    const available = findAvailableOrgansForSlot(baseSlot, data);
-
-    const buildOrganStatsHtml = (organ) => {
-      let statHtml = '';
-      if (!organ) return statHtml;
-      const bonus = organ.属性加成 || organ.data?.属性加成 || {};
-      const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
-      
-      statHtml += '<div style="margin-top:8px;">';
-      statHtml += '<div style="font-size:11px; font-weight:600; color:#4a3c31; margin-bottom:4px;">[属性加成]</div>';
-      if (bonusEntries.length > 0) {
-        statHtml += '<div class="organ-display-bonus" style="display:flex; flex-wrap:wrap; gap:4px;">';
-        bonusEntries.forEach(([k, v]) => {
-          statHtml += `<span class="f-bonus-tag" style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600; font-style:normal;">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`;
-        });
-        statHtml += '</div>';
-      } else {
-        statHtml += '<div style="font-size:10px; color:#8c8c8c; font-style:italic;">无属性加成</div>';
-      }
-      statHtml += '</div>';
-
-      const traits = organ.特性 || organ.data?.特性 || [];
-      statHtml += '<div style="margin-top:8px;">';
-      statHtml += '<div style="font-size:11px; font-weight:600; color:#4a3c31; margin-bottom:4px;">[特性槽]</div>';
-      if (traits.length > 0) {
-        statHtml += '<div class="organ-display-traits" style="display:flex; flex-direction:column; gap:2px; font-size:10px; color:#57606a;">';
-        traits.forEach(t => {
-          statHtml += `<div><i class="ri-shield-flash-line" style="color:#1a7f37; margin-right:3px;"></i>${t}</div>`;
-        });
-        statHtml += '</div>';
-      } else {
-        statHtml += '<div style="font-size:10px; color:#8c8c8c; font-style:italic;">无</div>';
-      }
-      statHtml += '</div>';
-      
-      return statHtml;
-    };
-
-    // Sub-slots cards rendering
-    let cardsHtml = '<div class="sub-slots-container" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">';
-    for (let i = 1; i <= count; i++) {
-      const subKey = count > 1 ? `${baseSlot}_${i}` : baseSlot;
-      const organInList = 器官列表[subKey];
-      const isEmpty = !!organInList && organInList.空;
-      const isEquipped = !!organInList && !organInList.空;
-      const isNative = !organInList;
-      const organ = isEquipped ? organInList : (isEmpty ? null : defaultOrgans[baseSlot]);
-
-      const isSelected = (selectedSubKey === subKey);
-      const borderCol = isSelected ? '#0969da' : '#d0d7de';
-      const borderStyle = isSelected 
-        ? `border: 2px solid ${borderCol}; box-shadow: 0 0 6px rgba(9, 105, 218, 0.45); padding: 7px 8px;` 
-        : `border: 1px solid ${borderCol}; padding: 8px;`;
-
-      let displayTitle = count > 1 ? `${baseSlot} #${i}` : `${baseSlot}`;
-      let displayOrganName = isEmpty ? '空置插槽' : (isNative ? `原生${baseSlot}` : organ.名称);
-      let qColor = isNative ? '#8c8c8c' : (isEquipped ? (qualityColors[organ.品质] || '#57606a') : '#afb8c1');
-
-      // Tooltip html
-      let tooltipHtml = `<div class="sub-slot-tooltip" style="display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); width: 220px; background: rgba(36, 41, 47, 0.98); border: 1px solid rgba(255,255,255,0.15); color: #f6f8fa; border-radius: 8px; padding: 10px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35); z-index: 110; font-size: 10px; pointer-events: none; line-height: 1.4;">`;
-      tooltipHtml += `<div style="font-weight: 700; font-size: 12px; color: ${qColor}; margin-bottom: 4px;">${displayOrganName}</div>`;
-      tooltipHtml += `<div style="color: #8c959f; font-size: 9px; margin-bottom: 6px;">部位: ${baseSlot} | 品质: ${isNative ? '普通' : (organ?.品质 || '普通')}</div>`;
-      if (organ) {
-        tooltipHtml += `<div style="color: #d0d7de; font-style: italic; margin-bottom: 6px;">${organ.描述 || '无描述'}</div>`;
-        const bonus = organ.属性加成 || {};
-        const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
-        if (bonusEntries.length > 0) {
-          tooltipHtml += `<div style="font-weight: 600; color: #58a6ff; margin-top: 4px;">[属性加成]</div>`;
-          bonusEntries.forEach(([k, v]) => {
-            tooltipHtml += `<div style="margin-left: 4px;">· ${k} ${v > 0 ? '+' : ''}${v}</div>`;
-          });
-        }
-        const traits = organ.特性 || [];
-        if (traits.length > 0) {
-          tooltipHtml += `<div style="font-weight: 600; color: #3fb950; margin-top: 4px;">[特性]</div>`;
-          traits.forEach(t => {
-            tooltipHtml += `<div style="margin-left: 4px;">· ${t}</div>`;
-          });
-        }
-        if (organ.套装) {
-          tooltipHtml += `<div style="font-weight: 600; color: #d29922; margin-top: 4px;">[套装: ${organ.套装}]</div>`;
-        }
-      }
-      tooltipHtml += `</div>`;
-
-      cardsHtml += `
-        <div class="sub-slot-card ${isSelected ? 'selected' : ''}" 
-             style="flex: 1; min-width: 90px; height: 110px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: relative; background: #fff; cursor: pointer; transition: all 0.2s ease; ${borderStyle}"
-             data-sub-key="${subKey}">
-          ${tooltipHtml}
-          <div style="font-size: 10px; color: #57606a; font-weight: 600;">${displayTitle}</div>
-          <div class="card-icon" style="color: ${qColor}; font-size: 20px; margin: 4px 0;">
-            <i class="${s?.icon || 'ri-heart-fill'}"></i>
-          </div>
-          <div class="card-name" style="font-size: 10px; color: ${qColor}; font-weight: 700; text-align: center; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 6px;">${displayOrganName}</div>
-          <div class="card-action" style="display: flex; gap: 4px; width: 100%;">
-            ${isEmpty ? `
-              <button class="btn-sub-select" style="flex: 1; background: #0969da; color: white; border: none; padding: 2px 4px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 600;">选择</button>
-            ` : `
-              <button class="btn-sub-unequip" data-sub-key="${subKey}" style="flex: 1; background: #cf222e; color: white; border: none; padding: 2px 4px; border-radius: 4px; font-size: 9px; cursor: pointer; font-weight: 600;">卸下</button>
-            `}
-          </div>
-        </div>
-      `;
-    }
-    cardsHtml += '</div>';
+    const available = findAvailableOrgansForSlot(slotName, data);
+    const currentEquipped = data?.人物?.器官系统?.器官列表?.[slotName];
 
     let html = `
-      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
-        <div class="fusion-card organ-theme-card" style="width: 440px; --quality-color: #0969da;">
-          <button class="popup-close"><i class="ri-close-line"></i></button>
-          <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
-            <div class="f-meta-row" style="font-size: 10px; color: #57606a; text-transform: uppercase;">
-              <span class="f-type">// 躯体器官管理</span>
-            </div>
-            <div class="f-title-row" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-              <span class="f-name" style="font-size: 14px; font-weight: 700; color: #24292f;">${baseSlot} 部位 (${count} 槽位)</span>
-            </div>
+      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay organ-popup">
+        <div class="fusion-card organ-theme-card">
+          <div class="f-header">
+            <span class="f-title"><i class="ri-body-scan-line"></i> 器官移植中心 - ${slotName}</span>
+            <button class="f-close"><i class="ri-close-line"></i></button>
           </div>
-          <div class="f-body" style="display: flex; flex-direction: column; gap: 12px;">
-            
-            <div class="current-organ-display">
-              <div class="section-title" style="font-size: 11px; font-weight: 600; color: #57606a; margin-bottom: 6px;">槽位选择与状态 <span style="font-size: 9px; color: #8c959f; font-weight: normal;">(鼠标悬停卡片查看详情)</span></div>
-              ${cardsHtml}
-            </div>
-
-            <div class="candidate-section-title" style="font-size: 11px; font-weight: 600; color: #57606a; margin-top: 4px; border-top: 1px solid #f0f2f5; padding-top: 8px;">
-              当前选中装配目标: <b style="color: #0969da;">${selectedSubKey.includes('_') ? `${baseSlot} #${selectedSubKey.split('_')[1]}` : baseSlot}</b>
-            </div>
+          <div class="f-body">
     `;
 
-    if (available.length === 0) {
+    if (currentEquipped) {
       html += `
-        <div class="empty-candidate-hint" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; font-size: 11px; color: #8c959f; text-align: center; gap: 6px;">
-          <i class="ri-heart-add-line" style="font-size: 20px; color: #afb8c1;"></i>
-          <div>暂无匹配 [${baseSlot}] 的备用器官配件嗷</div>
+        <div class="current-organ-display">
+          <div class="section-title">当前装配器官</div>
+          <div class="organ-display-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="organ-display-name">${currentEquipped.名称}</span>
+              <button class="btn-organ-action btn-organ-unequip" data-slot="${slotName}">剥离卸下</button>
+            </div>
+            <div class="organ-display-desc">${currentEquipped.描述 || '无描述'}</div>
+          </div>
         </div>
       `;
     } else {
-      html += `<div class="organ-candidates-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 4px;">`;
+      html += `
+        <div class="current-organ-display empty">
+          <div class="section-title">当前装配器官</div>
+          <div style="font-size:12px; color:#888; text-align:center; padding:15px 0;">人类标准器官 (空插槽)</div>
+        </div>
+      `;
+    }
+
+    html += `<div class="candidate-section-title">背包中的候补器官</div>`;
+
+    if (available.length === 0) {
+      html += `
+        <div class="empty-candidate-hint">
+          <i class="ri-heart-add-line"></i>
+          <div>你的背包或装备箱里暂无匹配 [${slotName}] 的器官配件嗷</div>
+        </div>
+      `;
+    } else {
+      html += `<div class="organ-candidates-list">`;
       available.forEach((item, idx) => {
-        const qColor = qualityColors[item.quality] || '#57606a';
-        const level = item.level > 0 ? ` +${item.level}` : '';
         html += `
-          <div class="organ-candidate-card" style="border: 1px solid #d0d7de; border-left: 4px solid ${qColor} !important; background: #ffffff; border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 6px;">
-            <div class="candidate-icon" style="color: ${qColor}; width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-              ${GameIcons.icon('organ')}
+          <div class="organ-candidate-card">
+            <div class="candidate-header">
+              <span class="candidate-name">${item.name}</span>
+              <span class="candidate-quality tag-${item.quality === '稀有' || item.quality === '史诗' ? 'positive' : 'neutral'}">${item.quality}</span>
             </div>
-            <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0;">
-              <div class="candidate-header" style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
-                <span class="candidate-name" style="font-size: 12px; font-weight: 700; color: #24292f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}${level}</span>
-                <span class="candidate-quality" style="font-size: 9.5px; color: ${qColor}; font-weight: 700; background: ${qColor}10; padding: 1px 5px; border-radius: 3px;">${item.quality}</span>
-              </div>
-              <div class="candidate-desc" style="font-size: 10px; color: #57606a; line-height: 1.3; word-break: break-all;">${item.desc || '无描述'}</div>
-              ${buildOrganStatsHtml(item.data)}
-              <div class="candidate-action-row" style="display: flex; justify-content: flex-end; margin-top: 4px;">
-                <button class="btn-organ-action btn-organ-equip" data-idx="${idx}" style="background: #0969da; color: white; border: none; padding: 3px 10px; border-radius: 4px; font-size: 10.5px; cursor: pointer; font-weight: 600;">装配</button>
-              </div>
+            <div class="candidate-desc">${item.desc}</div>
+            <div class="candidate-action-row">
+              <button class="btn-organ-action btn-organ-equip" data-idx="${idx}">移植接入</button>
             </div>
           </div>
         `;
@@ -8029,217 +7840,29 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     `;
 
     $(`#${SCRIPT_ID}-popup`).remove();
-    $(`#${SCRIPT_ID}-panel`).append(html);
+    $('body').append(html);
     
     const $popup = $(`#${SCRIPT_ID}-popup`);
+    $popup.find('.f-close').on('click', () => $popup.remove());
     
-    // 绑定关闭事件
-    $popup.on('click', function (e) {
-      if (e.target === this || $(e.target).closest('.popup-close').length) {
-        $(this).remove();
-      }
-    });
-
-    // CSS Tooltip hover style dynamically added if not exist
-    if (!$('#sub-slot-tooltip-css').length) {
-      $('head').append(`
-        <style id="sub-slot-tooltip-css">
-          .sub-slot-card { position: relative; }
-          .sub-slot-card:hover .sub-slot-tooltip { display: block !important; }
-        </style>
-      `);
-    }
-
-    // Click card to select slot
-    $popup.find('.sub-slot-card').on('click', function(e) {
-      if ($(e.target).closest('.btn-sub-unequip').length) return;
-      const subKey = $(this).data('sub-key');
-      selectedSubKey = subKey;
-      
-      $popup.find('.sub-slot-card').removeClass('selected').css({
-        'border': '1px solid #d0d7de',
-        'box-shadow': 'none',
-        'padding': '8px'
-      });
-      $(this).addClass('selected').css({
-        'border': '2px solid #0969da',
-        'box-shadow': '0 0 6px rgba(9, 105, 218, 0.45)',
-        'padding': '7px 8px'
-      });
-
-      const slotIdxLabel = subKey.includes('_') ? `${baseSlot} #${subKey.split('_')[1]}` : baseSlot;
-      $popup.find('.candidate-section-title b').text(slotIdxLabel);
-    });
-
-    // Click unequip
-    $popup.find('.btn-sub-unequip').on('click', async function(e) {
-      e.stopPropagation();
-      const subKey = $(this).data('sub-key');
-      $popup.remove();
-      await unequipOrganFromSlot(subKey);
-    });
-
-    // Click equip
-    $popup.find('.btn-organ-equip').on('click', async function(e) {
-      e.stopPropagation();
+    $popup.find('.btn-organ-equip').on('click', function() {
       const idx = $(this).data('idx');
       const targetOrgan = available[idx];
       if (targetOrgan) {
         $popup.remove();
-        await equipOrganToSlot(selectedSubKey, targetOrgan);
+        equipOrganToSlot(slotName, targetOrgan);
       }
     });
-  };
 
-  // 导出给 UI 调用
-
-  const findAllBackpackOrgans = (data) => {
-    const results = [];
-    const validOrganSlots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱','脑','胆','膀胱','胰腺','生殖'];
-    
-    // 1. 扫描器官背包
-    const 器官背包 = data?.人物?.器官系统?.器官背包 || data?.人物?.背包?.器官 || {};
-    Object.entries(器官背包).forEach(([key, eq]) => {
-      if (!eq) return;
-      results.push({
-        source: 'organpack',
-        key: key,
-        name: eq.名称 || key,
-        quality: eq.品质 || '普通',
-        desc: eq.描述 || '无描述',
-        level: eq.强化等级 || 0,
-        data: eq
-      });
-    });
-    // 2. 扫描道具背包
-    const 道具 = data?.人物?.背包?.道具 || {};
-    Object.entries(道具).forEach(([name, item]) => {
-      if (!item) return;
-      const isOrgan = name.includes('器官') || (item.描述 && item.描述.includes('器官'));
-      if (isOrgan) {
-        results.push({
-          source: 'item',
-          key: name,
-          name: name,
-          quality: item.品质 || '普通',
-          desc: item.描述 || '无描述',
-          level: item.强化等级 || 0,
-          data: item
-        });
-      }
-    });
-    // 3. 扫描装备箱
-    const 装备列表 = data?.人物?.装备列表 || {};
-    Object.entries(装备列表).forEach(([key, eq]) => {
-      if (!eq) return;
-      const isUnequipped = eq.装备箱 === true;
-      const isOrgan = String(eq.名称 || '').includes('器官') || String(eq.类型 || '').includes('器官') || (eq.部位 && validOrganSlots.includes(String(eq.部位).trim()));
-      if (isUnequipped && isOrgan) {
-        results.push({
-          source: 'equip',
-          key: key,
-          name: eq.名称 || key,
-          quality: eq.品质 || '普通',
-          desc: eq.描述 || '无描述',
-          level: eq.强化等级 || 0,
-          data: eq
-        });
-      }
-    });
-    return results;
-  };
-
-  const guessSlotFromOrganName = (name) => {
-    const slots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱','脑','胆','膀胱','胰腺','生殖'];
-    for (let s of slots) {
-      if (name && name.includes(s)) return s;
-    }
-    return null;
-  };
-
-  const showOrganItemDetailPopup = (organItem) => {
-    const slotName = organItem.data?.部位 || guessSlotFromOrganName(organItem.name);
-    const data = fetchLatestMvuData();
-    const currentEquipped = data?.人物?.器官系统?.器官列表?.[slotName];
-    const slotOccupied = !!currentEquipped && !currentEquipped.空;
-
-    const buildOrganStatsHtml = (organ) => {
-      let statHtml = '';
-      if (!organ) return statHtml;
-      const bonus = organ.属性加成 || {};
-      const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
-      statHtml += '<div style="margin-top:8px;"><div style="font-size:11px; font-weight:600; color:#4a3c31; margin-bottom:4px;">[属性加成]</div>';
-      if (bonusEntries.length > 0) {
-        statHtml += '<div style="display:flex; flex-wrap:wrap; gap:4px;">';
-        bonusEntries.forEach(([k, v]) => {
-          statHtml += `<span style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600;">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`;
-        });
-        statHtml += '</div>';
-      } else {
-        statHtml += '<div style="font-size:10px; color:#8c8c8c; font-style:italic;">无属性加成</div>';
-      }
-      statHtml += '</div>';
-      return statHtml;
-    };
-
-    let html = `
-      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
-        <div class="fusion-card organ-theme-card" style="--quality-color: #0969da;">
-          <button class="popup-close"><i class="ri-close-line"></i></button>
-          <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
-            <div class="f-meta-row" style="font-size: 10px; color: #57606a;">
-              <span class="f-type">// 器官背包详情</span>
-            </div>
-            <div class="f-title-row" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-              <span class="f-name" style="font-size: 14px; font-weight: 700; color: #24292f;">${organItem.name}</span>
-              <span style="font-size: 10px; padding: 1px 6px; border-radius: 3px; background: rgba(9,105,218,0.1); color: #0969da; font-weight: 600;">${organItem.quality}</span>
-            </div>
-          </div>
-          <div class="f-body" style="display: flex; flex-direction: column; gap: 10px;">
-            <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px 12px;">
-              <div style="font-size: 10.5px; color: #57606a; line-height: 1.4;">${organItem.desc || '无描述'}</div>
-              ${buildOrganStatsHtml(organItem.data)}
-            </div>
-            ${slotName ? `
-              <button class="btn-organ-action btn-organ-equip-direct" data-slot="${slotName}" style="background: ${slotOccupied ? '#f2994a' : '#0969da'}; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">
-                <i class="${slotOccupied ? 'ri-refresh-line' : 'ri-heart-add-line'}"></i> ${slotOccupied ? '替换到' : '装配到'} [${slotName}] 部位
-              </button>
-            ` : `
-              <div style="font-size:11px; color:#cf222e; text-align:center; padding:5px; background: rgba(207,34,46,0.05); border-radius: 4px;">未识别到适配部位，请点击对应移植槽进行装配。</div>
-            `}
-          </div>
-        </div>
-      </div>
-    `;
-    const $panel2 = $(`#${SCRIPT_ID}-panel`);
-    $panel2.find(`#${SCRIPT_ID}-popup`).remove();
-    $panel2.append(html);
-    const $popup = $panel2.find(`#${SCRIPT_ID}-popup`);
-    $popup.on('click', function (e) {
-      if (e.target === this || $(e.target).closest('.popup-close').length) $(this).remove();
-    });
-    $popup.find('.btn-organ-equip-direct').on('click', function() {
-      const targetSlot = $(this).data('slot');
+    $popup.find('.btn-organ-unequip').on('click', function() {
       $popup.remove();
-      equipOrganToSlot(targetSlot, organItem);
+      unequipOrganFromSlot(slotName);
     });
   };
 
-    const slotsDef = [
-    { key: "眼球", count: 2, icon: "ri-eye-fill", x: 50.0, y: 7.0 },
-    { key: "心脏", count: 1, icon: "ri-heart-pulse-fill", x: 72.0, y: 12.9 },
-    { key: "肺脏", count: 2, icon: "ri-windy-fill", x: 88.1, y: 29.0 },
-    { key: "胃", count: 1, icon: "ri-restaurant-fill", x: 94.0, y: 51.0 },
-    { key: "肠子", count: 1, icon: "ri-loop-left-line", x: 88.1, y: 73.0 },
-    { key: "阑尾", count: 1, icon: "ri-heart-add-fill", x: 72.0, y: 89.1 },
-    { key: "肌肉", count: 2, icon: "ri-hand-sanitizer-fill", x: 50.0, y: 95.0 },
-    { key: "肝脏", count: 1, icon: "ri-contrast-drop-2-fill", x: 28.0, y: 89.1 },
-    { key: "脾脏", count: 1, icon: "ri-shield-user-fill", x: 11.9, y: 73.0 },
-    { key: "肾脏", count: 2, icon: "ri-drop-fill", x: 6.0, y: 51.0 },
-    { key: "肋骨", count: 4, icon: "ri-split-cells-vertical", x: 11.9, y: 29.0 },
-    { key: "脊柱", count: 1, icon: "ri-node-tree", x: 28.0, y: 12.9 }
-  ];
-
+  /**
+   * 渲染器官系统 UI
+   */
   const updateOrganUI = () => {
     if (!$) {
       console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
@@ -8255,8 +7878,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const $organInfo = $panel.find('#organ-status-info');
     if ($organInfo.length) {
-      const healthColor = 健康度Val > 70 ? '#2ea87a' : (健康度Val > 30 ? '#d4a017' : '#cf222e');
-      const rejectColor = 排斥等级 === 0 ? '#2ea87a' : (排斥等级 < 3 ? '#d4a017' : '#cf222e');
+      const healthColor = 健康度Val > 70 ? '#2d6a4f' : (健康度Val > 30 ? '#d4a853' : '#c0392b');
+      const rejectColor = 排斥等级 === 0 ? '#2d6a4f' : (排斥等级 < 3 ? '#d4a853' : '#c0392b');
       $organInfo.html(`
         <div class="organ-status-header-row">
           <span><i class="ri-heart-pulse-line animate-pulse"></i> 排斥健康度: <b style="color:${healthColor}">${健康度Val}%</b></span>
@@ -8276,114 +7899,48 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     }
 
     const attrsDef = [
-      { key: "健康度", name: "健康度", icon: "ri-heart-pulse-line", default: 1, desc: "生命值发生 {pct}% 变动。" },
-      { key: "视觉", name: "视觉", icon: "ri-eye-line", default: 2, desc: "动态视力与感知变动 {val}。" },
-      { key: "坚韧", name: "坚韧", icon: "ri-shield-cross-line", default: 4.5, desc: "伤害发生 {pct}% 变动。" },
-      { key: "神经传递效率", name: "神经传递", icon: "ri-flashlight-line", default: 1, desc: "先攻与反应速度发生 {pct}% 变动。" },
-      { key: "血液过滤效率", name: "血液过滤", icon: "ri-drop-line", default: 2, desc: "流血恢复与再生效率发生 {pct}% 变动。" },
-      { key: "解毒效率", name: "解毒效率", icon: "ri-flask-line", default: 1, desc: "药效与抗毒持续时间变动 {val} 秒。" },
-      { key: "新陈代谢效率", name: "新陈代谢", icon: "ri-speed-up-line", default: 1, desc: "经验值获取率变动 {pct}%。" },
-      { key: "肺活量", name: "肺活量", icon: "ri-windy-line", default: 2, desc: "屏息与窒息耐受率变动 {pct}%。" },
-      { key: "耐力", name: "耐力", icon: "ri-heart-3-line", default: 2, desc: "濒死战续极限概率变动 {pct}%。" },
-      { key: "消化效率", name: "消化效率", icon: "ri-restaurant-line", default: 1, desc: "抗毒与食物转化效率变动 {pct}%。" },
-      { key: "营养获取效率", name: "营养获取", icon: "ri-hand-heart-line", default: 4, desc: "药效吸收放大 {val} 倍。" },
-      { key: "幸运", name: "幸运", icon: "ri-copper-coin-line", default: 1, desc: "幸运一击触发几率提高 {pct}%。" },
-      { key: "速度", name: "速度", icon: "ri-run-line", default: 8, desc: "基础战术位移距离增减 {val} 米。" },
-      { key: "筋力", name: "筋力", icon: "ri-hand-sanitizer-line", default: 8, desc: "近战伤害增幅 {pct}%，额外负重上限 {weight}kg。" }
+      { key: "健康度", name: "健康度", icon: "ri-heart-pulse-line", default: 1 },
+      { key: "视觉", name: "视觉", icon: "ri-eye-line", default: 2 },
+      { key: "坚韧", name: "坚韧", icon: "ri-shield-cross-line", default: 4.5 },
+      { key: "神经传递效率", name: "神经传递", icon: "ri-flashlight-line", default: 1 },
+      { key: "血液过滤效率", name: "血液过滤", icon: "ri-drop-line", default: 2 },
+      { key: "解毒效率", name: "解毒效率", icon: "ri-flask-line", default: 1 },
+      { key: "新陈代谢效率", name: "新陈代谢", icon: "ri-speed-up-line", default: 1 },
+      { key: "肺活量", name: "肺活量", icon: "ri-windy-line", default: 2 },
+      { key: "耐力", name: "耐力", icon: "ri-heart-3-line", default: 2 },
+      { key: "消化效率", name: "消化效率", icon: "ri-restaurant-line", default: 1 },
+      { key: "营养获取效率", name: "营养获取", icon: "ri-hand-heart-line", default: 4 },
+      { key: "幸运", name: "幸运", icon: "ri-copper-coin-line", default: 1 },
+      { key: "速度", name: "速度", icon: "ri-run-line", default: 8 },
+      { key: "筋力", name: "筋力", icon: "ri-hand-sanitizer-line", default: 8 }
     ];
 
     const getAttrVal = (key, defaultVal) => {
-      // 计算无器官时的基础值 = defaultVal - 所有原生器官对该属性的加成之和
-      let nativeBonusSum = 0;
-      Object.values(defaultOrgans).forEach(org => {
-        if (org.属性加成 && org.属性加成[key] !== undefined) {
-          nativeBonusSum += Number(org.属性加成[key]);
-        }
-      });
-      let baseVal = defaultVal - nativeBonusSum;
-
-      // 累加当前实际装备/原生的器官加成
-      let activeBonusSum = 0;
-      const slotKeys = ["眼球", "心脏", "肺脏", "胃", "肠子", "阑尾", "肌肉", "肝脏", "脾脏", "肾脏", "肋骨", "脊柱"];
-      slotKeys.forEach(slotKey => {
-        const organ = 器官列表[slotKey];
-        const isEmpty = !!organ && organ.空;
-        const isNative = !organ;
-        const isEquipped = !!organ && !organ.空;
-        
-        let activeOrgan = null;
-        if (isNative) {
-          activeOrgan = defaultOrgans[slotKey];
-        } else if (isEquipped) {
-          activeOrgan = organ;
-        }
-        
-        if (activeOrgan && activeOrgan.属性加成 && activeOrgan.属性加成[key] !== undefined) {
-          activeBonusSum += Number(activeOrgan.属性加成[key]);
-        }
-      });
-      return baseVal + activeBonusSum;
+      if (organSystem[key] !== undefined) return Number(organSystem[key]);
+      if (organSystem.属性 && organSystem.属性[key] !== undefined) return Number(organSystem.属性[key]);
+      if (data?.人物?.属性 && data?.人物?.属性[key] !== undefined) return Number(data.人物.属性[key]);
+      return defaultVal;
     };
 
-    let attrsGridHtml = '<div class="organ-attrs-header-bar">';
-    attrsGridHtml += `<span><i class="ri-pulse-line"></i> 生理指数评估</span>`;
-    attrsGridHtml += '</div>';
-    
-    attrsGridHtml += `<div class="organ-attrs-grid">`;
-    
-    let cardsHtml = '';
-    attrsDef.forEach((attr, idxCard) => {
+    let attrsGridHtml = '<div class="organ-attrs-grid">';
+    attrsDef.forEach(attr => {
       const val = getAttrVal(attr.key, attr.default);
-      
-      let providers = [];
-      const slotKeys = ["眼球", "心脏", "肺脏", "胃", "肠子", "阑尾", "肌肉", "肝脏", "脾脏", "肾脏", "肋骨", "脊柱"];
-      slotKeys.forEach(slotKey => {
-        const organ = 器官列表[slotKey] || defaultOrgans[slotKey];
-        if (organ && organ.属性加成 && organ.属性加成[attr.key] !== undefined) {
-          providers.push({
-            name: organ.名称.replace("原生人类", "原生"),
-            val: organ.属性加成[attr.key]
-          });
-        }
-      });
-      let providersHtml = '';
-      if (providers.length > 0) {
-        providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-          来源: ${providers.map(p => `${p.name} (+${p.val})`).join(', ')}
-        </div>`;
-      }
-
-      const colIndex = idxCard % 7;
-      let edgeClass = '';
-      if (colIndex === 0 || colIndex === 1) {
-        edgeClass = 'edge-left';
-      } else if (colIndex === 5 || colIndex === 6) {
-        edgeClass = 'edge-right';
-      }
-
       let valClass = '';
       let effectText = '';
       let effectClass = '';
-      let detailedReport = '';
-
+      
       if (attr.key === '健康度') {
         if (val < attr.default) {
           valClass = 'attr-down';
           const pct = Math.round((attr.default - val) * 100);
           effectText = val <= 0 ? '死亡' : `生命-${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 20);
           effectText = `生命+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "健康指数处于标准状态。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '坚韧') {
         if (val < attr.default) {
@@ -8391,18 +7948,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) * 20);
           effectText = `易伤+${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 20);
           effectText = `防御+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "身体物理坚韧度处于普通标准。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '神经传递效率') {
         if (val < attr.default) {
@@ -8410,18 +7961,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) * 100);
           effectText = val <= 0 ? '瘫痪' : `迟钝+${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `敏捷/先攻+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "反射反应神经传导速度正常。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '血液过滤效率') {
         if (val < attr.default) {
@@ -8429,420 +7974,199 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) / 2 * 100);
           effectText = `流血/治疗降${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const filterPct = Math.round((val - attr.default) * 10);
           effectText = `体质+${filterPct}%/再生`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${filterPct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "红血球过滤携氧循环水平正常。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '解毒效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const diff = (attr.default - val).toFixed(1);
-          effectText = val <= 0 ? '中毒' : `Buff时间-${diff}s`;
+          effectText = val <= 0 ? '中毒' : `Buff时间-${(attr.default - val).toFixed(1)}s`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{val}', `-${diff}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 5);
           effectText = `Buff时间+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{val}', `+${pct}%`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "肝肾毒素排解效率正常。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '视觉') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          let diffText = val <= 0 ? "致盲" : (val < 1 ? "半盲" : `感知-${(attr.default - val).toFixed(1)}`);
-          effectText = diffText;
+          if (val <= 0) effectText = '致盲';
+          else if (val < 1) effectText = '半盲';
+          else effectText = `感知-${(attr.default - val).toFixed(1)}`;
           effectClass = 'effect-debuff';
-          detailedReport = `受损：${diffText}。`;
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const bonus = (val - attr.default).toFixed(1);
-          effectText = `感知+${bonus}`;
+          effectText = `动态视力+${(val - attr.default).toFixed(1)}`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{val}', `+${bonus}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "视力与环境感知度处于常规水平。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '新陈代谢效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
           const pct = Math.round((attr.default - val) * 100);
-          effectText = val <= 0 ? '无经验' : `经验-${pct}%`;
+          effectText = val <= 0 ? '无经验/生手' : `经验-${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `经验+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "细胞吸收新陈代谢速率稳定。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '肺活量') {
         if (val < attr.default) {
           valClass = 'attr-down';
           const pct = Math.round((attr.default - val) / 2 * 100);
-          effectText = val <= 0 ? '窒息' : `窒息率+${pct}%`;
+          effectText = val <= 0 ? '无法呼吸' : `窒息率+${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 20);
           effectText = `屏息+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "常规肺泡气体交互容积稳定。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '耐力') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = '疲劳';
+          effectText = '体弱debuff';
           effectClass = 'effect-debuff';
-          detailedReport = "体力衰退，处于易劳累状态。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `战续+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "细胞抗劳累持续耐受性稳定。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '消化效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = '消化不良';
+          effectText = val <= 0 ? '持续中毒' : '增益降低/中毒';
           effectClass = 'effect-debuff';
-          detailedReport = "胃肠动力受损，食物吸收率下降。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `抗毒+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "消化与食物附带增益获取顺畅。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '营养获取效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
           const pct = Math.round((1 - val / attr.default) * 100);
-          effectText = `药效-${pct}%`;
+          effectText = val <= 0 ? '恢复药反噬' : `药效-${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = attr.desc.replace('{val}', `x${(val / attr.default).toFixed(1)}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const multiplier = (val / attr.default).toFixed(1);
-          effectText = `药效x${multiplier}`;
+          effectText = `回复量x${(val / attr.default).toFixed(1)}`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{val}', `${multiplier}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "对药水与生命恢复养分汲取度处于常规水平。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '幸运') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = '劣势';
+          const pct = Math.round((attr.default - val) * 10);
+          effectText = val <= 0 ? '永久劣势' : `厄运率+${pct}%`;
           effectClass = 'effect-debuff';
-          detailedReport = "气运低谷，面临倒霉几率增加。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 5);
           effectText = `幸运一击+${pct}%`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "命中与爆率判定维持标准几率。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '速度') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          let diffText = val < 1 ? '偏瘫' : '减速';
-          effectText = diffText;
+          effectText = val < 1 ? '无法移动' : (val < 4 ? '行动受限' : '移速/先攻降');
           effectClass = 'effect-debuff';
-          detailedReport = `移速降低。当前位移：${val}m。`;
         } else if (val > attr.default) {
           valClass = 'attr-up';
           effectText = `移动${val}m/先攻+${(val / 2).toFixed(1)}`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{val}', `+${val - attr.default}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "位移动力及先攻率处于常规水准。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
       else if (attr.key === '筋力') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = '虚弱';
+          effectText = val < 1 ? '完全瘫痪' : (val < 4 ? '禁用重装' : '近战/负重降');
           effectClass = 'effect-debuff';
-          detailedReport = "近战负荷与抗击退判定大幅受损。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const bonusDmg = Math.round((val - attr.default) * 5);
-          const weightCap = val * 10;
-          effectText = `伤害+${bonusDmg}%/负重${weightCap}kg`;
+          const pct = Math.round((val - attr.default) * 5);
+          effectText = `伤害+${pct}%/负重${val * 10}k`;
           effectClass = 'effect-buff';
-          detailedReport = attr.desc.replace('{pct}', `+${bonusDmg}`).replace('{weight}', `${weightCap}`);
-        } else {
-          effectText = '正常';
-          effectClass = 'effect-normal';
-          detailedReport = "身体肌肉与骨骼承重力处于健康状态。";
-        }
+        } else { effectText = '人类标准'; effectClass = 'effect-normal'; }
       }
 
-
-
-      cardsHtml += `
-        <div class="organ-attr-compact-card ${edgeClass}" data-attr-key="${attr.key}">
-          <div class="compact-header-vertical">
-            <i class="${attr.icon}"></i>
+      attrsGridHtml += `
+        <div class="organ-attr-card">
+          <div class="organ-attr-card-header">
+            <span><i class="${attr.icon}"></i> ${attr.name}</span>
             <span class="organ-attr-value ${valClass}">${val}</span>
           </div>
-          <div class="compact-detail">
-            <div class="compact-attr-name">${attr.name}</div>
-            <div class="compact-brief ${effectClass}">${effectText}</div>
-            <div class="compact-desc">${detailedReport}</div>
-            ${providersHtml}
-          </div>
+          <div class="organ-attr-effect ${effectClass}">${effectText}</div>
         </div>
       `;
     });
-
-    if (cardsHtml === '') {
-      cardsHtml = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 12px; color: #57606a; font-size: 11px; background: #f6f8fa; border: 1px dashed #d0d7de; border-radius: 6px;">
-          <i class="ri-shield-check-line" style="color:#2ea87a; margin-right:4px;"></i> 所有生理机能处于标准状态 (点击显示全部以查看数值)
-        </div>
-      `;
-    }
-
-    attrsGridHtml += cardsHtml;
     attrsGridHtml += '</div>';
 
-    $panel.find('.organ-attrs-header-bar').remove();
-    $panel.find('.organ-attrs-grid').remove();
-    $organSet.after(attrsGridHtml);
+    const $gridContainer = $panel.find('.organ-attrs-grid');
+    if ($gridContainer.length) {
+      $gridContainer.replaceWith(attrsGridHtml);
+    } else {
+      $organSet.after(attrsGridHtml);
+    }
 
-
-
-    // ===== 身体移植舱（装备栏人体拓扑图） =====
-    // 槽位定义：支持复数器官（数量 count）
-
-
-    // 获取所有槽位展开后的实例 key 列表，例如 ['眼球_1', '眼球_2', '肋骨_1', ...]
-    const getExpandedSlotKeys = () => {
-      const keys = [];
-      slotsDef.forEach(s => {
-        const count = s.count || 1;
-        if (count > 1) {
-          for (let i = 1; i <= count; i++) {
-            keys.push(`${s.key}_${i}`);
-          }
-        } else {
-          keys.push(s.key);
-        }
-      });
-      return keys;
-    };
-
-    const svgLines = `
-      <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
-        <!-- 外接圆 -->
-        <circle cx="50" cy="51" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
-        <!-- 外接正方形 -->
-        <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
-        <!-- 对角线和水平垂直辅助线，增加达芬奇手稿风格 -->
-        <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
-        <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
-        
-        <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
-        
-        <!-- 姿态1：直立十字人体 -->
-        <!-- 头部 -->
-        <circle cx="50" cy="17" r="3.2" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
-        <!-- 脖子 -->
-        <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(90, 70, 50, 0.25)" />
-        <!-- 身体躯干 -->
-        <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
-        <!-- 直立水平双臂 -->
-        <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 左臂 -->
-        <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 右臂 -->
-        <!-- 直立垂直双腿 -->
-        <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 左腿 -->
-        <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" /> <!-- 右腿 -->
-
-        <!-- 姿态2：大字形展开人体 -->
-        <!-- 展开斜向上双臂 -->
-        <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" /> <!-- 左斜臂 -->
-        <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" /> <!-- 右斜臂 -->
-        <!-- 展开斜向下双腿 -->
-        <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" /> <!-- 左斜腿 -->
-        <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" /> <!-- 右斜腿 -->
-      </svg>
-    `;
+    const slotsDef = [
+      { key: "心脏", name: "心脏", icon: "ri-heart-pulse-fill" },
+      { key: "眼球", name: "眼球", icon: "ri-eye-fill" },
+      { key: "脊柱", name: "脊柱", icon: "ri-node-tree" },
+      { key: "肋骨", name: "肋骨", icon: "ri-split-cells-vertical" },
+      { key: "肾脏", name: "肾脏", icon: "ri-drop-fill" },
+      { key: "肝脏", name: "肝脏", icon: "ri-contrast-drop-2-fill" },
+      { key: "脾脏", name: "脾脏", icon: "ri-shield-user-fill" },
+      { key: "肺脏", name: "肺脏", icon: "ri-windy-fill" },
+      { key: "肌肉", name: "肌肉", icon: "ri-hand-sanitizer-fill" },
+      { key: "肠子", name: "肠子", icon: "ri-loop-left-line" },
+      { key: "胃", name: "胃", icon: "ri-restaurant-fill" },
+      { key: "阑尾", name: "阑尾", icon: "ri-heart-add-fill" }
+    ];
 
     let slotsHtml = `
-      <div class="organ-slots-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: 4px; margin-bottom: 8px;">
-        <span><i class="ri-heart-pulse-fill"></i> 躯体</span>
-        <div class="organ-bg-controls" style="display: flex; gap: 8px; font-size: 10.5px;">
-          <label for="organ-bg-upload" style="cursor: pointer; color: #0969da; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-upload-2-line"></i> 换底图</label>
-          <input type="file" id="organ-bg-upload" accept="image/*" style="display: none;" />
-          <span id="organ-bg-reset" style="cursor: pointer; color: #cf222e; font-weight: 600; display: ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'inline-flex' : 'none'}; align-items: center; gap: 2px;"><i class="ri-refresh-line"></i> 重置</span>
-        </div>
-      </div>
-      <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;` : ''}">
-        <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
-          <!-- 外接圆 -->
-          <circle cx="50" cy="51" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
-          <!-- 外接正方形 -->
-          <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
-          <!-- 对角线和水平垂直辅助线 -->
-          <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
-          <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
-          
-          <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
-          <!-- 姿态1：直立十字人体 -->
-          <circle cx="50" cy="17" r="3.2" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
-          <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(90, 70, 50, 0.25)" />
-          <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
-          <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-          <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-          <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-          <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-
-          <!-- 姿态2：大字形展开人体 -->
-          <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
-          <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
-          <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
-          <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
-        </svg>
+      <div class="organ-slots-header"><i class="ri-shield-user-line"></i> 身体移植舱 (点击器官格以移植替换)</div>
+      <div class="organ-slots-grid">
     `;
 
-    const getOrganLevelColor = (lvl) => {
-      if (!lvl || lvl <= 0) return '#4a3c31'; // 古典铁锈褐
-      if (lvl <= 3) return '#1a7f37'; // 精良绿
-      if (lvl <= 6) return '#0969da'; // 稀有蓝
-      if (lvl <= 9) return '#8250df'; // 史诗紫
-      return '#cf222e'; // 传说红
-    };
-
-    // 只渲染12个品类的大圆圈插槽（与上个版本完全一致的主界面显示种类）
     slotsDef.forEach(s => {
-      const count = s.count || 1;
-      let activeCount = 0;
-      let firstOrgan = null;
-      let allNative = true;
-      let allEmpty = true;
-
-      for (let i = 1; i <= count; i++) {
-        const subKey = count > 1 ? `${s.key}_${i}` : s.key;
-        const organInList = 器官列表[subKey];
-        const isEmpty = !!organInList && organInList.空;
-        const isEquipped = !!organInList && !organInList.空;
-        const isNative = !organInList;
-
-        if (!isEmpty) {
-          activeCount++;
-          if (isEquipped && !firstOrgan) {
-            firstOrgan = organInList;
-          }
-          if (!isNative) {
-            allNative = false;
-          }
-          allEmpty = false;
-        }
-      }
-
-      let displayName = '';
+      const organ = 器官列表[s.key];
+      const isEquipped = !!organ;
+      const organName = isEquipped ? organ.名称 : "人类标准";
+      const organQuality = isEquipped ? (organ.品质 || "普通") : "初始";
+      const organLevel = (isEquipped && organ.强化等级 > 0) ? ` +${organ.强化等级}` : "";
+      
       let qClass = 'quality-default';
-      let borderStyle = '';
-      let lvlColor = '#57606a';
-      let slotClass = 'empty-organ';
-      let nameColor = '#57606a';
-
-      if (allEmpty) {
-        displayName = `[${s.key}]`;
-        qClass = 'is-empty';
-        slotClass = 'is-empty';
-        nameColor = '#afb8c1';
-      } else {
-        let baseName = '';
-        let level = 0;
-        if (firstOrgan) {
-          baseName = firstOrgan.名称 || s.key;
-          level = firstOrgan.强化等级 || 0;
-          allNative = false;
-        } else {
-          baseName = `人类${s.key}`;
-        }
-
-        const organLevel = level > 0 ? ` +${level}` : "";
-        const suffix = (count > 1) ? ` (${activeCount}/${count})` : "";
-        displayName = `${baseName}${organLevel}${suffix}`;
-
-        lvlColor = getOrganLevelColor(level);
-        nameColor = allNative ? '#8c8c8c' : lvlColor;
-
-        if (!allNative) {
-          slotClass = 'has-organ';
-          const quality = firstOrgan?.品质 || '普通';
-          if (quality === '稀有' || quality === '史诗') qClass = 'quality-rare';
-          else if (quality === '传说' || quality === '神话') qClass = 'quality-legendary';
-          else if (quality === '诅诅' || quality === '诅咒') qClass = 'quality-cursed';
-          if (level > 0) {
-            borderStyle = `border-color: ${lvlColor} !important; box-shadow: 0 0 5px ${lvlColor}aa;`;
-          }
-        }
+      if (isEquipped) {
+        if (organ.品质 === '稀有' || organ.品质 === '史诗') qClass = 'quality-rare';
+        else if (organ.品质 === '传说' || organ.品质 === '神话') qClass = 'quality-legendary';
+        else if (organ.品质 === '诅诅' || organ.品质 === '诅咒') qClass = 'quality-cursed';
       }
 
       slotsHtml += `
-        <div class="organ-gear-slot ${slotClass} ${qClass}" 
-             style="top: ${s.y}%; left: ${s.x}%; cursor: pointer;" 
-             data-slot-key="${s.key}">
-          <div class="organ-gear-circle" style="${borderStyle}">
+        <div class="organ-slot-slot-card ${isEquipped ? 'has-organ' : 'empty-organ'} ${qClass}" data-slot-key="${s.key}">
+          <div class="organ-slot-slot-icon">
             <i class="${s.icon}"></i>
           </div>
-          <div class="organ-gear-label-box">
-            <span class="organ-gear-val-name" style="color: ${nameColor};">${displayName}</span>
+          <div class="organ-slot-slot-info">
+            <div class="slot-title">${s.key}</div>
+            <div class="slot-organ-name">${organName}${organLevel}</div>
+            <div class="slot-organ-quality">${organQuality}</div>
           </div>
         </div>
       `;
@@ -8852,97 +8176,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const $list = $panel.find('#organ-page-list');
     if ($list.length) {
       $list.html(slotsHtml);
-      
-      // 渲染器官背包
-      const allBackpackOrgans = findAllBackpackOrgans(data);
-      const $backpackGrid = $panel.find('#organ-backpack-grid');
-      const $backpackCount = $panel.find('.organ-backpack-count');
-      if ($backpackGrid.length) {
-        $backpackCount.text(`${allBackpackOrgans.length} 件`);
-        if (allBackpackOrgans.length === 0) {
-          $backpackGrid.html(`
-            <div class="organ-backpack-empty" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; color: #afb8c1; font-size: 11px; text-align: center; gap: 4px;">
-              <i class="ri-briefcase-3-line" style="font-size: 22px; color: #d0d7de;"></i>
-              <span>背包中暂无可用器官配件嗷</span>
-            </div>
-          `);
-        } else {
-          const qualityColors = { '稀有': '#9b51e0', '史诗': '#9b51e0', '传说': '#f2994a', '神话': '#f2994a', '诅诅': '#eb5757', '诅咒': '#eb5757', '普通': '#57606a' };
-          let backpackHtml = '';
-          allBackpackOrgans.forEach((item, idx) => {
-            const color = qualityColors[item.quality] || '#57606a';
-            const slotGuess = item.data?.部位 || guessSlotFromOrganName(item.name) || '通用';
-            const level = item.level > 0 ? ` +${item.level}` : '';
-            backpackHtml += `
-              <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
-                   style="border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
-                <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
-                  ${GameIcons.icon('organ')}
-                </span>
-                <span class="inv-item-name" style="color: ${color}; font-size: 9px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;">${item.name}${level}</span>
-                <span style="font-size: 8px; color: #8c8c8c; background: rgba(255,255,255,0.7); padding: 0 4px; border-radius: 3px;">[${slotGuess}]</span>
-              </div>
-            `;
-          });
-          $backpackGrid.html(backpackHtml);
-          
-          // 绑定点击
-          $backpackGrid.find('.organ-backpack-item').off('click').on('click', function() {
-            const idx = $(this).data('bp-idx');
-            const item = allBackpackOrgans[idx];
-            if (item) showOrganItemDetailPopup(item);
-          });
-        }
-      }
-      
-      // 绑定部位插槽点击
-      $list.find('.organ-gear-slot').off('click').on('click', function() {
-        try {
-          const slotKey = $(this).data('slot-key');
-          console.log("[RPG] Organ slot clicked:", slotKey);
-          showOrganSelectPopup(slotKey);
-        } catch (e) {
-          console.error("[RPG] Error showing organ popup:", e);
-          alert("打开器官面板失败嗷：" + e.message + "\n" + e.stack);
-        }
-      });
-
-      // 动态文件上传背景监听
-      $list.find('#organ-bg-upload').off('change').on('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          if (file.size > 2 * 1024 * 1024) {
-            alert("上传的背景图请小于 2MB 嗷！");
-            return;
-          }
-          const reader = new FileReader();
-          reader.onload = function(evt) {
-            const base64 = evt.target.result;
-            try {
-              localStorage.setItem(`${SCRIPT_ID}-organ-bg`, base64);
-              $list.find('.visual-organ-container').css('background-image', `url(${base64})`);
-              $list.find('.vitruvian-background-svg').css('opacity', '0');
-              $list.find('#organ-bg-reset').css('display', 'inline-flex');
-            } catch(err) {
-              alert("背景保存失败，可能是图片数据太大超出浏览器限制了嗷！");
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // 动态重置背景监听
-      $list.find('#organ-bg-reset').off('click').on('click', function(e) {
-        e.preventDefault();
-        localStorage.removeItem(`${SCRIPT_ID}-organ-bg`);
-        $list.find('.visual-organ-container').css('background-image', 'none');
-        $list.find('.vitruvian-background-svg').css('opacity', '1');
-        $(this).css('display', 'none');
-        $list.find('#organ-bg-upload').val('');
+      $list.find('.organ-slot-slot-card').off('click').on('click', function() {
+        const slotKey = $(this).data('slot-key');
+        showOrganSelectPopup(slotKey);
       });
     }
   };
 
+
+  /**
+   * 刷新状态栏数据
+   */
   const refreshStatusBar = () => {
     console.log("[小苑调试] refreshStatusBar 正在执行...");
     const data = fetchLatestMvuData();
@@ -8969,24 +8213,20 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     $("head").append(`<style id="${SCRIPT_ID}-styles">
 
-
-
-/* ========== 生物/器官系统古典做旧羊皮纸风格主题 ========== */
+/* ========== 生物/器官系统血肉风格主题 ========== */
 #view-organ {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxODAnIGhlaWdodD0nMTgwJz4KICA8ZmlsdGVyIGlkPSdwYXBlcl9ub2lzZSc+CiAgICA8ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nMC4yNScgbnVtT2N0YXZlcz0nMycgcmVzdWx0PSdub2lzZScvPgogICAgPGZlQ29sb3JNYXRyaXggdHlwZT0nbWF0cml4JyB2YWx1ZXM9JzEgMCAwIDAgMCAgMCAxIDAgMCAwICAwIDAgMSAwIDAgIDAgMCAwIDAuMTIgMCcvPgogIDwvZmlsdGVyPgogIDxyZWN0IHdpZHRoPScxODAnIGhlaWdodD0nMTgwJyBmaWx0ZXI9J3VybCgjcGFwZXJfbm9pc2UpJyBmaWxsPSdub25lJy8+Cjwvc3ZnPg=="), radial-gradient(circle, #fbf8ef 0%, #ede1be 100%) !important;
-    background-repeat: repeat, no-repeat !important;
-    border: 1px solid #dcd1b4 !important;
+    background: radial-gradient(circle, #250a0a 0%, #110303 100%) !important;
+    border: 1px solid #5c1818 !important;
     border-radius: 8px;
-    padding: 12px;
-    color: #4a3c31 !important;
-    box-shadow: 0 2px 8px rgba(90, 70, 50, 0.08);
+    padding: 10px;
+    color: #ffcccc !important;
+    box-shadow: inset 0 0 15px rgba(192, 57, 43, 0.2);
 }
 
 #view-organ .traits-page-title {
-    color: #4a3c31 !important;
+    color: #ff4d4d !important;
+    text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
     font-weight: 700;
-    border-bottom: 1px solid #dcd1b4;
-    padding-bottom: 6px;
 }
 
 .organ-status-header-row {
@@ -8994,434 +8234,377 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     justify-content: space-between;
     margin-bottom: 12px;
     font-size: 13px;
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
+    background: rgba(192, 57, 43, 0.1);
+    border: 1px solid #4a1212;
     padding: 8px 12px;
     border-radius: 6px;
-    color: #24292f;
+    color: #ffb3b3;
 }
 
 .organ-set-active-row {
     margin-bottom: 12px;
     font-size: 12px;
     padding: 6px 12px;
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
+    background: rgba(142, 68, 173, 0.15);
+    border: 1px solid #6c3483;
     border-radius: 6px;
-    color: #24292f;
+    color: #e8dbfc;
 }
 
 .organ-set-active-row.empty {
-    color: #57606a;
-    background: #f6f8fa;
+    color: #888;
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.05);
 }
 
 .organ-set-chip {
-    background: #0969da;
+    background: #8e44ad;
     color: white;
     padding: 1px 6px;
     border-radius: 4px;
     margin-left: 6px;
     font-size: 10px;
     font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-.organ-attrs-header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 15px 0 8px 0;
-    font-size: 12px;
-    font-weight: bold;
-    color: #24292f;
-    border-bottom: 1px solid #d0d7de;
-    padding-bottom: 4px;
-}
-
-/* 7列排列，方便容纳极小图标竖卡片 */
 .organ-attrs-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
     margin-bottom: 15px;
 }
 
-/* 一键全部展开时改回 2 列布局，方便文字完整显示 */
-.organ-attrs-grid.layout-all-expanded {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-/* 默认只显示图标和数值的极小竖直卡片 */
-.organ-attr-compact-card {
-    background: #ffffff;
-    border: 1px solid #d0d7de;
+.organ-attr-card {
+    background: rgba(30, 8, 8, 0.6);
+    border: 1px solid #3d1010;
     border-radius: 6px;
-    padding: 4px 2px;
-    min-height: 46px;
+    padding: 6px 8px;
+    min-height: 48px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    position: relative; /* 用于 tooltip 绝对定位的参考锚点 */
+    justify-content: space-between;
+    transition: all 0.2s ease;
 }
 
-.organ-attr-compact-card:hover {
-    border-color: #0969da;
-    box-shadow: 0 0 0 1px #0969da;
+.organ-attr-card:hover {
+    border-color: #7d1c1c;
+    background: rgba(45, 12, 12, 0.7);
+    box-shadow: 0 0 8px rgba(192, 57, 43, 0.3);
 }
 
-.compact-header-vertical {
+.organ-attr-card-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    gap: 3px;
-    width: 100%;
-}
-
-.compact-header-vertical i {
-    font-size: 15px;
-    color: #57606a;
+    font-size: 11px;
+    color: #ffcccc;
 }
 
 .organ-attr-value {
     font-family: var(--font-tech);
     font-weight: 700;
-    font-size: 11px;
-    color: #24292f;
-    line-height: 1.1;
-    text-align: center;
-    white-space: nowrap;
+    font-size: 12px;
+    color: #ffb3b3;
 }
 
 .organ-attr-value.attr-up {
-    color: #1a7f37 !important;
+    color: #2ecc71 !important;
+    text-shadow: 0 0 5px rgba(46, 204, 113, 0.4);
 }
 
 .organ-attr-value.attr-down {
-    color: #cf222e !important;
+    color: #e74c3c !important;
+    text-shadow: 0 0 5px rgba(231, 76, 60, 0.4);
 }
 
-/* 悬浮展示详细效果 */
-.compact-detail {
-    position: absolute;
-    bottom: 115%;
-    left: 50%;
-    transform: translate(-50%, -6px);
-    width: 140px;
-    background: #fbf8ef !important;
-    border: 1px solid #dcd1b4 !important;
-    border-radius: 6px;
-    padding: 6px 8px !important;
-    box-shadow: 0 4px 12px rgba(90, 70, 50, 0.18) !important;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    text-align: left;
-    white-space: normal;
-    display: block !important;
+.organ-attr-effect {
+    font-size: 9px;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
 }
 
-.organ-attr-compact-card:hover .compact-detail {
-    opacity: 1;
-    transform: translate(-50%, 0);
-}
-.organ-attr-compact-card.edge-left .compact-detail {
-    left: 0 !important;
-    transform: translate(0, -6px) !important;
-}
-.organ-attr-compact-card:hover.edge-left .compact-detail {
-    transform: translate(0, 0) !important;
-}
-.organ-attr-compact-card.edge-right .compact-detail {
-    left: auto !important;
-    right: 0 !important;
-    transform: translate(0, -6px) !important;
-}
-.organ-attr-compact-card:hover.edge-right .compact-detail {
-    transform: translate(0, 0) !important;
-}
-
-
-.compact-attr-name {
-    font-size: 12px;
-    font-weight: 700;
-    color: #24292f;
-    margin-bottom: 3px;
-    border-bottom: 1px dashed rgba(90, 70, 50, 0.15);
-    padding-bottom: 2px;
-}
-
-.compact-brief {
-    font-size: 10px;
+.organ-attr-effect.effect-buff {
+    color: #2ecc71 !important;
     font-weight: 600;
-    margin-bottom: 2px;
 }
 
-.compact-brief.effect-buff {
-    color: #1a7f37 !important;
+.organ-attr-effect.effect-debuff {
+    color: #e74c3c !important;
+    font-weight: 600;
 }
 
-.compact-brief.effect-debuff {
-    color: #cf222e !important;
-}
-
-.compact-brief.effect-normal {
-    color: #57606a !important;
-}
-
-.compact-desc {
-    font-size: 10px;
-    color: #665b49;
-    line-height: 1.25;
-    word-break: break-all;
-}
-
-/* 单张卡片在7列布局下展开时，跨 3 列展示文字 */
-.organ-attr-compact-card.expanded {
-    grid-column: span 3;
-    align-items: flex-start;
-    padding: 8px 10px;
-}
-
-/* 在一键全部展开模式下（网格已是2列），卡片跨 1 列即可 */
-.organ-attrs-grid.layout-all-expanded .organ-attr-compact-card.expanded {
-    grid-column: span 1;
-    align-items: flex-start;
-    padding: 8px 10px;
-}
-
-.organ-attr-compact-card.expanded .compact-header-vertical {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f0f2f5;
-    padding-bottom: 4px;
-}
-
-.organ-attr-compact-card.expanded .compact-header-vertical i {
-    font-size: 13px;
+.organ-attr-effect.effect-normal {
+    color: #7f8c8d !important;
 }
 
 .organ-slots-header {
     font-size: 13px;
     margin: 15px 0 10px 0;
     font-weight: 700;
-    color: #24292f;
-    border-bottom: 1px solid #d0d7de;
+    color: #ff4d4d;
+    border-bottom: 1px solid #4a1212;
     padding-bottom: 4px;
 }
 
-/* 身体移植舱（装备式分布容器） */
-.visual-organ-container {
-    position: relative;
-    width: 100%;
-    max-width: 380px;
-    aspect-ratio: 1 / 1;
-    margin: 0 auto 15px;
-    background-color: #e5d7b5;
-    
-    background-size: 100% 100%;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-repeat: no-repeat;
+.organ-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.organ-slot-slot-card {
+    display: flex;
+    align-items: center;
+    background: rgba(30, 8, 8, 0.8);
+    border: 1px solid #3d1010;
     border-radius: 8px;
-    border: 1px solid #d0d7de;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
     overflow: hidden;
 }
 
-.organ-lines-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
+.organ-slot-slot-card:hover {
+    transform: translateY(-2px);
+    border-color: #c0392b;
+    box-shadow: 0 0 10px rgba(192, 57, 43, 0.4);
 }
 
-.organ-lines-svg path {
-    fill: none;
-    stroke: rgba(9, 105, 218, 0.25);
-    stroke-width: 0.8px;
-    stroke-dasharray: 2 2;
-}
-
-.organ-gear-slot {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column; /* 垂直分布：标签在图标上方 */
-    align-items: center;
-    cursor: pointer;
-    z-index: 5;
-    transition: transform 0.15s ease;
-}
-
-.organ-gear-slot:hover {
-    transform: translate(-50%, -50%) scale(1.08);
-}
-
-.organ-gear-slot:active {
-    transform: translate(-50%, -50%) scale(0.95);
-}
-
-.organ-gear-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(253, 251, 245, 0.4) !important;
-    backdrop-filter: blur(6px) saturate(110%) !important;
-    -webkit-backdrop-filter: blur(6px) saturate(110%) !important;
-    border: 1.5px solid rgba(220, 209, 180, 0.5) !important;
+.organ-slot-slot-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(192, 57, 43, 0.1);
+    border: 1px solid #4a1212;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 3px 8px rgba(90, 70, 50, 0.08) !important;
-    z-index: 2;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-.organ-gear-slot.is-empty .organ-gear-circle {
-    background: rgba(90, 70, 50, 0.04) !important;
-    border: 1.5px dashed rgba(90, 70, 50, 0.25) !important;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.12), inset -2px -2px 4px rgba(255, 255, 255, 0.5) !important;
-    backdrop-filter: blur(1px) !important;
-}
-.organ-gear-slot.is-empty .organ-gear-circle i {
-    color: rgba(90, 70, 50, 0.2) !important;
-    text-shadow: none !important;
-}
-.organ-backpack-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 6px rgba(90, 70, 50, 0.15);
-    border-color: rgba(90, 70, 50, 0.4) !important;
-}
-.organ-gear-slot.is-empty {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-}
-.organ-gear-slot.is-empty:hover {
-    transform: scale(0.65) !important;
-    box-shadow: 0 0 10px rgba(90, 70, 50, 0.15);
-}
-.organ-gear-slot.organ-multi-slot {
-    z-index: 3;
-}
-.organ-gear-slot.organ-multi-slot .organ-gear-circle {
-    width: 32px !important;
-    height: 32px !important;
-    transform: scale(0.7);
-}
-.organ-gear-slot.organ-multi-slot.is-empty .organ-gear-circle {
-    transform: scale(0.75);
-}
-.organ-gear-slot.organ-multi-slot {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    z-index: 3;
+    margin-right: 8px;
+    flex-shrink: 0;
 }
 
-
-.organ-gear-slot:hover .organ-gear-circle {
-    transform: scale(1.08);
-}
-
-.organ-gear-circle i {
+.organ-slot-slot-icon i {
     font-size: 16px;
-    color: #57606a;
+    color: #e74c3c;
 }
 
-/* 根据品质和装备状态亮起插槽圈 */
-.organ-gear-slot.has-organ .organ-gear-circle {
-    border-color: rgba(9, 105, 218, 0.6) !important;
-    box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 0 8px rgba(9, 105, 218, 0.3) !important;
-}
-.organ-gear-slot.has-organ .organ-gear-circle i {
-    color: #0969da;
+.organ-slot-slot-info {
+    flex: 1;
+    min-width: 0;
 }
 
-.organ-gear-slot.quality-rare .organ-gear-circle {
-    border-color: #9b51e0;
-}
-.organ-gear-slot.quality-rare .organ-gear-circle i {
-    color: #9b51e0;
-}
-
-.organ-gear-slot.quality-legendary .organ-gear-circle {
-    border-color: #f2994a;
-}
-.organ-gear-slot.quality-legendary .organ-gear-circle i {
-    color: #f2994a;
+.organ-slot-slot-info .slot-title {
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
 }
 
-.organ-gear-slot.quality-cursed .organ-gear-circle {
-    border-color: #eb5757;
-}
-.organ-gear-slot.quality-cursed .organ-gear-circle i {
-    color: #eb5757;
-}
-
-/* 文字标签统一浮在圆圈图标正上方 */
-.organ-gear-label-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: #fbf8ef;
-    border: 1px solid #dcd1b4;
-    border-radius: 10px;
-    padding: 2px 8px;
-    font-size: 9.5px;
-    display: flex;
+.organ-slot-slot-info .slot-organ-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffcccc;
     white-space: nowrap;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(90, 70, 50, 0.15);
-    pointer-events: none;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.organ-gear-slot:hover .organ-gear-label-box {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.organ-gear-val-name {
-    color: #24292f;
-    font-weight: 600;
-    max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-top: 1px;
 }
 
-
-
-/* 器官移植中心弹窗美化 */
-#${SCRIPT_ID}-popup .organ-theme-card {
-    background: #ffffff !important;
-    border: 1px solid #d0d7de !important;
-    border-radius: 12px !important;
-    width: 90% !important;
-    max-width: 340px !important;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
-    color: #24292f !important;
-    padding: 16px !important;
+.organ-slot-slot-info .slot-organ-quality {
+    font-size: 8px;
+    color: #aaa;
+    margin-top: 1px;
 }
 
-#${SCRIPT_ID}-popup .organ-theme-card .popup-close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: none;
+.organ-slot-slot-card.quality-default {
+    border-left: 3px solid #7f8c8d;
+}
+.organ-slot-slot-card.quality-rare {
+    border-left: 3px solid #2ecc71;
+    box-shadow: inset 5px 0 10px rgba(46, 204, 113, 0.05);
+}
+.organ-slot-slot-card.quality-legendary {
+    border-left: 3px solid #e67e22;
+    box-shadow: inset 5px 0 10px rgba(230, 126, 34, 0.05);
+}
+.organ-slot-slot-card.quality-cursed {
+    border-left: 3px solid #9b59b6;
+    box-shadow: inset 5px 0 10px rgba(155, 89, 182, 0.05);
+}
+
+.organ-slot-slot-card.empty-organ .organ-slot-slot-icon {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.05);
+}
+.organ-slot-slot-card.empty-organ .organ-slot-slot-icon i {
+    color: #555;
+}
+.organ-slot-slot-card.empty-organ .slot-organ-name {
+    color: #555;
+    font-weight: normal;
+}
+
+.organ-theme-card {
+    background: #140505 !important;
+    border: 2px solid #5c1818 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(192, 57, 43, 0.3) !important;
+    color: #ffcccc !important;
+}
+
+.organ-theme-card .f-header {
+    border-bottom: 1px solid #4a1212 !important;
+}
+
+.organ-theme-card .f-title {
+    color: #ff4d4d !important;
+}
+
+.organ-theme-card .f-close {
+    color: #ffb3b3 !important;
+}
+
+.organ-theme-card .section-title, 
+.organ-theme-card .candidate-section-title {
+    font-size: 11px;
+    color: #ff8080;
+    margin: 8px 0 5px 0;
+    font-weight: 600;
+}
+
+.organ-display-card {
+    background: rgba(30, 8, 8, 0.8);
+    border: 1px solid #5c1818;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.organ-display-name {
+    font-weight: 700;
+    color: #ff4d4d;
+    font-size: 12px;
+}
+
+.organ-display-desc {
+    font-size: 10px;
+    color: #b39999;
+    margin-top: 4px;
+}
+
+.organ-candidate-card {
+    background: rgba(20, 5, 5, 0.6);
+    border: 1px solid #3d1010;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.organ-candidate-card:hover {
+    border-color: #8e1d1d;
+    background: rgba(35, 8, 8, 0.8);
+}
+
+.candidate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.candidate-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffcccc;
+}
+
+.candidate-quality {
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.candidate-quality.tag-positive {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+.candidate-desc {
+    font-size: 10px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.candidate-action-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.btn-organ-action {
     border: none;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    color: #57606a;
+    transition: all 0.15s ease;
 }
 
+.btn-organ-unequip {
+    background: #7d1c1c;
+    color: #ffcccc;
+    border: 1px solid #9e2b2b;
+}
+
+.btn-organ-unequip:hover {
+    background: #b32424;
+    box-shadow: 0 0 6px rgba(179, 36, 36, 0.5);
+}
+
+.btn-organ-equip {
+    background: #1b4332;
+    color: #d8f3dc;
+    border: 1px solid #2d6a4f;
+}
+
+.btn-organ-equip:hover {
+    background: #2d6a4f;
+    box-shadow: 0 0 6px rgba(45, 106, 79, 0.5);
+}
+
+.empty-candidate-hint {
+    text-align: center;
+    padding: 20px 10px;
+    color: #555;
+    font-size: 11px;
+}
+
+.empty-candidate-hint i {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+@keyframes organ-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.animate-pulse {
+    animation: organ-pulse 2s infinite ease-in-out;
+}
+
+/* 器官属性面板自定义样式 */
+.organ-attr-value.attr-up { color: #2d6a4f !important; }
+.organ-attr-value.attr-down { color: #c0392b !important; }
+.organ-attr-effect.effect-buff { color: #2e7d32 !important; font-weight: 600; }
+.organ-attr-effect.effect-debuff { color: #c62828 !important; font-weight: 600; }
+.organ-attr-effect.effect-normal { color: #888888 !important; }
 /* ========== 悬浮球样式 - 完全复用AppleStyle-Star的Brushed Metal ========== */
 #${SCRIPT_ID}-toggle {
     position: fixed !important;
@@ -15063,20 +14246,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
                 <div class="traits-list" id="organ-page-list">
                   <div class="traits-empty"><i class="ri-ghost-line"></i> 暂无移植器官</div>
                 </div>
-                <div class="organ-backpack-container" style="margin-top: 14px; padding: 10px 12px; background: rgba(246, 240, 224, 0.5); border: 1px solid rgba(90, 70, 50, 0.1); border-radius: 10px;">
-                  <div class="organ-backpack-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(90, 70, 50, 0.2);">
-                    <span style="font-size: 13px; font-weight: 700; color: #5a4632; display: flex; align-items: center; gap: 6px;">
-                      <i class="ri-heart-pulse-line" style="color: #b85c5c;"></i> 器官背包
-                    </span>
-                    <span class="organ-backpack-count" style="font-size: 10px; color: #8c8c8c; font-weight: 600; background: rgba(255,255,255,0.6); padding: 2px 8px; border-radius: 10px;">0 件</span>
-                  </div>
-                  <div class="organ-backpack-grid" id="organ-backpack-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; min-height: 60px;">
-                    <div class="organ-backpack-empty" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; color: #afb8c1; font-size: 11px; text-align: center; gap: 4px;">
-                      <i class="ri-briefcase-3-line" style="font-size: 22px; color: #d0d7de;"></i>
-                      <span>背包中暂无可用器官配件嗷</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
             <div style="height: 100px;"></div>
@@ -15581,8 +14750,7 @@ ultimate = 显示终结组</pre>
       isGenerating: false,
       timerInterval: null,
       seconds: 0,
-      formData: { className: '', combatStyle: '', organ: 'M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z',
-    weapon: '', classStyle: '', flavor: '', usePresetAndWorldbook: false },
+      formData: { className: '', combatStyle: '', weapon: '', classStyle: '', flavor: '', usePresetAndWorldbook: false },
       error: '',
       hasOpened: false  // 是否曾经打开过（区分首次打开和恢复）
     };
