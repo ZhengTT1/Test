@@ -8536,7 +8536,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 /* ========== 生物/器官系统古典做旧羊皮纸风格主题 ========== */
 #view-organ {
-    background: radial-gradient(circle, #fcfaf2 0%, #f3eacb 100%) !important;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3'/><feColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.06 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>"), radial-gradient(circle, #fcfaf2 0%, #f3eacb 100%) !important;
+    background-repeat: repeat, no-repeat !important;
     border: 1px solid #dcd1b4 !important;
     border-radius: 8px;
     padding: 12px;
