@@ -7833,23 +7833,35 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       // 读取器官身上的属性加成
       const bonus = organ.属性加成 || organ.data?.属性加成 || {};
       const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
+      
+      statHtml += '<div style="margin-top:8px;">';
+      statHtml += '<div style="font-size:11px; font-weight:600; color:#4a3c31; margin-bottom:4px;">[属性加成]</div>';
       if (bonusEntries.length > 0) {
-        statHtml += '<div class="organ-display-bonus" style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">';
+        statHtml += '<div class="organ-display-bonus" style="display:flex; flex-wrap:wrap; gap:4px;">';
         bonusEntries.forEach(([k, v]) => {
           statHtml += `<span class="f-bonus-tag" style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600; font-style:normal;">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`;
         });
         statHtml += '</div>';
+      } else {
+        statHtml += '<div style="font-size:10px; color:#8c8c8c; font-style:italic;">无属性加成</div>';
       }
+      statHtml += '</div>';
 
       // 读取器官身上的特性
       const traits = organ.特性 || organ.data?.特性 || [];
+      statHtml += '<div style="margin-top:8px;">';
+      statHtml += '<div style="font-size:11px; font-weight:600; color:#4a3c31; margin-bottom:4px;">[特性槽]</div>';
       if (traits.length > 0) {
-        statHtml += '<div class="organ-display-traits" style="display:flex; flex-direction:column; gap:2px; margin-top:6px; font-size:10px; color:#57606a;">';
+        statHtml += '<div class="organ-display-traits" style="display:flex; flex-direction:column; gap:2px; font-size:10px; color:#57606a;">';
         traits.forEach(t => {
           statHtml += `<div><i class="ri-shield-flash-line" style="color:#1a7f37; margin-right:3px;"></i>${t}</div>`;
         });
         statHtml += '</div>';
+      } else {
+        statHtml += '<div style="font-size:10px; color:#8c8c8c; font-style:italic;">无</div>';
       }
+      statHtml += '</div>';
+      
       return statHtml;
     };
 
@@ -8395,7 +8407,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     let slotsHtml = `
       <div class="organ-slots-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: 4px; margin-bottom: 8px;">
-        <span><i class="ri-heart-pulse-fill"></i> 身体移植舱 (点击部位以移植)</span>
+        <span><i class="ri-heart-pulse-fill"></i> [躯体]</span>
         <div class="organ-bg-controls" style="display: flex; gap: 8px; font-size: 10.5px;">
           <label for="organ-bg-upload" style="cursor: pointer; color: #0969da; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-upload-2-line"></i> 换底图</label>
           <input type="file" id="organ-bg-upload" accept="image/*" style="display: none;" />
@@ -8430,6 +8442,14 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         </svg>
     `;
 
+    const getOrganLevelColor = (lvl) => {
+      if (!lvl || lvl <= 0) return '#4a3c31'; // 古典铁锈褐
+      if (lvl <= 3) return '#1a7f37'; // 精良绿
+      if (lvl <= 6) return '#0969da'; // 稀有蓝
+      if (lvl <= 9) return '#8250df'; // 史诗紫
+      return '#cf222e'; // 传说红
+    };
+
     slotsDef.forEach(s => {
       const organ = 器官列表[s.key] || defaultOrgans[s.key];
       const isEquipped = !!器官列表[s.key];
@@ -8444,16 +8464,20 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
       const isNative = !器官列表[s.key] || (organ.名称 || '').includes('原生');
       const displayName = isNative ? `人类${s.key}` : `${organ.名称}${organLevel}`;
+      
+      const lvlColor = getOrganLevelColor(organ.强化等级 || 0);
+      // 如果强化过，圆圈边框和阴影会有等级专属色彩
+      const borderStyle = (isEquipped && organ.强化等级 > 0) ? `border-color: ${lvlColor} !important; box-shadow: 0 0 5px ${lvlColor}aa;` : '';
 
       slotsHtml += `
         <div class="organ-gear-slot ${isEquipped && !isNative ? 'has-organ' : 'empty-organ'} ${qClass}" 
              style="top: ${s.y}%; left: ${s.x}%;" 
              data-slot-key="${s.key}">
-          <div class="organ-gear-circle">
+          <div class="organ-gear-circle" style="${borderStyle}">
             <i class="${s.icon}"></i>
           </div>
           <div class="organ-gear-label-box">
-            <span class="organ-gear-val-name">${displayName}</span>
+            <span class="organ-gear-val-name" style="color: ${lvlColor};">${displayName}</span>
           </div>
         </div>
       `;
@@ -8536,7 +8560,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 /* ========== 生物/器官系统古典做旧羊皮纸风格主题 ========== */
 #view-organ {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3'/><feColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.06 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>"), radial-gradient(circle, #fcfaf2 0%, #f3eacb 100%) !important;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxODAnIGhlaWdodD0nMTgwJz4KICA8ZmlsdGVyIGlkPSdwYXBlcl9ub2lzZSc+CiAgICA8ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nMC4yNScgbnVtT2N0YXZlcz0nMycgcmVzdWx0PSdub2lzZScvPgogICAgPGZlQ29sb3JNYXRyaXggdHlwZT0nbWF0cml4JyB2YWx1ZXM9JzEgMCAwIDAgMCAgMCAxIDAgMCAwICAwIDAgMSAwIDAgIDAgMCAwIDAuMTIgMCcvPgogIDwvZmlsdGVyPgogIDxyZWN0IHdpZHRoPScxODAnIGhlaWdodD0nMTgwJyBmaWx0ZXI9J3VybCgjcGFwZXJfbm9pc2UpJyBmaWxsPSdub25lJy8+Cjwvc3ZnPg=="), radial-gradient(circle, #fbf8ef 0%, #ede1be 100%) !important;
     background-repeat: repeat, no-repeat !important;
     border: 1px solid #dcd1b4 !important;
     border-radius: 8px;
@@ -8844,19 +8868,28 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 /* 文字标签统一浮在圆圈图标正上方 */
 .organ-gear-label-box {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #d0d7de;
-    border-radius: 12px;
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translate(-50%, -4px);
+    background: #fbf8ef;
+    border: 1px solid #dcd1b4;
+    border-radius: 10px;
     padding: 2px 8px;
-    margin-bottom: 4px; /* 离下方圆圈距离 */
     font-size: 9.5px;
     display: flex;
     white-space: nowrap;
     align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 6px rgba(90, 70, 50, 0.15);
     pointer-events: none;
-    z-index: 1;
-    order: -1; /* 保证排在圆圈图标前面(即上方) */
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.organ-gear-slot:hover .organ-gear-label-box {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }
 
 .organ-gear-val-name {
