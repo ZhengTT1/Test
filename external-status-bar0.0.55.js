@@ -7626,18 +7626,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
   
   // 寻找适合该插槽的可植入器官
   const defaultOrgans = {
-    "眼球": { 名称: "原生人类眼球", 品质: "普通", 属性加成: { "视觉": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装视觉感光器官，提供常规视界嗷。" },
-    "心脏": { 名称: "原生人类心脏", 品质: "普通", 属性加成: { "健康度": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装血液循环泵，源源不断输送能量嗷。" },
-    "肺脏": { 名称: "原生人类肺脏", 品质: "普通", 属性加成: { "肺活量": 1, "耐力": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装气体交互器官，维持日常呼吸嗷。" },
-    "胃": { 名称: "原生人类胃", 品质: "普通", 属性加成: { "消化效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装初步消化器官，分解常规膳食嗷。" },
-    "肠子": { 名称: "原生人类肠道", 品质: "普通", 属性加成: { "营养获取效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装主要吸收器官，吸取营养元素嗷。" },
-    "阑尾": { 名称: "原生人类阑尾", 品质: "普通", 属性加成: { "幸运": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装免疫辅助器官，虽不起眼但也有些许用处嗷。" },
-    "脊柱": { 名称: "原生人类脊柱", 品质: "普通", 属性加成: { "坚韧": 0.5, "神经传递效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装躯干支柱与中枢神经通道，维持体态嗷。" },
-    "肋骨": { 名称: "原生人类肋骨", 品质: "普通", 属性加成: { "坚韧": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装胸腔保护骨骼，遮蔽脏器免受直接冲击嗷。" },
-    "肾脏": { 名称: "原生人类肾脏", 品质: "普通", 属性加成: { "血液过滤效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装多余水分与毒素排泄器官，平衡内环境嗷。" },
-    "脾脏": { 名称: "原生人类脾脏", 品质: "普通", 属性加成: { "新陈代谢效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装造血与免疫储血滤血器官，默默守护身体嗷。" },
-    "肝脏": { 名称: "原生人类肝脏", 品质: "普通", 属性加成: { "解毒效率": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装代谢解毒核心器官，协调多种生化反应嗷。" },
-    "肌肉": { 名称: "原生人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 标签: ["血肉", "人类"], 描述: "人体原装运动收缩肌纤维，提供基础负重与行动力嗷。" }
+    "眼球": { 名称: "人类眼球", 品质: "普通", 属性加成: { "视觉": 1 }, 标签: ["血肉", "人类"], 描述: "人类的视觉感光器官，提供常规视界。" },
+    "心脏": { 名称: "人类心脏", 品质: "普通", 属性加成: { "健康度": 1 }, 标签: ["血肉", "人类"], 描述: "人类的血液循环泵，源源不断输送能量。" },
+    "肺脏": { 名称: "人类肺脏", 品质: "普通", 属性加成: { "肺活量": 1, "耐力": 1 }, 标签: ["血肉", "人类"], 描述: "人类的气体交互器官，维持日常呼吸。" },
+    "胃": { 名称: "人类胃", 品质: "普通", 属性加成: { "消化效率": 1 }, 标签: ["血肉", "人类"], 描述: "人类的初步消化器官，分解常规膳食。" },
+    "肠子": { 名称: "人类肠道", 品质: "普通", 属性加成: { "营养获取效率": 1 }, 标签: ["血肉", "人类"], 描述: "人类的主要吸收器官，吸取营养元素。" },
+    "阑尾": { 名称: "人类阑尾", 品质: "普通", 属性加成: { "幸运": 1 }, 标签: ["血肉", "人类"], 描述: "人类的免疫辅助器官，虽然不起眼但也有些许用处。" },
+    "脊柱": { 名称: "人类脊柱", 品质: "普通", 属性加成: { "坚韧": 0.5, "神经传递效率": 1 }, 标签: ["血肉", "人类"], 描述: "人类的躯干支柱与中枢神经通道，维持体态。" },
+    "肋骨": { 名称: "人类肋骨", 品质: "普通", 属性加成: { "坚韧": 1 }, 标签: ["血肉", "人类"], 描述: "人类的胸腔保护骨骼，遮蔽脏器免受直接冲击。" },
+    "肾脏": { 名称: "人类肾脏", 品质: "普通", 属性加成: { "血液过滤效率": 1 }, 标签: ["血肉", "人类"], 描述: "人类的多余水分与毒素排泄器官，平衡内环境。" },
+    "脾脏": { 名称: "人类脾脏", 品质: "普通", 属性加成: { "新陈代谢效率": 1 }, 标签: ["血肉", "人类"], 描述: "人类的造血与免疫储血滤血器官，默默守护身体。" },
+    "肝脏": { 名称: "人类肝脏", 品质: "普通", 属性加成: { "解毒效率": 1 }, 标签: ["血肉", "人类"], 描述: "人类的代谢解毒核心器官，协调多种生化反应。" },
+    "肌肉": { 名称: "人类肌肉", 品质: "普通", 属性加成: { "速度": 1, "筋力": 1 }, 标签: ["血肉", "人类"], 描述: "人类的运动收缩肌纤维，提供基础负重与行动力。" }
   };
 
 
@@ -7651,21 +7651,54 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
   const stripNativePrefix = (name) => {
     if (!name) return '';
-    return name.replace(/^原生/, '');
+    return name.replace(/^(原生|初始)/, '');
   };
 
   const getDefaultOrganForSlot = (slotKey, race) => {
+    const raceName = race || '人类';
     // 阑尾和幸运只有人类有，其他种族默认无阑尾
     if (slotKey === '阑尾') {
-      const isHuman = !race || race.includes('人类') || race.includes('凡人');
+      const isHuman = raceName.includes('人类') || raceName.includes('凡人');
       if (!isHuman) return { 空: true, 名称: '[空置阑尾]' };
     }
-    return defaultOrgans[slotKey] || { 空: true, 名称: `[${slotKey}]` };
+    const baseOrgan = defaultOrgans[slotKey];
+    if (!baseOrgan) return { 空: true, 名称: `[${slotKey}]` };
+    
+    const organ = JSON.parse(JSON.stringify(baseOrgan));
+    if (raceName !== '人类') {
+      organ.名称 = `${raceName}${slotKey}`;
+      organ.标签 = ["血肉", raceName];
+      organ.描述 = `${raceName}的${slotKey}器官。`;
+    }
+    return organ;
   };
 
-  const getNormalizedOrgan = (organObj) => {
+  const getNormalizedOrgan = (organObj, race = '') => {
     if (!organObj || organObj.空) return organObj;
     const organ = JSON.parse(JSON.stringify(organObj));
+    
+    const tags = organ.标签 || [];
+    const isUndead = (race && (race.includes('亡灵') || race.includes('不死'))) || tags.includes('亡灵') || tags.includes('不死');
+    
+    const part = organ.部位 || guessSlotFromOrganName(organ.名称);
+
+    if (part === '心脏') {
+      if (!organ.属性加成) organ.属性加成 = {};
+      if (!isUndead) {
+        const currentHealth = organ.属性加成['健康度'] || 0;
+        if (currentHealth < 1) {
+          organ.属性加成['健康度'] = 1;
+        }
+      }
+    }
+    if (part === '眼球') {
+      if (!organ.属性加成) organ.属性加成 = {};
+      const currentVision = organ.属性加成['视觉'] || 0;
+      if (currentVision < 0.5) {
+        organ.属性加成['视觉'] = 0.5;
+      }
+    }
+
     if (organ.特性) {
       const traitsToMove = ['超频爆发', '超载爆发', '重击强化'];
       traitsToMove.forEach(t => {
@@ -7935,7 +7968,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const success = await applyMvuPatches(patches);
     if (success) {
-      showToast('success', `剥离成功：已将 [${organ.名称}] 从 [${slotName}] 槽位剥离并放入背包嗷`);
+      showToast('success', `剥离成功：已将 [${organ.名称}] 从 [${slotName}] 槽位剥离并放入背包`);
       updateOrganUI();
       setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
@@ -8644,9 +8677,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         
         let activeOrgan = null;
         if (isNative) {
-          activeOrgan = getDefaultOrganForSlot(slot.baseKey, race);
+          activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race), race);
         } else if (isEquipped) {
-          activeOrgan = organ;
+          activeOrgan = getNormalizedOrgan(organ, race);
         }
         
         if (activeOrgan && !activeOrgan.空 && activeOrgan.属性加成 && activeOrgan.属性加成[key] !== undefined) {
@@ -8655,6 +8688,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       });
       
       let finalVal = baseVal + activeBonusSum;
+      if (key === '健康度' && race && (race.includes('亡灵') || race.includes('不死'))) {
+        let undeadOrganCount = 0;
+        expandedSlots.forEach(slot => {
+          const organ = 器官列表[slot.key];
+          if (organ && !organ.空) {
+            const tags = organ.标签 || [];
+            if (tags.includes('亡灵') || tags.includes('不死')) {
+              undeadOrganCount++;
+            }
+          }
+        });
+        finalVal += (undeadOrganCount * 0.15);
+      }
       const activeResources = ['燃点', '储能', '能量', '怒气', '法力', '主动能量'];
       if (activeResources.includes(key) && finalVal < 0) {
         finalVal = 0;
@@ -8695,9 +8741,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         
         let activeOrgan = null;
         if (isNative) {
-          activeOrgan = defaultOrgans[slot.baseKey];
+          activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race), race);
         } else if (isEquipped) {
-          activeOrgan = organ;
+          activeOrgan = getNormalizedOrgan(organ, race);
         }
         
         if (activeOrgan && activeOrgan.属性加成 && activeOrgan.属性加成[attr.key] !== undefined) {
@@ -9047,9 +9093,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       
       let activeOrgan = null;
       if (isNative) {
-        activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race));
+        activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race), race);
       } else if (isEquipped) {
-        activeOrgan = getNormalizedOrgan(organ);
+        activeOrgan = getNormalizedOrgan(organ, race);
       }
       
       if (activeOrgan && !activeOrgan.空) {
@@ -9091,9 +9137,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         
         let activeOrgan = null;
         if (isNative) {
-          activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race));
+          activeOrgan = getNormalizedOrgan(getDefaultOrganForSlot(slot.baseKey, race), race);
         } else if (isEquipped) {
-          activeOrgan = getNormalizedOrgan(organ);
+          activeOrgan = getNormalizedOrgan(organ, race);
         }
         
         if (activeOrgan && !activeOrgan.空 && activeOrgan.属性加成 && activeOrgan.属性加成[k] !== undefined) {
@@ -9481,7 +9527,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           $backpackGrid.html(`
             <div class="organ-backpack-empty" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; color: #afb8c1; font-size: 11px; text-align: center; gap: 4px;">
               <i class="ri-briefcase-3-line" style="font-size: 22px; color: #d0d7de;"></i>
-              <span>背包中暂无可用器官配件嗷</span>
+              <span>背包中暂无可用器官配件</span>
             </div>
           `);
         } else {
@@ -9522,7 +9568,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           showOrganSelectPopup(slotKey);
         } catch (e) {
           console.error("[RPG] Error showing organ popup:", e);
-          alert("打开器官面板失败嗷：" + e.message + "\n" + e.stack);
+          alert("打开器官面板失败：" + e.message + "\n" + e.stack);
         }
       });
 
@@ -9531,7 +9577,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         const file = e.target.files[0];
         if (file) {
           if (file.size > 2 * 1024 * 1024) {
-            alert("上传的背景图请小于 2MB 嗷！");
+            alert("上传的背景图请小于 2MB ！");
             return;
           }
           const reader = new FileReader();
@@ -9543,7 +9589,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
               $list.find('.vitruvian-background-svg').css('opacity', '0');
               $list.find('#organ-bg-reset').css('display', 'inline-flex');
             } catch(err) {
-              alert("背景保存失败，可能是图片数据太大超出浏览器限制了嗷！");
+              alert("背景保存失败，可能是图片数据太大超出浏览器限制了！");
             }
           };
           reader.readAsDataURL(file);
@@ -9642,7 +9688,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         描述: "机械与血肉融合的心脏，泵血量极其惊人。",
         部位: "心脏",
         装备箱: true,
-        属性加成: { 筋力: 2, 储能: 20, "超频爆发": 1 },
+        属性加成: { 筋力: 2, 储能: 20, "超频爆发": 1, "健康度": 1 },
         特性: [],
         标签: ["机械", "血肉"],
         种族: "",
@@ -9657,11 +9703,77 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     }
   };
 
+    let autoInitInFlight = false;
+  const autoInitializeMissingOrgans = async (data) => {
+    if (autoInitInFlight) return;
+    if (!data || !data.人物) return;
+    
+    const patches = [];
+    let changed = false;
+    
+    if (!data.人物.器官系统) {
+      patches.push({ op: 'add', path: '/人物/器官系统', value: { 器官列表: {}, 器官背包: {} } });
+      changed = true;
+    } else if (!data.人物.器官系统.器官列表) {
+      patches.push({ op: 'add', path: '/人物/器官系统/器官列表', value: {} });
+      changed = true;
+    }
+    
+    if (changed) {
+      // Apply initial container structure first
+      autoInitInFlight = true;
+      try {
+        await applyMvuPatches(patches);
+      } catch(e) {}
+      autoInitInFlight = false;
+      return;
+    }
+    
+    const race = data.人物.种族 || '人类';
+    const list = data.人物.器官系统.器官列表 || {};
+    
+    slotsDef.forEach(slot => {
+      const baseSlot = slot.key;
+      const count = slot.count || 1;
+      for (let i = 1; i <= count; i++) {
+        const subKey = count > 1 ? `${baseSlot}_${i}` : baseSlot;
+        if (list[subKey] === undefined) {
+          const defaultOrgan = getDefaultOrganForSlot(baseSlot, race);
+          if (defaultOrgan && !defaultOrgan.空) {
+            patches.push({
+              op: 'add',
+              path: `/人物/器官系统/器官列表/${subKey}`,
+              value: JSON.parse(JSON.stringify(defaultOrgan))
+            });
+            changed = true;
+          }
+        }
+      }
+    });
+    
+    if (changed && patches.length > 0) {
+      autoInitInFlight = true;
+      try {
+        console.log("[小苑调试] 检测到未装备/缺失的默认器官，正在自动植入...", patches);
+        const success = await applyMvuPatches(patches);
+        if (success) {
+          console.log("[小苑调试] 默认器官自动植入成功！");
+          setTimeout(refreshStatusBar, 100);
+        }
+      } catch(err) {
+        console.error("[小苑调试] 自动植入默认器官失败:", err);
+      } finally {
+        autoInitInFlight = false;
+      }
+    }
+  };
+
   const refreshStatusBar = () => {
     console.log("[小苑调试] refreshStatusBar 正在执行...");
     const data = fetchLatestMvuData();
     if (Object.keys(data).length > 0) {
       runOnceOrganSystemInitialization();
+      autoInitializeMissingOrgans(data);
       if (data?.人物?.技能树) {
         syncSkillSlots(data.人物.技能树, data.人物);
       }
@@ -15788,7 +15900,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
                   <div class="organ-backpack-grid" id="organ-backpack-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; min-height: 60px;">
                     <div class="organ-backpack-empty" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; color: #afb8c1; font-size: 11px; text-align: center; gap: 4px;">
                       <i class="ri-briefcase-3-line" style="font-size: 22px; color: #d0d7de;"></i>
-                      <span>背包中暂无可用器官配件嗷</span>
+                      <span>背包中暂无可用器官配件</span>
                     </div>
                   </div>
                 </div>
