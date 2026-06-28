@@ -45,6 +45,7 @@
       return { window: window, $: window.jQuery, getDB: () => window.AutoCardUpdaterAPI };
     }
   };
+  const { $ } = getCore();
 
   // 战斗中检测：从MVU变量获取 战斗.是否战斗中
   const isInBattle = () => {
@@ -14661,10 +14662,12 @@ ultimate = 显示终结组</pre>
   }
 
   // 卸载时清理（和仿手机.js一样）
-  const { $ } = getCore();
-  if ($) {
-    $(window).on('unload', () => {
-      cleanup();
-    });
-  }
+  try {
+    const { $ } = getCore();
+    if ($) {
+      $(window).on('unload', () => {
+        cleanup();
+      });
+    }
+  } catch(e) {}
 })();
