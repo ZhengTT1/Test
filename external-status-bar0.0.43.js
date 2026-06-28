@@ -7734,7 +7734,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           value: true
         });
       } else {
-        const newKey = `器官_${Date.now()}`;
+        const newKey = `器官_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
         patches.push({
           op: 'add',
           path: `/人物/装备列表/${newKey}`,
@@ -7840,7 +7840,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         value: true
       });
     } else {
-      const newKey = `器官_${Date.now()}`;
+      const newKey = `器官_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
       patches.push({
         op: 'add',
         path: `/人物/装备列表/${newKey}`,
@@ -7993,7 +7993,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           ` : ''}
           <div style="font-size: 8.5px; color: #57606a; font-weight: 600; line-height: 1;">${displayTitle}</div>
           <div class="card-icon" style="color: ${qColor}; font-size: 14px; margin: 2px 0; line-height: 1;">
-            <i class="${s?.icon || 'ri-heart-fill'}"></i>
+            <i class="${(organ && !isEmpty) ? getOrganIconClass(organ.部位 || baseSlot, organ.名称) : (s?.icon || 'ri-heart-fill')}"></i>
           </div>
           <div class="card-name" style="font-size: 9px; color: ${qColor}; font-weight: 700; text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">${displayOrganName}</div>
         </div>
@@ -8053,7 +8053,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         html += `
           <div class="organ-candidate-card-grid" data-idx="${idx}" data-tooltip-html="${escapedCandidateTooltip}">
             <div class="card-icon" style="color: ${qColor}; font-size: 14px; margin: 2px 0; line-height: 1;">
-              <i class="${s?.icon || 'ri-heart-fill'}"></i>
+              <i class="${getOrganIconClass(item.data.部位 || baseSlot, item.name)}"></i>
             </div>
             <div class="card-name" style="font-size: 9px; color: ${qColor}; font-weight: 700; text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">${item.name}${level}</div>
           </div>
@@ -9140,11 +9140,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             backpackHtml += `
               <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
                    style="border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
-                <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
-                  ${GameIcons.icon('organ')}
+                <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                  <i class="${getOrganIconClass(slotGuess, item.name)}"></i>
                 </span>
-                <span class="inv-item-name" style="color: ${color}; font-size: 9px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;">${item.name}${level}</span>
-                <span style="font-size: 8px; color: #8c8c8c; background: rgba(255,255,255,0.7); padding: 0 4px; border-radius: 3px;">[${slotGuess}]</span>
+                <span class="inv-item-name" style="color: ${color}; font-size: 9px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;">${stripNativePrefix(item.name)}${level}</span>
               </div>
             `;
           });
