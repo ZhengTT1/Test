@@ -7976,7 +7976,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
       }
       
-      // Escape single/double quotes to safely put in attribute
+      // Escape quotes safely
       const escapedTooltip = tooltipContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
       cardsHtml += `
@@ -8052,10 +8052,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
         html += `
           <div class="organ-candidate-card-grid" data-idx="${idx}" data-tooltip-html="${escapedCandidateTooltip}">
-            <span class="candidate-icon" style="color: ${qColor}; font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center;">
-              ${GameIcons.icon('organ')}
-            </span>
-            <span class="candidate-name" style="font-size: 9px; font-weight: 700; color: ${qColor}; width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.name}${level}</span>
+            <div class="card-icon" style="color: ${qColor}; font-size: 14px; margin: 2px 0; line-height: 1;">
+              <i class="${s?.icon || 'ri-heart-fill'}"></i>
+            </div>
+            <div class="card-name" style="font-size: 9px; color: ${qColor}; font-weight: 700; text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">${item.name}${level}</div>
           </div>
         `;
       });
@@ -8113,7 +8113,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           
           .organ-candidates-grid {
             display: grid !important;
-            grid-template-columns: repeat(6, 1fr) !important;
+            grid-template-columns: repeat(4, 1fr) !important;
             gap: 6px !important;
             margin-top: 8px !important;
             max-height: 180px !important;
@@ -8122,25 +8122,87 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             width: 100% !important;
           }
           .organ-candidate-card-grid {
-            border: 1px solid #d0d7de !important;
+            position: relative !important;
+            width: 100% !important;
+            height: 52px !important;
             border-radius: 6px !important;
-            padding: 6px 4px !important;
             display: flex !important;
             flex-direction: column !important;
-            align-items: center !important;
             justify-content: center !important;
-            background: #ffffff !important;
+            align-items: center !important;
+            background: #fff !important;
+            border: 1px solid #d0d7de !important;
             cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            position: relative !important;
-            aspect-ratio: 1 !important;
+            transition: all 0.15s ease !important;
             box-sizing: border-box !important;
+            padding: 4px 2px !important;
           }
           .organ-candidate-card-grid:hover { 
             border-color: #0969da !important; 
             box-shadow: 0 0 0 1px #0969da !important;
           }
         </style>
+      `);
+    } else {
+      // Style already exists, let's update it dynamically by replacing style element content
+      $('#sub-slot-tooltip-css').html(`
+        .sub-slots-container {
+          display: grid !important;
+          grid-template-columns: repeat(4, 1fr) !important;
+          gap: 6px !important;
+          margin-bottom: 12px !important;
+          width: 100% !important;
+        }
+        .sub-slot-card {
+          position: relative;
+          width: 100% !important;
+          height: 52px !important;
+          border-radius: 6px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          align-items: center !important;
+          background: #fff !important;
+          cursor: pointer !important;
+          transition: all 0.15s ease !important;
+          box-sizing: border-box !important;
+          padding: 4px 2px !important;
+        }
+        .sub-slot-card:hover {
+          border-color: #0969da !important;
+          box-shadow: 0 0 0 1px #0969da !important;
+        }
+        
+        .organ-candidates-grid {
+          display: grid !important;
+          grid-template-columns: repeat(4, 1fr) !important;
+          gap: 6px !important;
+          margin-top: 8px !important;
+          max-height: 180px !important;
+          overflow-y: auto !important;
+          padding: 4px !important;
+          width: 100% !important;
+        }
+        .organ-candidate-card-grid {
+          position: relative !important;
+          width: 100% !important;
+          height: 52px !important;
+          border-radius: 6px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          align-items: center !important;
+          background: #fff !important;
+          border: 1px solid #d0d7de !important;
+          cursor: pointer !important;
+          transition: all 0.15s ease !important;
+          box-sizing: border-box !important;
+          padding: 4px 2px !important;
+        }
+        .organ-candidate-card-grid:hover { 
+          border-color: #0969da !important; 
+          box-shadow: 0 0 0 1px #0969da !important;
+        }
       `);
     }
 
