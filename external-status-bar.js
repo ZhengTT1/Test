@@ -6979,7 +6979,7 @@ const updateOrganUI = () => {
     return;
   }
 
-  // 按部位分组显示（同现有逻辑）
+  // 按部位分组显示
   const groupOrder = ['循环', '感官', '骨骼', '内脏', '肌肉'];
   const grouped = {};
   entries.forEach(([name, organ]) => {
@@ -6991,8 +6991,10 @@ const updateOrganUI = () => {
   groupOrder.forEach(part => {
     const items = grouped[part] || [];
     if (items.length === 0) return;
+
     const partIcons = { 循环: '❤️', 感官: '👁️', 骨骼: '🦴', 内脏: '🧫', 肌肉: '💪' };
     const icon = partIcons[part] || '🧬';
+
     let rowHtml = `<div class="organ-group"><div class="organ-group-title">${icon} ${part}</div><div class="organ-group-grid">`;
     items.forEach(organ => {
       const qualityColor = getQualityColor(organ.品质 || '普通');
@@ -7001,6 +7003,7 @@ const updateOrganUI = () => {
         .join(' ');
       const traitText = (organ.特性 || []).slice(0, 2).join('、');
       const hasSkill = organ.技能 && organ.技能.名称;
+
       rowHtml += `
         <div class="organ-card" data-organ-name="${organ.name}" style="border-color: ${qualityColor}; background: ${qualityColor}08;">
           <div class="organ-card-header">
@@ -7687,6 +7690,7 @@ const updateOrganUI = () => {
    * 刷新状态栏数据
    */
   const refreshStatusBar = () => {
+    const { $ } = getCore();
     const data = fetchLatestMvuData();
     if (Object.keys(data).length > 0) {
       if (data?.人物?.技能树) {
@@ -7694,10 +7698,12 @@ const updateOrganUI = () => {
       }
       updateStatusBarUI(data);
 
-      // 如果特质页面当前可见，同步更新
-      const { $ } = getCore();
       if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
         updateTraitsPageUI();
+      }
+      // 如果器官视图激活，也刷新
+      if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
+        updateOrganUI();
       }
     }
   };
@@ -13726,13 +13732,9 @@ const updateOrganUI = () => {
         refreshStatusBar();
       }
 	 if (normalizedTabIndex === 5) {
-    // 先确保数据最新，再渲染
-    refreshStatusBar();      // 同步其他数据
-	// 如果当前器官视图是激活的，刷新它
-if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
+    // 先刷新数据，再专门渲染器官
+    refreshStatusBar();
     updateOrganUI();
-}
-    updateOrganUI();         // 现在无参，内部自行获取
 }
 
       // 恢复目标tab的滚动位置
