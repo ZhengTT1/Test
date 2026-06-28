@@ -8042,6 +8042,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       // Escape quotes safely
       const escapedTooltip = tooltipContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+      const subSlotSetBadge = (organ && organ.套装) ? `<span class="sub-slot-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${organ.套装}</span>` : '';
       cardsHtml += `
         <div class="sub-slot-card ${isSelected ? 'selected' : ''}" 
              style="${borderStyle}"
@@ -8054,6 +8055,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
               <i class="ri-close-circle-fill"></i>
             </button>
           ` : ''}
+          ${subSlotSetBadge}
           <div style="font-size: 8.5px; color: #57606a; font-weight: 600; line-height: 1;">${displayTitle}</div>
           <div class="card-icon" style="color: ${qColor}; font-size: 14px; margin: 2px 0; line-height: 1;">
             <i class="${(organ && !isEmpty) ? getOrganIconClass(organ.部位 || baseSlot, organ.名称) : (s?.icon || 'ri-heart-fill')}"></i>
@@ -8113,8 +8115,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         
         const escapedCandidateTooltip = candidateTooltipContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+        const candidateSetBadge = item.data?.套装 ? `<span class="candidate-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${item.data.套装}</span>` : '';
         html += `
-          <div class="organ-candidate-card-grid" data-idx="${idx}" data-tooltip-html="${escapedCandidateTooltip}">
+          <div class="organ-candidate-card-grid" data-idx="${idx}" data-tooltip-html="${escapedCandidateTooltip}" style="position: relative;">
+            ${candidateSetBadge}
             <div class="card-icon" style="color: ${qColor}; font-size: 14px; margin: 2px 0; line-height: 1;">
               <i class="${getOrganIconClass(item.data.部位 || baseSlot, item.name)}"></i>
             </div>
@@ -8987,6 +8991,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const customAttrs = new Set();
     const activeTraits = {}; 
+    const setCounts = {};
     const baseAttrKeys = new Set(attrsDef.map(a => a.key));
     const race = data?.人物?.种族 || '';
 
@@ -9021,6 +9026,10 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
               });
             }
           });
+        }
+        if (activeOrgan.套装) {
+          const setName = activeOrgan.套装;
+          setCounts[setName] = (setCounts[setName] || 0) + 1;
         }
       }
     });
@@ -9133,17 +9142,63 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         traitDesc = "奔跑或移动时，将位移动能自动转化为电力，为具有“储能”上限的机械器官恢复能量。";
       }
 
+      const traitVal = traitSources.length;
+
       cardsHtml += `
         <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}" style="border-color: #2ea87a40; background: rgba(46,168,122,0.03);">
           <div class="compact-header-vertical" style="color: #2ea87a;">
             <i class="ri-shield-flash-line"></i>
-            <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">激活</span>
+            <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${traitVal}</span>
           </div>
           <div class="compact-detail">
             <div class="compact-attr-name" style="color: #2ea87a; font-weight: 700;">[特性] ${traitName}</div>
             <div class="compact-brief effect-buff" style="color: #2ea87a;">额外效果</div>
             <div class="compact-desc">${traitDesc}</div>
             ${providersHtml}
+          </div>
+        </div>
+      `;
+      customCardIdx++;
+    });
+
+    // 渲染套装列表作为生理指数卡片
+    Object.entries(setCounts).forEach(([setName, count]) => {
+      const colIndex = customCardIdx % 7;
+      let edgeClass = '';
+      if (colIndex === 0 || colIndex === 1) {
+        edgeClass = 'edge-left';
+      } else if (colIndex === 5 || colIndex === 6) {
+        edgeClass = 'edge-right';
+      }
+
+      const setProviders = [];
+      expandedSlots.forEach(slot => {
+        const organ = 器官列表[slot.key];
+        const isEquipped = !!organ && !organ.空;
+        if (isEquipped && organ.套装 === setName) {
+          setProviders.push(organ.名称);
+        }
+      });
+      const setProvidersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
+        部件: ${setProviders.join(', ')}
+      </div>`;
+
+      let setDesc = `已装备 ${setName} 部件。成套后可激活特殊机能共鸣。`;
+      if (setName.includes('机械')) {
+        setDesc = `已装备 ${count} 件机械套装部件。激活效果：机械传动效率提升，储能最大上限额外获得提升。`;
+      }
+
+      cardsHtml += `
+        <div class="organ-attr-compact-card set-card ${edgeClass}" data-attr-key="${setName}" style="border-color: #d2992240; background: rgba(210,153,34,0.03);">
+          <div class="compact-header-vertical" style="color: #d29922;">
+            <i class="ri-vip-crown-line"></i>
+            <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${count}</span>
+          </div>
+          <div class="compact-detail">
+            <div class="compact-attr-name" style="color: #d29922; font-weight: 700;">[套装] ${setName}</div>
+            <div class="compact-brief effect-buff" style="color: #d29922;">套装组合</div>
+            <div class="compact-desc">${setDesc}</div>
+            ${setProvidersHtml}
           </div>
         </div>
       `;
@@ -9321,6 +9376,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         const organLevel = level > 0 ? ` +${level}` : "";
         const suffix = (count > 1) ? ` (${activeCount}/${count})` : "";
         displayName = `${baseName}${organLevel}${suffix}`;
+        
+        let setBadge = '';
+        if (firstOrgan && firstOrgan.套装) {
+          setBadge = `<span class="organ-set-tag-badge" style="display:inline-block; font-size:7px; background:#d29922; color:#fff; padding:0 2px; border-radius:3px; margin-left:3px; font-weight:700; vertical-align:middle;">${firstOrgan.套装}</span>`;
+        }
 
         lvlColor = getOrganLevelColor(level);
         nameColor = allNative ? '#8c8c8c' : lvlColor;
@@ -9345,7 +9405,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             <i class="${s.icon}"></i>
           </div>
           <div class="organ-gear-label-box">
-            <span class="organ-gear-val-name" style="color: ${nameColor};">${displayName}</span>
+            <span class="organ-gear-val-name" style="color: ${nameColor};">${displayName}${setBadge}</span>
           </div>
         </div>
       `;
@@ -9376,9 +9436,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             const color = qualityColors[item.quality] || '#57606a';
             const slotGuess = item.data?.部位 || guessSlotFromOrganName(item.name) || '通用';
             const level = item.level > 0 ? ` +${item.level}` : '';
+            const backpackSetBadge = item.data?.套装 ? `<span class="backpack-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${item.data.套装}</span>` : '';
             backpackHtml += `
               <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
-                   style="border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
+                   style="position: relative; border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
+                ${backpackSetBadge}
                 <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
                   <i class="${getOrganIconClass(slotGuess, item.name)}"></i>
                 </span>
