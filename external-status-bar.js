@@ -6949,122 +6949,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     log.info('状态栏UI更新完成');
   };
-/**
- * 渲染器官系统 UI（与装备栏风格统一）
- */
-const updateOrganUI = () => {
-  const { $ } = getCore();
-  if (!$) {
-    console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
-    return;
-  }
 
-  const $panel = $(`#${SCRIPT_ID}-panel`);
-  const data = fetchLatestMvuData();
-  const organSystem = data?.人物?.器官系统 || {};
-  const 器官列表 = organSystem.器官列表 || {};
-  const 排斥等级 = organSystem.排斥等级 || 0;
-  const 健康度 = organSystem.健康度 || 100;
-  const 套装 = organSystem.已激活套装 || [];
-
-  // 更新状态栏
-  $panel.find('#organ-rejection').text(排斥等级);
-  $panel.find('#organ-health').text(健康度 + '%');
-  $panel.find('#organ-set-bonus').text(套装.length ? 套装.join('、') : '无');
-
-  const $grid = $panel.find('#organ-grid');
-  if (!$grid.length) {
-    console.warn('[RPG StatusBar] #organ-grid not found');
-    return;
-  }
-  $grid.empty();
-
-  const entries = Object.entries(器官列表);
-  if (entries.length === 0) {
-    $grid.html('<div class="organ-empty"><i class="ri-heart-add-line"></i> 尚未移植任何器官</div>');
-    return;
-  }
-
-  // 按部位分组显示
-  const groupOrder = ['循环', '感官', '骨骼', '内脏', '肌肉'];
-  const grouped = {};
-  entries.forEach(([name, organ]) => {
-    const part = organ.部位 || '其他';
-    if (!grouped[part]) grouped[part] = [];
-    grouped[part].push({ name, ...organ });
-  });
-
-  let html = '';
-  groupOrder.forEach(part => {
-    const items = grouped[part] || [];
-    if (items.length === 0) return;
-
-    const partIcons = { 循环: '❤️', 感官: '👁️', 骨骼: '🦴', 内脏: '🧫', 肌肉: '💪' };
-    const icon = partIcons[part] || '🧬';
-
-    html += `<div class="organ-group"><div class="organ-group-title">${icon} ${part}</div><div class="organ-group-grid">`;
-    items.forEach(organ => {
-      const qualityColor = getQualityColor(organ.品质 || '普通');
-      const attrText = Object.entries(organ.属性 || {})
-        .map(([k, v]) => `${k}+${v}`)
-        .join(' ');
-      const traitText = (organ.特性 || []).slice(0, 2).join('、');
-      const hasSkill = organ.技能 && organ.技能.名称;
-
-      html += `
-        <div class="organ-card" data-organ-name="${organ.name}" style="border-color: ${qualityColor}; background: ${qualityColor}08;">
-          <div class="organ-card-header">
-            <span class="organ-name" style="color: ${qualityColor};">${organ.name}</span>
-            <span class="organ-race">${organ.种族 || '人类'}</span>
-            <span class="organ-quality" style="background: ${qualityColor};">${organ.品质 || '普通'}</span>
-          </div>
-          <div class="organ-attr-row">${attrText}</div>
-          ${traitText ? `<div class="organ-traits">${traitText}</div>` : ''}
-          ${hasSkill ? `<div class="organ-skill-badge"><i class="ri-flashlight-line"></i> ${organ.技能.名称}</div>` : ''}
-        </div>
-      `;
-    });
-    html += `</div></div>`;
-  });
-
-  $grid.html(html);
-
-  // 绑定器官卡片点击事件（详情弹窗）
-  $grid.find('.organ-card').off('click').on('click', function() {
-    const organName = $(this).attr('data-organ-name');
-    if (!organName) return;
-    const organ = 器官列表[organName];
-    if (!organ) return;
-
-    // 复用 Fusion 风格弹窗
-    const content = `
-      <div class="f-header">
-        <div class="f-meta-row">
-          <span class="f-quality" style="background:${getQualityColor(organ.品质)}; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">${organ.品质 || '普通'}</span>
-          <span class="f-type">// ${organ.部位 || '器官'}</span>
-        </div>
-        <div class="f-title-row">
-          <span class="f-name" style="background:${getQualityColor(organ.品质)}; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">${organName}</span>
-        </div>
-      </div>
-      <div class="f-content">
-        <div class="f-data-group">
-          <div class="f-data-row"><span class="f-data-label">种族</span><span class="f-data-val">${organ.种族 || '人类'}</span></div>
-          ${Object.entries(organ.属性 || {}).map(([k,v]) => `<div class="f-data-row"><span class="f-data-label">${k}</span><span class="f-data-val val-positive">+${v}</span></div>`).join('')}
-        </div>
-        ${(organ.特性 || []).length ? `<div class="f-section-title"><i class="ri-sparkling-line"></i> 特性</div><div class="f-effect-box">${organ.特性.join('、')}</div>` : ''}
-        ${organ.技能 ? `<div class="f-section-title"><i class="ri-flashlight-line"></i> 技能</div><div class="f-effect-box"><b>${organ.技能.名称}</b><br>${organ.技能.描述 || ''}<br><span style="color:#636e72;font-size:0.8rem;">剩余 ${organ.技能.剩余次数 ?? 0}/${organ.技能.最大次数 ?? 0} 次</span></div>` : ''}
-      </div>
-    `;
-
-    // 利用现有的弹窗函数
-    showDetailPopup('organ', organName, { ...organ, 名称: organName });
-  });
-};
-    rowHtml += `</div></div>`;
-    $grid.append(rowHtml);
-  });
-};
   /**
    * 自动学习已解锁的技能并装备到空槽位
    * @param {object} skillTree - 技能树数据
@@ -7729,27 +7614,43 @@ const updateOrganUI = () => {
 
     $summary.html(`<div class="trait-chips-row">${chips}</div>`);
   };
+  /**
+ * 渲染器官系统 UI（与装备栏风格统一）
+ */
+const updateOrganUI = () => {
+  const { $ } = getCore();
+  if (!$) {
+    console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
+    return;
+  }
+  const $panel = $(`#${SCRIPT_ID}-panel`);
+  const data = fetchLatestMvuData();
+  const organSystem = data?.人物?.器官系统 || {};
+  const 器官列表 = organSystem.器官列表 || {};
+  const 排斥等级 = organSystem.排斥等级 || 0;
+  const 健康度 = organSystem.健康度 || 100;
+  const 套装 = organSystem.已激活套装 || [];
+
+  // ... 你完整的 updateOrganUI 实现（包括状态栏更新、卡片渲染等） ...
+};
 
   /**
    * 刷新状态栏数据
    */
-const refreshStatusBar = () => {
-  const data = fetchLatestMvuData();
-  if (Object.keys(data).length > 0) {
-    if (data?.人物?.技能树) {
-      syncSkillSlots(data.人物.技能树, data.人物);
+  const refreshStatusBar = () => {
+    const data = fetchLatestMvuData();
+    if (Object.keys(data).length > 0) {
+      if (data?.人物?.技能树) {
+        syncSkillSlots(data.人物.技能树, data.人物);
+      }
+      updateStatusBarUI(data);
+      // 如果特质页面当前可见，同步更新
+      const { $ } = getCore();
+      if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
+        updateTraitsPageUI();
+      }
     }
-    updateStatusBarUI(data);
-    // 如果特质页面当前可见，同步更新
-    const { $ } = getCore();
-    if ($(`#${SCRIPT_ID}-panel #view-traits`).hasClass('active')) {
-      updateTraitsPageUI();
-    }
-    // 如果器官页面当前可见，同步更新
-    if ($(`#${SCRIPT_ID}-panel #view-organs`).hasClass('active')) {
-      updateOrganUI();
-    }
-  }
+  };
 
   // 注入样式 - 完全复用原版状态栏.html的CSS
   const injectStyles = () => {
@@ -7757,162 +7658,6 @@ const refreshStatusBar = () => {
     if ($(`#${SCRIPT_ID}-styles`).length) return;
 
     $("head").append(`<style id="${SCRIPT_ID}-styles">
-	/* ========== 器官系统样式 ========== */
-#${SCRIPT_ID}-panel .organ-status-bar {
-  display: flex;
-  gap: 20px;
-  padding: 12px 16px;
-  background: rgba(255,255,255,0.6);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.4);
-}
-#${SCRIPT_ID}-panel .organ-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-#${SCRIPT_ID}-panel .organ-stat-label {
-  font-size: 0.65rem;
-  color: #636e72;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-#${SCRIPT_ID}-panel .organ-stat-value {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #2d3436;
-  font-family: var(--font-tech);
-}
-#${SCRIPT_ID}-panel .organ-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-#${SCRIPT_ID}-panel .organ-group-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #636e72;
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
-}
-#${SCRIPT_ID}-panel .organ-group-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
-}
-#${SCRIPT_ID}-panel .organ-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px 14px;
-  border-left: 4px solid var(--organ-color, #6c5ce7);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-#${SCRIPT_ID}-panel .organ-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-}
-#${SCRIPT_ID}-panel .organ-card-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
-}
-#${SCRIPT_ID}-panel .organ-name {
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-#${SCRIPT_ID}-panel .organ-race {
-  font-size: 0.6rem;
-  color: #636e72;
-  background: #f1f2f6;
-  padding: 0 6px;
-  border-radius: 4px;
-}
-#${SCRIPT_ID}-panel .organ-quality {
-  font-size: 0.55rem;
-  font-weight: 700;
-  color: #fff;
-  padding: 0 8px;
-  border-radius: 10px;
-  line-height: 1.6;
-  margin-left: auto;
-}
-#${SCRIPT_ID}-panel .organ-attr-row {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #2d6a4f;
-  font-family: var(--font-tech);
-  margin-bottom: 4px;
-}
-#${SCRIPT_ID}-panel .organ-traits {
-  font-size: 0.65rem;
-  color: #636e72;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#${SCRIPT_ID}-panel .organ-skill-badge {
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: #e67e22;
-  background: rgba(230,126,34,0.08);
-  padding: 2px 8px;
-  border-radius: 10px;
-  display: inline-block;
-  margin-top: 4px;
-}
-#${SCRIPT_ID}-panel .organ-empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 30px;
-  color: #b2bec3;
-  font-size: 0.85rem;
-}
-#${SCRIPT_ID}-panel .organ-empty i {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 8px;
-  opacity: 0.4;
-}
-#${SCRIPT_ID}-panel .organ-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-#${SCRIPT_ID}-panel .organ-action-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: #f1f2f6;
-  color: #2d3436;
-}
-#${SCRIPT_ID}-panel .organ-action-btn:hover {
-  background: #dfe6e9;
-}
-#${SCRIPT_ID}-panel .organ-action-btn#organ-add-btn {
-  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-  color: #fff;
-}
-#${SCRIPT_ID}-panel .organ-action-btn#organ-add-btn:hover {
-  opacity: 0.9;
-}
-#${SCRIPT_ID}-panel .organ-action-btn#organ-clear-btn {
-  background: #f8d7da;
-  color: #c0392b;
-}
-#${SCRIPT_ID}-panel .organ-action-btn#organ-clear-btn:hover {
-  background: #f5c6cb;
-}
 /* ========== 悬浮球样式 - 完全复用AppleStyle-Star的Brushed Metal ========== */
 #${SCRIPT_ID}-toggle {
     position: fixed !important;
@@ -13543,32 +13288,6 @@ const refreshStatusBar = () => {
                 <div class="diff-tiers" id="diff-tiers-body"></div>
               </div>
             </div>
-			   <!-- ===== 器官系统视图（移到 main 内部） ===== -->
-            <div id="view-organs" class="view-section">
-              <div class="organ-container">
-                <div class="organ-status-bar">
-                  <div class="organ-stat">
-                    <span class="organ-stat-label">🧬 排斥等级</span>
-                    <span class="organ-stat-value" id="organ-rejection">0</span>
-                  </div>
-                  <div class="organ-stat">
-                    <span class="organ-stat-label">❤️ 健康度</span>
-                    <span class="organ-stat-value" id="organ-health">100%</span>
-                  </div>
-                  <div class="organ-stat">
-                    <span class="organ-stat-label">⚡ 套装</span>
-                    <span class="organ-stat-value" id="organ-set-bonus">无</span>
-                  </div>
-                </div>
-                <div class="organ-grid" id="organ-grid">
-                  <!-- 由 JS 动态渲染 -->
-                </div>
-                <div class="organ-actions">
-                  <button class="organ-action-btn" id="organ-add-btn"><i class="ri-add-line"></i> 移植器官</button>
-                  <button class="organ-action-btn" id="organ-clear-btn"><i class="ri-delete-bin-line"></i> 清空所有</button>
-                </div>
-              </div>
-            </div>
             <div style="height: 100px;"></div>
           </main>
           <div class="floating-menu">
@@ -13577,7 +13296,6 @@ const refreshStatusBar = () => {
             <div class="menu-item" data-tab="2">❖</div>
             <div class="menu-item" data-tab="3">✦</div>
             <div class="menu-item" data-tab="4">⚙</div>
-			<div class="menu-item" data-tab="5">🧬</div>
           </div>
         </div>
       </div>
@@ -13774,11 +13492,6 @@ const refreshStatusBar = () => {
         // Switch to Quests Tab
         refreshStatusBar();
       }
-	 if (normalizedTabIndex === 5) {
-    // 先刷新数据，再专门渲染器官
-    refreshStatusBar();
-    updateOrganUI();
-}
 
       // 恢复目标tab的滚动位置
       const savedPos = _panelTabState.scrollPositions[normalizedTabIndex] || 0;
@@ -13952,50 +13665,7 @@ const refreshStatusBar = () => {
       showToast('success', nextMode === 'combo' ? '已切换为组合技能模式' : '已切换为经典技能模式');
       setTimeout(refreshStatusBar, 80);
     });
-	// 移植器官（示例：弹出一个简易输入框，实际可扩展为商店或选择器）
-$panel.on('click', '#organ-add-btn', function () {
-  // 这里可以调出器官商店/生成器，暂用 prompt 演示
-  const name = prompt('输入器官名称（如：龙心）');
-  if (!name) return;
-  const race = prompt('输入种族（如：龙精种）') || '人类';
-  const quality = prompt('输入品质（普通/精良/稀有/神器/传说/史诗/神话）') || '普通';
-  const attrKey = prompt('属性名（如：体质）') || '体质';
-  const attrVal = parseInt(prompt('属性值（数字）') || '10', 10);
 
-  const data = fetchLatestMvuData();
-  const organSystem = data?.人物?.器官系统 || { 器官列表: {} };
-  if (!organSystem.器官列表) organSystem.器官列表 = {};
-
-  organSystem.器官列表[name] = {
-    种族: race,
-    品质: quality,
-    属性: { [attrKey]: attrVal },
-    特性: ['示例特性'],
-    部位: '其他'
-  };
-
-  applyMvuPatches([
-    { op: 'replace', path: '/人物/器官系统', value: organSystem }
-  ]).then(success => {
-    if (success) {
-      showToast('success', `已移植 ${name}`);
-      refreshStatusBar();
-    }
-  });
-});
-
-// 清空所有器官（带二次确认）
-$panel.on('click', '#organ-clear-btn', function () {
-  showPanelConfirm('确定要清空所有器官吗？此操作不可恢复。', async () => {
-    const success = await applyMvuPatches([
-      { op: 'remove', path: '/人物/器官系统' }
-    ]);
-    if (success) {
-      showToast('success', '已清空所有器官');
-      refreshStatusBar();
-    }
-  });
-});
     $panel.on('click', '#combo-custom-btn', function (e) {
       e.stopPropagation();
       const data = fetchLatestMvuData();
@@ -14584,37 +14254,8 @@ ultimate = 显示终结组</pre>
       if ($(e.target).is('input[type="checkbox"]')) return;
       const $check = $(this).find('.batch-check');
       $check.prop('checked', !$check.prop('checked'));
-		});
-	$panel.on('click', '.organ-card', function () {
-  const organName = $(this).attr('data-organ-name');
-  if (!organName) return;
-  const data = fetchLatestMvuData();
-  const organ = data?.人物?.器官系统?.器官列表?.[organName];
-  if (!organ) return;
+    });
 
-  // 复用 Fusion 风格弹窗
-  const content = `
-    <div class="f-header">
-      <div class="f-meta-row">
-        <span class="f-quality" style="background:${getQualityColor(organ.品质)}; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">${organ.品质 || '普通'}</span>
-        <span class="f-type">// ${organ.部位 || '器官'}</span>
-      </div>
-      <div class="f-title-row">
-        <span class="f-name" style="background:${getQualityColor(organ.品质)}; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">${organName}</span>
-      </div>
-    </div>
-    <div class="f-content">
-      <div class="f-data-group">
-        <div class="f-data-row"><span class="f-data-label">种族</span><span class="f-data-val">${organ.种族 || '人类'}</span></div>
-        ${Object.entries(organ.属性 || {}).map(([k,v]) => `<div class="f-data-row"><span class="f-data-label">${k}</span><span class="f-data-val val-positive">+${v}</span></div>`).join('')}
-      </div>
-      ${(organ.特性 || []).length ? `<div class="f-section-title"><i class="ri-sparkling-line"></i> 特性</div><div class="f-effect-box">${organ.特性.join('、')}</div>` : ''}
-      ${organ.技能 ? `<div class="f-section-title"><i class="ri-flashlight-line"></i> 技能</div><div class="f-effect-box"><b>${organ.技能.名称}</b><br>${organ.技能.描述 || ''}<br><span style="color:#636e72;font-size:0.8rem;">剩余 ${organ.技能.剩余次数 ?? 0}/${organ.技能.最大次数 ?? 0} 次</span></div>` : ''}
-    </div>
-  `;
-
-  showDetailPopup('organ', organName, { ...organ, 名称: organName });
-});
     // 全选/取消全选
     $panel.on('change', '.batch-check-all', function () {
       const checked = $(this).prop('checked');
