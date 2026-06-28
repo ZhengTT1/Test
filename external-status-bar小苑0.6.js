@@ -7878,8 +7878,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     const $organInfo = $panel.find('#organ-status-info');
     if ($organInfo.length) {
-      const healthColor = 健康度Val > 70 ? '#2d6a4f' : (健康度Val > 30 ? '#d4a853' : '#c0392b');
-      const rejectColor = 排斥等级 === 0 ? '#2d6a4f' : (排斥等级 < 3 ? '#d4a853' : '#c0392b');
+      const healthColor = 健康度Val > 70 ? '#2ecc71' : (健康度Val > 30 ? '#f1c40f' : '#e74c3c');
+      const rejectColor = 排斥等级 === 0 ? '#2ecc71' : (排斥等级 < 3 ? '#f1c40f' : '#e74c3c');
       $organInfo.html(`
         <div class="organ-status-header-row">
           <span><i class="ri-heart-pulse-line animate-pulse"></i> 排斥健康度: <b style="color:${healthColor}">${健康度Val}%</b></span>
@@ -7899,20 +7899,20 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     }
 
     const attrsDef = [
-      { key: "健康度", name: "健康度", icon: "ri-heart-pulse-line", default: 1 },
-      { key: "视觉", name: "视觉", icon: "ri-eye-line", default: 2 },
-      { key: "坚韧", name: "坚韧", icon: "ri-shield-cross-line", default: 4.5 },
-      { key: "神经传递效率", name: "神经传递", icon: "ri-flashlight-line", default: 1 },
-      { key: "血液过滤效率", name: "血液过滤", icon: "ri-drop-line", default: 2 },
-      { key: "解毒效率", name: "解毒效率", icon: "ri-flask-line", default: 1 },
-      { key: "新陈代谢效率", name: "新陈代谢", icon: "ri-speed-up-line", default: 1 },
-      { key: "肺活量", name: "肺活量", icon: "ri-windy-line", default: 2 },
-      { key: "耐力", name: "耐力", icon: "ri-heart-3-line", default: 2 },
-      { key: "消化效率", name: "消化效率", icon: "ri-restaurant-line", default: 1 },
-      { key: "营养获取效率", name: "营养获取", icon: "ri-hand-heart-line", default: 4 },
-      { key: "幸运", name: "幸运", icon: "ri-copper-coin-line", default: 1 },
-      { key: "速度", name: "速度", icon: "ri-run-line", default: 8 },
-      { key: "筋力", name: "筋力", icon: "ri-hand-sanitizer-line", default: 8 }
+      { key: "健康度", name: "健康度", icon: "ri-heart-pulse-line", default: 1, desc: "决定你的生命上限。当前数值变换导致生命值变动 {pct}%。" },
+      { key: "视觉", name: "视觉", icon: "ri-eye-line", default: 2, desc: "影响动态视力与感知。当前数值使你的动态视力与感知提升 {val}。" },
+      { key: "坚韧", name: "坚韧", icon: "ri-shield-cross-line", default: 4.5, desc: "抵御外来物理伤害。当前数值使你的易伤或防御发生 {pct}% 变动。" },
+      { key: "神经传递效率", name: "神经传递", icon: "ri-flashlight-line", default: 1, desc: "影响反应速度和敏捷先攻。当前数值使先攻发生 {pct}% 的变动。" },
+      { key: "血液过滤效率", name: "血液过滤", icon: "ri-drop-line", default: 2, desc: "体内血液循环净化能力。当前数值使流血恢复或再生发生 {pct}% 的变动。" },
+      { key: "解毒效率", name: "解毒效率", icon: "ri-flask-line", default: 1, desc: "身体对毒素的抗性。当前数值使药效/毒性持续时间发生 {val} 秒的变动。" },
+      { key: "新陈代谢效率", name: "新陈代谢", icon: "ri-speed-up-line", default: 1, desc: "影响经验获取率。当前数值使战斗经验获取率发生 {pct}% 的变动。" },
+      { key: "肺活量", name: "肺活量", icon: "ri-windy-line", default: 2, desc: "影响憋气与特殊环境生存时间。当前数值使窒息或气量上限发生 {pct}% 的变动。" },
+      { key: "耐力", name: "耐力", icon: "ri-heart-3-line", default: 2, desc: "提供战续和持久作战能力。当前数值使战续极限概率发生 {pct}% 变动。" },
+      { key: "消化效率", name: "消化效率", icon: "ri-restaurant-line", default: 1, desc: "吸收食物增益并抵抗有害物质。当前变动使食物抗毒性发生 {pct}% 变动。" },
+      { key: "营养获取效率", name: "营养获取", icon: "ri-hand-heart-line", default: 4, desc: "提升药剂和治疗法术的恢复量。当前变动使药效收益放大 {val} 倍。" },
+      { key: "幸运", name: "幸运", icon: "ri-copper-coin-line", default: 1, desc: "影响暴击概率及战利品质。当前变动使幸运一击触发几率提高 {pct}%。" },
+      { key: "速度", name: "速度", icon: "ri-run-line", default: 8, desc: "战术移动速度与敏捷判定。当前变动使每回合移速增减 {val} 米。" },
+      { key: "筋力", name: "筋力", icon: "ri-hand-sanitizer-line", default: 8, desc: "负重与近战伤害的基础加成。当前变动使近战伤害增幅 {pct}%，负重增至 {weight}kg。" }
     ];
 
     const getAttrVal = (key, defaultVal) => {
@@ -7926,7 +7926,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     let hasDiff = false;
     let attrsGridHtml = '<div class="organ-attrs-header-bar">';
-    attrsGridHtml += `<span><i class="ri-pulse-line"></i> 生理指数反馈</span>`;
+    attrsGridHtml += `<span><i class="ri-pulse-line"></i> 生理指数反馈 (点击卡片查看详细影响)</span>`;
     attrsGridHtml += `<button class="btn-toggle-attrs" style="font-size:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#ffcccc; padding:2px 6px; border-radius:4px; cursor:pointer;">${showAllAttrs ? '精简显示' : '显示全部'}</button>`;
     attrsGridHtml += '</div>';
     
@@ -7943,19 +7943,26 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let valClass = '';
       let effectText = '';
       let effectClass = '';
-      
+      let detailedReport = '';
+
       if (attr.key === '健康度') {
         if (val < attr.default) {
           valClass = 'attr-down';
           const pct = Math.round((attr.default - val) * 100);
           effectText = val <= 0 ? '死亡' : `生命-${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 20);
           effectText = `生命+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "当前数值处于标准值，无额外生命上限加成嗷。";
+        }
       }
       else if (attr.key === '坚韧') {
         if (val < attr.default) {
@@ -7963,12 +7970,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) * 20);
           effectText = `易伤+${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{pct}', `+${pct} (易伤)`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 20);
           effectText = `防御+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct} (减伤)`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "物理抗性处于普通标准状态。";
+        }
       }
       else if (attr.key === '神经传递效率') {
         if (val < attr.default) {
@@ -7976,12 +7989,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) * 100);
           effectText = val <= 0 ? '瘫痪' : `迟钝+${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{pct}', `-${pct} (行动迟缓)`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `敏捷/先攻+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct} (出手更快)`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "神经突触反射效率处于标准状态。";
+        }
       }
       else if (attr.key === '血液过滤效率') {
         if (val < attr.default) {
@@ -7989,37 +8008,59 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) / 2 * 100);
           effectText = `流血/治疗降${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{pct}', `-${pct} (伤口愈合缓慢)`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const filterPct = Math.round((val - attr.default) * 10);
           effectText = `体质+${filterPct}%/再生`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${filterPct} (抗流血并缓慢再生)`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "红血球携氧与净化速度正常。";
+        }
       }
       else if (attr.key === '解毒效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = val <= 0 ? '中毒' : `Buff时间-${(attr.default - val).toFixed(1)}s`;
+          const diff = (attr.default - val).toFixed(1);
+          effectText = val <= 0 ? '中毒' : `Buff时间-${diff}s`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{val}', `-${diff}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 5);
           effectText = `Buff时间+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{val}', `+${pct}%`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "肝脏和肾脏的毒素分解效率处于正常基准。";
+        }
       }
       else if (attr.key === '视觉') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          if (val <= 0) effectText = '致盲';
-          else if (val < 1) effectText = '半盲';
-          else effectText = `感知-${(attr.default - val).toFixed(1)}`;
+          let diffText = "";
+          if (val <= 0) diffText = "致盲";
+          else if (val < 1) diffText = "半盲";
+          else diffText = `感知-${(attr.default - val).toFixed(1)}`;
+          effectText = diffText;
           effectClass = 'effect-debuff';
+          detailedReport = `当前受损：${diffText}。` + attr.desc.replace('{val}', `${val}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          effectText = `动态视力+${(val - attr.default).toFixed(1)}`;
+          const bonus = (val - attr.default).toFixed(1);
+          effectText = `动态视力+${bonus}`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{val}', `+${bonus}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "双眼焦距和感光度处于正常标准嗷。";
+        }
       }
       else if (attr.key === '新陈代谢效率') {
         if (val < attr.default) {
@@ -8027,12 +8068,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) * 100);
           effectText = val <= 0 ? '无经验/生手' : `经验-${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `经验+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "细胞能量转换效率处于人类普通水平。";
+        }
       }
       else if (attr.key === '肺活量') {
         if (val < attr.default) {
@@ -8040,36 +8087,54 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) / 2 * 100);
           effectText = val <= 0 ? '无法呼吸' : `窒息率+${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{pct}', `-${pct} (窒息率提高)`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 20);
           effectText = `屏息+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "肺泡气体交换量处于常规标准。";
+        }
       }
       else if (attr.key === '耐力') {
         if (val < attr.default) {
           valClass = 'attr-down';
           effectText = '体弱debuff';
           effectClass = 'effect-debuff';
+          detailedReport = "耐力衰退：陷入体弱状态，更容易产生疲劳。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `战续+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "持久战承受力与细胞呼吸深度正常。";
+        }
       }
       else if (attr.key === '消化效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
           effectText = val <= 0 ? '持续中毒' : '增益降低/中毒';
           effectClass = 'effect-debuff';
+          detailedReport = "肠胃消化机能低落，易受腐烂食物或毒素毒害。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 10);
           effectText = `抗毒+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "胃酸分泌及胃动力正常，正常消化食物增益。";
+        }
       }
       else if (attr.key === '营养获取效率') {
         if (val < attr.default) {
@@ -8077,11 +8142,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((1 - val / attr.default) * 100);
           effectText = val <= 0 ? '恢复药反噬' : `药效-${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = attr.desc.replace('{val}', `x${(val / attr.default).toFixed(1)}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          effectText = `回复量x${(val / attr.default).toFixed(1)}`;
+          const multiplier = (val / attr.default).toFixed(1);
+          effectText = `回复量x${multiplier}`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{val}', `${multiplier}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "对恢复类药物、治疗药水的营养吸收效率正常嗷。";
+        }
       }
       else if (attr.key === '幸运') {
         if (val < attr.default) {
@@ -8089,39 +8161,62 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const pct = Math.round((attr.default - val) * 10);
           effectText = val <= 0 ? '永久劣势' : `厄运率+${pct}%`;
           effectClass = 'effect-debuff';
+          detailedReport = "命运之神弃你而去。当前受到不幸诅咒。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
           const pct = Math.round((val - attr.default) * 5);
           effectText = `幸运一击+${pct}%`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${pct}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "命运气运稳定，无额外暴击或掉落判定增益。";
+        }
       }
       else if (attr.key === '速度') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = val < 1 ? '无法移动' : (val < 4 ? '行动受限' : '移速/先攻降');
+          let diffText = val < 1 ? '无法移动' : (val < 4 ? '行动受限' : '移速降');
+          effectText = diffText;
           effectClass = 'effect-debuff';
+          detailedReport = `当前受限：${diffText}。` + attr.desc.replace('{val}', `${val}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          effectText = `移动${val}m/先攻+${(val / 2).toFixed(1)}`;
+          const bonusSpeed = val;
+          const initiative = (val / 2).toFixed(1);
+          effectText = `移动${val}m/先攻+${initiative}`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{val}', `+${val - attr.default}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "移动步伐和步频正常，每轮标准位移量嗷。";
+        }
       }
       else if (attr.key === '筋力') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          effectText = val < 1 ? '完全瘫痪' : (val < 4 ? '禁用重装' : '近战/负重降');
+          let diffText = val < 1 ? '完全瘫痪' : (val < 4 ? '禁用重装' : '近战/负重降');
+          effectText = diffText;
           effectClass = 'effect-debuff';
+          detailedReport = `由于肌肉力量受损：${diffText}。` + attr.desc.replace('{pct}', `-${Math.round((1 - val/attr.default)*100)}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 5);
-          effectText = `伤害+${pct}%/负重${val * 10}k`;
+          const bonusDmg = Math.round((val - attr.default) * 5);
+          const weightCap = val * 10;
+          effectText = `伤害+${bonusDmg}%/负重${weightCap}k`;
           effectClass = 'effect-buff';
-        } else { effectText = '标准'; effectClass = 'effect-normal'; }
+          detailedReport = attr.desc.replace('{pct}', `+${bonusDmg}`).replace('{weight}', `${weightCap}`);
+        } else {
+          effectText = '标准';
+          effectClass = 'effect-normal';
+          detailedReport = "肌肉强度与骨骼支撑力处于正常水平。";
+        }
       }
 
       cardsHtml += `
-        <div class="organ-attr-card">
+        <div class="organ-attr-card" data-attr-title="${attr.name}" data-attr-val="${val}" data-attr-desc="${detailedReport}" style="cursor:pointer;">
           <div class="organ-attr-card-header">
             <span><i class="${attr.icon}"></i> ${attr.name}</span>
             <span class="organ-attr-value ${valClass}">${val}</span>
@@ -8134,7 +8229,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if (cardsHtml === '') {
       cardsHtml = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 12px; color: #888; font-size: 11px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.05); border-radius: 6px;">
-          <i class="ri-shield-check-line" style="color:#2ecc71; margin-right:4px;"></i> 所有生理机能处于标准状态
+          <i class="ri-shield-check-line" style="color:#2ecc71; margin-right:4px;"></i> 所有生理机能处于标准状态 (点击显示全部以查看数值)
         </div>
       `;
     }
@@ -8151,10 +8246,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       $organSet.after(attrsGridHtml);
     }
 
-    $panel.find('.btn-toggle-attrs').off('click').on('click', function() {
+    $panel.find('.btn-toggle-attrs').off('click').on('click', function(e) {
+      e.stopPropagation();
       const currentVal = $panel.data('organ-show-all-attrs') === 'true';
       $panel.data('organ-show-all-attrs', currentVal ? 'false' : 'true');
       updateOrganUI();
+    });
+
+    $panel.find('.organ-attr-card').off('click').on('click', function() {
+      const title = $(this).data('attr-title');
+      const val = $(this).data('attr-val');
+      const desc = $(this).data('attr-desc');
+      showToast('info', `<b>${title} (${val}) 状态评估</b><br/><span style="font-size:11px; opacity:0.9; line-height:1.4;">${desc}</span>`);
     });
 
     const slotsDef = [
@@ -8289,9 +8392,21 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     $("head").append(`<style id="${SCRIPT_ID}-styles">
 
 /* ========== 生物/器官系统血肉风格主题 ========== */
+.organ-attrs-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0 6px 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #adbac7;
+    border-bottom: 1px solid rgba(56, 139, 253, 0.2);
+    padding-bottom: 4px;
+}
+
 #view-organ {
-    background: radial-gradient(circle, #250a0a 0%, #110303 100%) !important;
-    border: 1px solid #5c1818 !important;
+    background: radial-gradient(circle, #1a1d24 0%, #0d0f13 100%) !important;
+    border: 1px solid #2d333b !important;
     border-radius: 8px;
     padding: 10px;
     color: #ffcccc !important;
@@ -8309,11 +8424,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     justify-content: space-between;
     margin-bottom: 12px;
     font-size: 13px;
-    background: rgba(192, 57, 43, 0.1);
-    border: 1px solid #4a1212;
+    background: rgba(56, 139, 253, 0.05);
+    border: 1px solid #30363d;
     padding: 8px 12px;
     border-radius: 6px;
-    color: #ffb3b3;
+    color: #adbac7;
 }
 
 .organ-set-active-row {
@@ -8351,8 +8466,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .organ-attr-card {
-    background: rgba(30, 8, 8, 0.6);
-    border: 1px solid #3d1010;
+    background: rgba(22, 27, 34, 0.8);
+    border: 1px solid #30363d;
     border-radius: 6px;
     padding: 6px 8px;
     min-height: 48px;
@@ -8363,9 +8478,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .organ-attr-card:hover {
-    border-color: #7d1c1c;
-    background: rgba(45, 12, 12, 0.7);
-    box-shadow: 0 0 8px rgba(192, 57, 43, 0.3);
+    border-color: #444c56;
+    background: rgba(34, 41, 51, 0.9);
+    box-shadow: 0 0 8px rgba(56, 139, 253, 0.15);
 }
 
 .organ-attr-card-header {
@@ -8373,14 +8488,14 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     justify-content: space-between;
     align-items: center;
     font-size: 11px;
-    color: #ffcccc;
+    color: #adbac7;
 }
 
 .organ-attr-value {
     font-family: var(--font-tech);
     font-weight: 700;
     font-size: 12px;
-    color: #ffb3b3;
+    color: #adbac7;
 }
 
 .organ-attr-value.attr-up {
