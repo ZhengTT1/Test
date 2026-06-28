@@ -8330,24 +8330,24 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
     // ===== 身体移植舱（装备栏人体拓扑图） =====
     const slotsDef = [
-      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: -3.0 },
-      { key: "心脏", icon: "ri-heart-pulse-fill", x: 72.0, y: 2.9 },
-      { key: "肺脏", icon: "ri-windy-fill", x: 88.1, y: 19.0 },
-      { key: "胃", icon: "ri-restaurant-fill", x: 94.0, y: 41.0 },
-      { key: "肠子", icon: "ri-loop-left-line", x: 88.1, y: 63.0 },
-      { key: "阑尾", icon: "ri-heart-add-fill", x: 72.0, y: 79.1 },
-      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 85.0 },
-      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 28.0, y: 79.1 },
-      { key: "脾脏", icon: "ri-shield-user-fill", x: 11.9, y: 63.0 },
-      { key: "肾脏", icon: "ri-drop-fill", x: 6.0, y: 41.0 },
-      { key: "肋骨", icon: "ri-split-cells-vertical", x: 11.9, y: 19.0 },
-      { key: "脊柱", icon: "ri-node-tree", x: 28.0, y: 2.9 }
+      { key: "眼球", icon: "ri-eye-fill", x: 50.0, y: -1.0 },
+      { key: "心脏", icon: "ri-heart-pulse-fill", x: 72.0, y: 4.9 },
+      { key: "肺脏", icon: "ri-windy-fill", x: 88.1, y: 21.0 },
+      { key: "胃", icon: "ri-restaurant-fill", x: 94.0, y: 43.0 },
+      { key: "肠子", icon: "ri-loop-left-line", x: 88.1, y: 65.0 },
+      { key: "阑尾", icon: "ri-heart-add-fill", x: 72.0, y: 81.1 },
+      { key: "肌肉", icon: "ri-hand-sanitizer-fill", x: 50.0, y: 87.0 },
+      { key: "肝脏", icon: "ri-contrast-drop-2-fill", x: 28.0, y: 81.1 },
+      { key: "脾脏", icon: "ri-shield-user-fill", x: 11.9, y: 65.0 },
+      { key: "肾脏", icon: "ri-drop-fill", x: 6.0, y: 43.0 },
+      { key: "肋骨", icon: "ri-split-cells-vertical", x: 11.9, y: 21.0 },
+      { key: "脊柱", icon: "ri-node-tree", x: 28.0, y: 4.9 }
     ];
 
     const svgLines = `
       <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
         <!-- 外接圆 -->
-        <circle cx="50" cy="50" r="38" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
+        <circle cx="50" cy="43" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
         <!-- 外接正方形 -->
         <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
         <!-- 对角线和水平垂直辅助线，增加达芬奇手稿风格 -->
@@ -8392,7 +8392,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;` : ''}">
         <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
           <!-- 外接圆 -->
-          <circle cx="50" cy="50" r="38" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
+          <circle cx="50" cy="43" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
           <!-- 外接正方形 -->
           <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
           <!-- 对角线和水平垂直辅助线 -->
@@ -8692,14 +8692,16 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .compact-attr-name {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     color: #24292f;
     margin-bottom: 3px;
+    border-bottom: 1px dashed rgba(90, 70, 50, 0.15);
+    padding-bottom: 2px;
 }
 
 .compact-brief {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
     margin-bottom: 2px;
 }
@@ -8717,8 +8719,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 
 .compact-desc {
-    color: #57606a;
-    line-height: 1.3;
+    font-size: 9px;
+    color: #665b49;
+    line-height: 1.25;
     word-break: break-all;
 }
 
