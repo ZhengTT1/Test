@@ -9394,6 +9394,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       <div class="organ-slots-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: 4px; margin-bottom: 8px;">
         <span><i class="ri-heart-pulse-fill"></i> 躯体</span>
         <div class="organ-bg-controls" style="display: flex; gap: 8px; font-size: 10.5px;">
+          <span id="organ-test-random" style="cursor: pointer; color: #d29922; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-gift-line"></i> 测试测试</span>
           <label for="organ-bg-upload" style="cursor: pointer; color: #0969da; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-upload-2-line"></i> 换底图</label>
           <input type="file" id="organ-bg-upload" accept="image/*" style="display: none;" />
           <span id="organ-bg-reset" style="cursor: pointer; color: #cf222e; font-weight: 600; display: ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'inline-flex' : 'none'}; align-items: center; gap: 2px;"><i class="ri-refresh-line"></i> 重置</span>
@@ -9580,6 +9581,99 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         } catch (e) {
           console.error("[RPG] Error showing organ popup:", e);
           alert("打开器官面板失败：" + e.message + "\n" + e.stack);
+        }
+      });
+
+      // 测试随机生成器官监听
+      $list.find('#organ-test-random').off('click').on('click', async function() {
+        try {
+          const races = ['人类', '天降者', '亡灵', '机械', '精灵', '兽人', '龙族'];
+          const slots = ['心脏', '肝脏', '脾脏', '肺脏', '肾脏', '眼球', '大脑', '脊椎', '神经网', '左臂', '右臂', '左腿', '右腿', '皮下层'];
+          const qualities = ['普通', '精良', '稀有', '史诗', '传说', '神话'];
+          const traitsPool = ['聚焦', '超频爆发', '重击强化', '充能', '过载', '复苏', '不屈', '寒冰', '剧毒', '风行'];
+          const labelsPool = ['初火', '虚空', '深渊', '机械', '圣光', '暗影'];
+          const setsPool = ['初火誓约', '机械主宰', '虚空行者', '亡灵协奏', '风暴使者'];
+
+          const randomRace = races[Math.floor(Math.random() * races.length)];
+          const randomSlot = slots[Math.floor(Math.random() * slots.length)];
+          const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
+          
+          const organName = `${randomRace}${randomSlot}`;
+          
+          const traits = [];
+          const labels = [];
+          
+          // 40% chance of random trait
+          if (Math.random() > 0.6) {
+            traits.push(traitsPool[Math.floor(Math.random() * traitsPool.length)]);
+          }
+          // 20% chance of "源火" unique trait, forcing "初火" label
+          if (Math.random() > 0.8) {
+            if (!traits.includes("源火")) traits.push("源火");
+            if (!labels.includes("初火")) labels.push("初火");
+          }
+          
+          // 40% chance of random label
+          if (Math.random() > 0.6) {
+            const randomLabel = labelsPool[Math.floor(Math.random() * labelsPool.length)];
+            if (!labels.includes(randomLabel)) labels.push(randomLabel);
+          }
+
+          const hasSet = Math.random() > 0.5;
+          const setName = hasSet ? setsPool[Math.floor(Math.random() * setsPool.length)] : undefined;
+
+          const baseAttrs = ['健康度', '视觉', '坚韧', '敏捷', '神经传递效率', '负重上限'];
+          const attrKey = baseAttrs[Math.floor(Math.random() * baseAttrs.length)];
+          const attrVal = parseFloat((Math.random() * 5 + 0.5).toFixed(1));
+          const subAttrs = {};
+          subAttrs[attrKey] = attrVal;
+          if (Math.random() > 0.6) {
+            const subAttrKey = baseAttrs[Math.floor(Math.random() * baseAttrs.length)];
+            if (subAttrKey !== attrKey) {
+              subAttrs[subAttrKey] = parseFloat((Math.random() * 3 + 0.1).toFixed(1));
+            }
+          }
+
+          const win = typeof getCore === 'function' ? getCore().window : window;
+          const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
+          if (!mvuData || !mvuData.stat_data) {
+            alert("获取存档数据失败");
+            return;
+          }
+          
+          const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
+          sys.器官系统 = sys.器官系统 || {};
+          sys.器官系统.器官背包 = sys.器官系统.器官背包 || {};
+          
+          let uniqueName = organName;
+          let counter = 1;
+          while (sys.器官系统.器官背包[uniqueName]) {
+            uniqueName = `${organName} +${counter}`;
+            counter++;
+          }
+
+          sys.器官系统.器官背包[uniqueName] = {
+            名称: uniqueName,
+            品质: randomQuality,
+            描述: `来自随机种族 ${randomRace} 的 ${randomSlot} 测试器官。`,
+            空: false,
+            强化等级: 0,
+            属性加成: subAttrs,
+            特性: traits,
+            标签: labels,
+            套装: setName
+          };
+
+          await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
+          
+          // Re-render UI
+          updateOrganUI();
+          
+          // Show prompt
+          alert(`成功获得：[${randomQuality}] ${uniqueName}\n特性: ${traits.join(', ') || '无'}\n标签: ${labels.join(', ') || '无'}\n套装: ${setName || '无'}`);
+        } catch (err) {
+          console.error(err);
+          alert("随机生成器官失败：" + err.message);
         }
       });
 
