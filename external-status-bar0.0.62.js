@@ -3324,7 +3324,7 @@ ${lockedSkillsJson}
     // 构建属性加成显示
     const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
     const bonusHtml = bonusEntries.length > 0
-      ? bonusEntries.map(([k, v]) => `<span class="f-bonus-tag">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`).join('')
+      ? bonusEntries.map(([k, v]) => `<span class="f-bonus-tag">${k} <em>${v > 0 ? '+' : ''}${formatAttrVal(v)}</em></span>`).join('')
       : '';
     const tagSection = renderFusionTagsSection(data.标签);
 
@@ -3382,7 +3382,7 @@ ${lockedSkillsJson}
     // 构建属性加成显示
     const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
     const bonusHtml = bonusEntries.length > 0
-      ? bonusEntries.map(([k, v]) => `<span class="f-bonus-tag">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`).join('')
+      ? bonusEntries.map(([k, v]) => `<span class="f-bonus-tag">${k} <em>${v > 0 ? '+' : ''}${formatAttrVal(v)}</em></span>`).join('')
       : '';
     const tagSection = renderFusionTagsSection(data.标签);
 
@@ -3502,7 +3502,7 @@ ${lockedSkillsJson}
     const gradeDisplay = getGradeDisplay(grade);
     const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
     const bonusHtml = bonusEntries.length > 0
-      ? bonusEntries.map(([k, v]) => `<span class="f-bonus-tag">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`).join('')
+      ? bonusEntries.map(([k, v]) => `<span class="f-bonus-tag">${k} <em>${v > 0 ? '+' : ''}${formatAttrVal(v)}</em></span>`).join('')
       : '';
     const tagSection = renderFusionTagsSection(data.标签);
 
@@ -4132,7 +4132,7 @@ ${lockedSkillsJson}
       .sort((a, b) => (rankMap[a[0]] ?? 999) - (rankMap[b[0]] ?? 999))
       .map(([k, raw]) => {
         const num = Number(raw);
-        const val = Number.isInteger(num) ? num : Number(num.toFixed(2));
+        const val = formatAttrVal(num);
         return `${k}${val > 0 ? '+' : ''}${val}`;
       })
       .join(' / ');
@@ -7919,7 +7919,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if (success) {
       showToast('success', `移植成功：已将 [${organItem.name}] 替换 [${slotName}] 槽位`);
       updateOrganUI();
-      setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
   };
 
@@ -7973,7 +7972,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if (success) {
       showToast('success', `剥离成功：已将 [${organ.名称}] 从 [${slotName}] 槽位剥离并放入背包`);
       updateOrganUI();
-      setTimeout(() => showOrganSelectPopup(baseSlot, slotName), 120);
     }
   };
 
@@ -8029,7 +8027,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       if (bonusEntries.length > 0) {
         statHtml += '<div class="organ-display-bonus" style="display:flex; flex-wrap:wrap; gap:4px;">';
         bonusEntries.forEach(([k, v]) => {
-          statHtml += `<span class="f-bonus-tag" style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600; font-style:normal;">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`;
+          statHtml += `<span class="f-bonus-tag" style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600; font-style:normal;">${k} <em>${v > 0 ? '+' : ''}${formatAttrVal(v)}</em></span>`;
         });
         statHtml += '</div>';
       } else {
@@ -8104,7 +8102,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         if (bonusEntries.length > 0) {
           tooltipContent += `<div style="font-weight: 600; color: #58a6ff; margin-top: 4px;">[属性加成]</div>`;
           bonusEntries.forEach(([k, v]) => {
-            tooltipContent += `<div style="margin-left: 4px;">· ${k} ${v > 0 ? '+' : ''}${v}</div>`;
+            tooltipContent += `<div style="margin-left: 4px;">· ${k} ${v > 0 ? '+' : ''}${formatAttrVal(v)}</div>`;
           });
         }
         const traits = organ.特性 || [];
@@ -8504,7 +8502,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       if (bonusEntries.length > 0) {
         statHtml += '<div style="display:flex; flex-wrap:wrap; gap:4px;">';
         bonusEntries.forEach(([k, v]) => {
-          statHtml += `<span style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600;">${k} <em>${v > 0 ? '+' : ''}${v}</em></span>`;
+          statHtml += `<span style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600;">${k} <em>${v > 0 ? '+' : ''}${formatAttrVal(v)}</em></span>`;
         });
         statHtml += '</div>';
       } else {
@@ -8628,6 +8626,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     { key: "肋骨", count: 4, icon: "ri-split-cells-vertical", x: 11.9, y: 29.0 },
     { key: "脊柱", count: 1, icon: "ri-node-tree", x: 28.0, y: 12.9 }
   ];
+
+  
+  const formatAttrVal = (v) => {
+    const num = Number(v);
+    if (!Number.isFinite(num)) return v;
+    return (Math.round(num * 10) / 10).toString();
+  };
 
   const updateOrganUI = () => {
     if (!$) {
@@ -8818,7 +8823,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let providersHtml = '';
       if (providers.length > 0) {
         providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-          来源：${providers.map(p => `${p.name}+${p.val}`).join(', ')}
+          来源：${providers.map(p => `${p.name}+${formatAttrVal(p.val)}`).join(', ')}
         </div>`;
       }
 
@@ -9104,7 +9109,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         <div class="organ-attr-compact-card ${edgeClass}" data-attr-key="${attr.key}">
           <div class="compact-header-vertical">
             <i class="${attr.icon}"></i>
-            <span class="organ-attr-value ${valClass}">${val}</span>
+            <span class="organ-attr-value ${valClass}">${formatAttrVal(val)}</span>
           </div>
           <div class="compact-detail">
             <div class="compact-attr-name">${attr.name}</div>
@@ -9201,7 +9206,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       let providersHtml = '';
       if (providers.length > 0) {
         providersHtml = `<div class="compact-providers" style="margin-top: 4px; border-top: 1px dashed rgba(90, 70, 50, 0.15); padding-top: 3px; font-size: 9.5px; color: #8c7e65; font-weight: 500; line-height: 1.2;">
-          来源：${providers.map(p => `${p.name}+${p.val}`).join(', ')}
+          来源：${providers.map(p => `${p.name}+${formatAttrVal(p.val)}`).join(', ')}
         </div>`;
       }
 
@@ -9240,7 +9245,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         <div class="organ-attr-compact-card custom-attr-card ${edgeClass}" data-attr-key="${k}">
           <div class="compact-header-vertical" style="color: #2ea87a;">
             <i class="${customIcon}"></i>
-            <span class="organ-attr-value ${valClass}" style="font-size: 9.5px;">${val}</span>
+            <span class="organ-attr-value ${valClass}" style="font-size: 9.5px;">${formatAttrVal(val)}</span>
           </div>
           <div class="compact-detail">
             <div class="compact-attr-name">${k}</div>
