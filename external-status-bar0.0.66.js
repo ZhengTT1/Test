@@ -8754,7 +8754,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
       });
       
-      let finalVal = baseVal + activeBonusSum;
+      // 高于初始值的属性加成改为百分比增长：每多1点提高5%对应初始数值，避免膨胀
+      const initialValue = defaultVal; // 角色在默认器官下的初始属性值
+      const excessBonus = activeBonusSum - nativeBonusSum; // 超出初始器官加成的部分
+      let finalVal;
+      if (excessBonus > 0) {
+        // 超出部分按每1点增加5%初始值计算
+        finalVal = initialValue * (1 + excessBonus * 0.05);
+      } else {
+        // 低于或等于初始值时直接累加（不惩罚）
+        finalVal = baseVal + activeBonusSum;
+      }
       if (key === '健康度' && race && (race.includes('亡灵') || race.includes('不死'))) {
         let undeadOrganCount = 0;
         expandedSlots.forEach(slot => {
