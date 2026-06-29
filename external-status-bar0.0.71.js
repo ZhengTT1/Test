@@ -9119,29 +9119,10 @@ let slotsHtml = `
       const 排异药剂数量 = (data?.人物?.器官系统?.排异药剂数量 !== undefined) ? data.人物.器官系统.排异药剂数量 : 0;
       const $medicineCount = $panel.find('.organ-medicine-count');
       if ($medicineCount.length) {
-        $medicineCount.text(`${排异药剂数量} 瓶`);
+        $medicineCount.text(`${排异药剂数量}`);
       }
 
-      $panel.find('#btn-test-get-medicine').off('click').on('click', async function() {
-        const win = typeof getCore === 'function' ? getCore().window : window;
-        const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
-        if (!mvuData || !mvuData.stat_data) {
-          showToast('error', '无法获取 MVU 数据');
-          return;
-        }
-        const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
-        sys.器官系统 = sys.器官系统 || {};
-        sys.器官系统.排异药剂数量 = (sys.器官系统.排异药剂数量 || 0) + 5;
-        const saved = await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
-        if (saved) {
-          showToast('success', '已成功获取 5 瓶排异药剂');
-          updateOrganUI();
-        } else {
-          showToast('error', '保存数据失败');
-        }
-      });
-
-      $panel.find('#btn-use-medicine').off('click').on('click', function() {
+      $panel.find('#organ-medicine-card').off('click').on('click', function() {
         const d2 = fetchLatestMvuData();
         const sys = d2?.人物?.器官系统;
         const 列表 = sys?.器官列表 || {};
