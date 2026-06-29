@@ -9679,19 +9679,63 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             '脾脏': ['健康度'],
             '阑尾': ['幸运']
           };
-          const qualityMult = { '普通': 1.0, '精良': 1.3, '稀有': 1.6, '史诗': 2.0, '传说': 2.5, '神话': 3.0 }[randomQuality] || 1.0;
+
+          // === 数值规范化：固定预算分配 ===
+          // 品质越高，预算越大；词条越多，单条数值越低
+          const qualityBudget = {
+            '普通': 2.0,
+            '精良': 3.0,
+            '稀有': 4.5,
+            '史诗': 6.0,
+            '传说': 8.0,
+            '神话': 10.0
+          };
+          const budget = qualityBudget[randomQuality] || 2.0;
+
           const attrPool = attrPools[randomSlot] || ['健康度'];
+          // 决定属性词条数量 (1~3)
+          // 普通/精良: 80% 1条, 20% 2条
+          // 稀有/史诗: 30% 1条, 50% 2条, 20% 3条
+          // 传说/神话: 10% 1条, 40% 2条, 50% 3条
+          let attrCount = 1;
+          const qIdx = ['普通','精良','稀有','史诗','传说','神话'].indexOf(randomQuality);
+          const dice = Math.random();
+          if (qIdx >= 5) { // 神话
+            attrCount = dice < 0.1 ? 1 : (dice < 0.5 ? 2 : 3);
+          } else if (qIdx >= 4) { // 传说
+            attrCount = dice < 0.1 ? 1 : (dice < 0.5 ? 2 : 3);
+          } else if (qIdx >= 3) { // 史诗
+            attrCount = dice < 0.3 ? 1 : (dice < 0.8 ? 2 : 3);
+          } else if (qIdx >= 2) { // 稀有
+            attrCount = dice < 0.3 ? 1 : (dice < 0.8 ? 2 : 3);
+          } else { // 普通/精良
+            attrCount = dice < 0.8 ? 1 : 2;
+          }
+
+          // 随机抽取属性条目
+          const selectedAttrs = [];
+          const poolCopy = [...attrPool];
+          for (let i = 0; i < Math.min(attrCount, poolCopy.length); i++) {
+            const idx = Math.floor(Math.random() * poolCopy.length);
+            selectedAttrs.push(poolCopy.splice(idx, 1)[0]);
+          }
+
+          // 平均分配预算，但给主属性略微加权 (1.2倍)
           const subAttrs = {};
-          attrPool.forEach(attr => {
-            subAttrs[attr] = parseFloat(((Math.random() * 2.5 + 0.5) * qualityMult).toFixed(1));
-          });
-          // 30% chance to add a secondary attribute
-          if (Math.random() > 0.7) {
-            const secondaryPool = ['健康度', '坚韧', '神经传递效率'].filter(x => !attrPool.includes(x));
-            if (secondaryPool.length > 0) {
-              const secAttr = secondaryPool[Math.floor(Math.random() * secondaryPool.length)];
-              subAttrs[secAttr] = parseFloat(((Math.random() * 1.5 + 0.2) * qualityMult).toFixed(1));
-            }
+          if (selectedAttrs.length === 1) {
+            subAttrs[selectedAttrs[0]] = Math.round(budget * 10) / 10;
+          } else if (selectedAttrs.length === 2) {
+            const weights = [1.2, 0.8];
+            const totalW = 2.0;
+            selectedAttrs.forEach((attr, i) => {
+              subAttrs[attr] = Math.round((budget * weights[i] / totalW) * 10) / 10;
+            });
+          } else if (selectedAttrs.length >= 3) {
+            const weights = [1.2, 0.9, 0.9];
+            const totalW = 3.0;
+            selectedAttrs.forEach((attr, i) => {
+              subAttrs[attr] = Math.round((budget * weights[i] / totalW) * 10) / 10;
+            });
           }
 
           const win = typeof getCore === 'function' ? getCore().window : window;
