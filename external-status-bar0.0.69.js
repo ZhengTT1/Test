@@ -9001,6 +9001,7 @@ let slotsHtml = `
       let slotClass = 'empty-organ';
       let nameColor = '#57606a';
       let setBadge = '';
+      let isUnadapted = false;
 
       if (allEmpty) {
         displayName = `[${s.key}]`;
@@ -9040,7 +9041,7 @@ let slotsHtml = `
           }
         }
         // 检测是否未排异
-        const isUnadapted = firstOrgan && firstOrgan.已排异 !== true;
+        isUnadapted = firstOrgan && firstOrgan.已排异 !== true;
         if (isUnadapted) {
           qClass += ' quality-unadapted';
         }
