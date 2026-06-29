@@ -8288,16 +8288,21 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           }
           .organ-candidate-card-grid:hover { 
             border-color: #0969da !important; 
-            box-shadow: 0 0 0 1px #0969da !important;
+            box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
           }
-        
-#organ-medicine-card:hover {
-  border-color: #8e44ad;
-  background: rgba(142, 68, 173, 0.12);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(142, 68, 173, 0.15);
-}
-</style>
+          .medicine-grid-item:hover {
+            border-color: #0969da !important;
+            box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
+          }
+          .equip-target-slot-card:hover {
+            border-color: #0969da !important;
+            box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
+          }
+          .sub-slot-pick-item:hover {
+            border-color: #0969da !important;
+            box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
+          }
+        </style>
       `);
     } else {
       // Style already exists, let's update it dynamically by replacing style element content
@@ -8357,7 +8362,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
         .organ-candidate-card-grid:hover { 
           border-color: #0969da !important; 
-          box-shadow: 0 0 0 1px #0969da !important;
+          box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
+        }
+        .medicine-grid-item:hover {
+          border-color: #0969da !important;
+          box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
+        }
+        .equip-target-slot-card:hover {
+          border-color: #0969da !important;
+          box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
+        }
+        .sub-slot-pick-item:hover {
+          border-color: #0969da !important;
+          box-shadow: 0 0 6px rgba(9, 105, 218, 0.45) !important;
         }
       `);
     }
@@ -8511,49 +8528,54 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       const qColor = qColorMap[organ.品质] || '#57606a';
       const baseSlot = slotKey.includes('_') ? slotKey.split('_')[0] : slotKey;
       const slotIcon = getOrganIconClass(baseSlot, organ.名称);
-      const level = (organ.强化等级 && organ.强化等级 > 0) ? ' +' + organ.强化等级 : '';
+      const level = (organ.强化等级 && organ.强化等级 > 0) ? ` +${organ.强化等级}` : '';
       const organName = stripNativePrefix(organ.名称 || '未知器官');
       const bonus = organ.属性加成 || {};
       const bonusEntries = Object.entries(bonus).filter(([, v]) => v !== 0);
       let tipParts = [];
-      tipParts.push('<b style="color:' + qColor + ';">' + organName + level + '</b>');
-      tipParts.push('部位: ' + slotKey + ' | 品质: ' + (organ.品质 || '普通'));
+      tipParts.push(`<b style="color:${qColor};">${organName}${level}</b>`);
+      tipParts.push(`部位: ${slotKey} | 品质: ${organ.品质 || '普通'}`);
       if (organ.描述) tipParts.push(organ.描述);
       if (bonusEntries.length > 0) {
         tipParts.push('── 属性加成 ──');
-        bonusEntries.forEach(([k, v]) => { tipParts.push('· ' + k + ' ' + (v > 0 ? '+' : '') + formatAttrVal(v)); });
+        bonusEntries.forEach(([k, v]) => { tipParts.push(`· ${k} ${v > 0 ? '+' : ''}${formatAttrVal(v)}`); });
       }
-      const escTip = tipParts.join('\n').replace(/"/g, '"');
-      itemsHtml += '        <div class="use-medicine-grid-item" data-slot="' + slotKey + '" data-tooltip="' + escTip + '" style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 4px;gap:3px;background:#fff;border:2px solid ' + qColor + '60;border-radius:6px;cursor:pointer;transition:all 0.15s;width:100%;aspect-ratio:1;">' +
-        '<div style="color:' + qColor + ';width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="' + slotIcon + '"></i></div>' +
-        '<span style="font-size:9px;color:' + qColor + ';font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;">' + organName + '</span>' +
-        '<span style="position:absolute;top:2px;right:3px;width:6px;height:6px;background:#cf222e;border-radius:50%;box-shadow:0 0 4px rgba(207,34,46,0.6);"></span>' +
-        '</div>\n';
+      const escapedTip = tipParts.join('<br>').replace(/"/g, '"').replace(/'/g, '&#39;');
+
+      itemsHtml += `
+        <div class="medicine-grid-item" data-slot="${slotKey}" data-tooltip-html="${escapedTip}" style="position: relative; width: 100%; height: 52px; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff; border: 2px solid ${qColor}60; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box; padding: 4px 2px;">
+          <span style="position:absolute;top:2px;right:3px;width:6px;height:6px;background:#cf222e;border-radius:50%;box-shadow:0 0 4px rgba(207,34,46,0.6);"></span>
+          <div style="color:${qColor};font-size:14px;line-height:1;"><i class="${slotIcon}"></i></div>
+          <div style="font-size:9px;color:${qColor};font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70px;">${organName}</div>
+        </div>
+      `;
     });
 
-    const html = '      <div id="' + SCRIPT_ID + '-popup" class="fusion-popup-overlay">\n' +
-      '        <div class="fusion-card organ-theme-card" style="width: 440px; --quality-color: #8e44ad; position: relative;">\n' +
-      '          <button class="popup-close"><i class="ri-close-line"></i></button>\n' +
-      '          <div id="organ-medicine-shared-tooltip" style="display:none;position:absolute;width:200px;background:rgba(36,41,47,0.98);border:1px solid rgba(255,255,255,0.15);color:#f6f8fa;border-radius:8px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:200;font-size:10px;pointer-events:none;line-height:1.4;word-break:break-all;"></div>\n' +
-      '          <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">\n' +
-      '            <div class="f-meta-row" style="font-size: 10px; color: #57606a;">\n' +
-      '              <span class="f-type">// 排异药剂</span>\n' +
-      '            </div>\n' +
-      '            <div class="f-title-row" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">\n' +
-      '              <span class="f-name" style="font-size: 14px; font-weight: 700; color: #6c3483;">选择需要排异的器官</span>\n' +
-      '              <span style="font-size: 10px; padding: 1px 6px; border-radius: 3px; background: rgba(142,68,173,0.1); color: #8e44ad; font-weight: 600;">剩余 ' + medicineCount + ' 瓶</span>\n' +
-      '            </div>\n' +
-      '          </div>\n' +
-      '          <div class="f-body" style="display: flex; flex-direction: column; gap: 8px;">\n' +
-      '            <div style="font-size: 10.5px; color: #57606a; line-height: 1.4;">\n' +
-      '              悬停查看器官详情，点击对其使用 1 瓶排异药剂。\n' +
-      '            </div>\n' +
-      '            <div class="use-medicine-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:320px;overflow-y:auto;padding:4px;">\n' +
-      '              ' + itemsHtml +
-      '            </div>\n' +
-      '          </div>\n' +
-      '        </div>\n' +
-      '      </div>\n';
+    const html = `
+      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
+        <div class="fusion-card organ-theme-card" style="width: 440px; --quality-color: #8e44ad; position: relative;">
+          <button class="popup-close"><i class="ri-close-line"></i></button>
+          <div id="organ-shared-tooltip" style="display:none;position:absolute;width:200px;background:rgba(36,41,47,0.98);border:1px solid rgba(255,255,255,0.15);color:#f6f8fa;border-radius:8px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:200;font-size:10px;pointer-events:none;line-height:1.4;word-break:break-all;"></div>
+          <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
+            <div class="f-meta-row" style="font-size: 10px; color: #57606a;">
+              <span class="f-type">// 排异药剂</span>
+            </div>
+            <div class="f-title-row" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+              <span class="f-name" style="font-size: 14px; font-weight: 700; color: #6c3483;">选择需要排异的器官</span>
+              <span style="font-size: 10px; padding: 1px 6px; border-radius: 3px; background: rgba(142,68,173,0.1); color: #8e44ad; font-weight: 600;">剩余 ${medicineCount} 瓶</span>
+            </div>
+          </div>
+          <div class="f-body" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 10.5px; color: #57606a; line-height: 1.4;">
+              悬停查看器官详情，点击对其使用 1 瓶排异药剂。
+            </div>
+            <div class="medicine-items-grid" style="display:grid;grid-template-columns:repeat(4,1fr)!important;gap:6px!important;margin-top:8px;max-height:180px;overflow-y:auto;padding:4px;width:100%;">
+              ${itemsHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
 
     const $panel2 = $(`#${SCRIPT_ID}-panel`);
     $panel2.find(`#${SCRIPT_ID}-popup`).remove();
@@ -8562,32 +8584,37 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     $popup.on('click', function(e) {
       if (e.target === this || $(e.target).closest('.popup-close').length) $(this).remove();
     });
-    $popup.on('mouseenter', '.use-medicine-grid-item', function() {
-      const tipContent = $(this).attr('data-tooltip');
-      if (!tipContent) return;
-      const $tip = $popup.find('#organ-medicine-shared-tooltip');
-      $tip.html(tipContent.replace(/\n/g, '<br>')).show();
+
+    // Shared tooltip engine (same as showOrganSelectPopup)
+    $popup.on('mouseenter', '.medicine-grid-item', function() {
+      const content = $(this).attr('data-tooltip-html');
+      if (!content) return;
+      const $tooltip = $popup.find('#organ-shared-tooltip');
+      $tooltip.html(content).show();
       const cardOff = $(this).offset();
       const popOff = $popup.find('.fusion-card').offset();
       const cH = $(this).outerHeight();
       const cW = $(this).outerWidth();
-      const tW = $tip.outerWidth();
-      const tH = $tip.outerHeight();
+      const tW = $tooltip.outerWidth();
+      const tH = $tooltip.outerHeight();
+      const popW = $popup.find('.fusion-card').outerWidth();
       let top = cardOff.top - popOff.top - tH - 8;
       let left = cardOff.left - popOff.left + (cW - tW) / 2;
       if (left < 10) left = 10;
-      if (left + tW > 420) left = 420 - tW - 10;
+      if (left + tW > popW - 10) left = popW - tW - 10;
       if (top < 10) top = cardOff.top - popOff.top + cH + 8;
-      $tip.css({ top: top + 'px', left: left + 'px' });
-    }).on('mouseleave', '.use-medicine-grid-item', function() {
-      $popup.find('#organ-medicine-shared-tooltip').hide();
+      $tooltip.css({ top: top + 'px', left: left + 'px' });
+    }).on('mouseleave', '.medicine-grid-item', function() {
+      $popup.find('#organ-shared-tooltip').hide();
     });
-    $popup.find('.use-medicine-grid-item').on('click', async function() {
+
+    $popup.find('.medicine-grid-item').on('click', async function() {
       const targetSlot = $(this).data('slot');
       $popup.remove();
       await applyRejectionMedicine(targetSlot);
     });
   };
+
 
 
   const applyRejectionMedicine = async (slotName) => {
@@ -8637,7 +8664,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       if (bonusEntries.length > 0) {
         statHtml += '<div style="display:flex; flex-wrap:wrap; gap:4px;">';
         bonusEntries.forEach(([k, v]) => {
-          statHtml += `<span style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:4px; font-weight:600;">${k} <em>${v > 0 ? '+' : ''}${formatAttrVal(v)}</em></span>`;
+          statHtml += `<span style="font-size:9.5px; background:rgba(9,105,218,0.06); color:#0969da; border:1px solid rgba(9,105,218,0.15); padding:1px 5px; border-radius:3px; font-weight:600;">${k} ${v>0?'+':''}${formatAttrVal(v)}</span>`;
         });
         statHtml += '</div>';
       } else {
@@ -8646,22 +8673,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       return statHtml;
     };
 
-    // 生成 12 种器官插槽选择网格 (一排6个, 2列的格式: 即 6行, 2列)
-    let targetSlotsHtml = `
-      <div class="target-slots-header" style="font-size: 11px; font-weight: 600; color: #4a3c31; margin-top: 12px; border-top: 1px solid #d0d7de; padding-top: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
-        <i class="ri-grid-line"></i> 选择装配部位 (点击直接装配，悬停查看多槽位)
-      </div>
-      <div class="target-slots-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
-    `;
+    // 生成 12 种器官插槽选择网格 (一排4个的正方形小卡片)
+    let itemsHtml = '';
     slotsDef.forEach(s => {
       const key = s.key;
       const count = s.count || 1;
-
       // 寻找当前等级最低/为空的子槽位
       let targetSubKey = '';
       let lowestLevel = Infinity;
       let lowestOrganName = '空';
-
       for (let i = 1; i <= count; i++) {
         const subKey = count > 1 ? `${key}_${i}` : key;
         const organ = 器官列表[subKey];
@@ -8673,44 +8693,38 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         }
       }
 
-      // 生成悬停时的具体槽位快速替换菜单
-      let subMenuItemsHtml = '';
-      for (let i = 1; i <= count; i++) {
-        const subKey = count > 1 ? `${key}_${i}` : key;
-        const organ = 器官列表[subKey];
-        const organName = (!organ || organ.空) ? '空' : organ.名称;
-        const displayName = count > 1 ? `${key} #${i}` : key;
-        subMenuItemsHtml += `
-          <div class="sub-menu-item" data-target-slot="${subKey}" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; font-size: 10px; border-radius: 4px; color: #24292f; cursor: pointer; transition: background 0.15s; margin-bottom: 2px;" onmouseover="this.style.background='#0969da'; this.style.color='#ffffff';" onmouseout="this.style.background='transparent'; this.style.color='#24292f';">
-            <span style="font-weight: 600;">${displayName}</span>
-            <span style="font-size: 8.5px; opacity: 0.7; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: right;">${organName}</span>
-          </div>
-        `;
+      // 悬停显示的详细信息
+      let tipParts = [];
+      tipParts.push(`<b style="color:#57606a;">${key}</b>`);
+      if (count > 1) {
+        tipParts.push(`${count} 个槽位 → 悬停选择具体序号`);
+        // 列出每个子槽位
+        for (let i = 1; i <= count; i++) {
+          const subKey = count > 1 ? `${key}_${i}` : key;
+          const organ = 器官列表[subKey];
+          const name = (!organ || organ.空) ? '空' : (organ.名称 || '未知');
+          const lv = (!organ || organ.空) ? '' : ((organ.强化等级 || 0) > 0 ? ` +${organ.强化等级}` : '');
+          tipParts.push(`#${i}: ${name}${lv}`);
+        }
+      } else {
+        tipParts.push(`当前: ${lowestOrganName}`);
       }
+      const escapedTip = tipParts.join('<br>').replace(/"/g, '"').replace(/'/g, '&#39;');
 
-      const hoverMenuHtml = `
-        <div class="slot-sub-menu" style="display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: #ffffff; border: 1px solid #d0d7de; box-shadow: 0 4px 16px rgba(0,0,0,0.18); border-radius: 8px; padding: 6px; z-index: 110; min-width: 180px; flex-direction: column; margin-bottom: 4px;">
-          <div style="font-size: 9px; color: #8c959f; font-weight: 600; padding: 2px 8px 5px 8px; border-bottom: 1px solid #eaeef2; margin-bottom: 4px; display: flex; align-items: center; gap: 3px;">
-            <i class="ri-list-unordered" style="font-size: 9px;"></i> 替换到具体槽位
-          </div>
-          ${subMenuItemsHtml}
-        </div>
-      `;
-
-      targetSlotsHtml += `
-        <div class="target-slot-btn" data-target-slot="${targetSubKey}" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; font-size: 11px; color: #24292f; transition: all 0.15s; min-height: 32px;" onmouseover="this.querySelector('.slot-sub-menu').style.display='flex'; this.style.borderColor='#0969da'; this.style.background='#eaeef2';" onmouseout="this.querySelector('.slot-sub-menu').style.display='none'; this.style.borderColor='#d0d7de'; this.style.background='#f6f8fa';">
-          <span style="display: flex; align-items: center; gap: 5px; min-width: 0; flex-shrink: 0;"><i class="${s.icon}" style="font-size: 12px; color: #57606a;"></i><span style="font-weight: 600;">${key}</span></span>
-          <span style="font-size: 9px; color: #8c959f; max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 4px;">${lowestOrganName}</span>
-          ${hoverMenuHtml}
+      itemsHtml += `
+        <div class="equip-target-slot-card" data-target-slot="${targetSubKey}" data-slot-key="${key}" data-slot-count="${count}" data-tooltip-html="${escapedTip}" style="position: relative; width: 100%; height: 52px; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff; border: 1px solid #d0d7de; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box; padding: 4px 2px;">
+          <div style="font-size:14px;color:#57606a;line-height:1;"><i class="${s.icon}"></i></div>
+          <div style="font-size:9px;color:#24292f;font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70px;">${key}</div>
+          ${count > 1 ? `<span style="position:absolute;top:2px;right:3px;font-size:7px;color:#0969da;font-weight:700;">×${count}</span>` : ''}
         </div>
       `;
     });
-    targetSlotsHtml += `</div>`;
 
-    let html = `
+    const html = `
       <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
-        <div class="fusion-card organ-theme-card" style="--quality-color: #0969da;">
+        <div class="fusion-card organ-theme-card" style="width: 440px; --quality-color: #0969da; position: relative;">
           <button class="popup-close"><i class="ri-close-line"></i></button>
+          <div id="organ-shared-tooltip" style="display:none;position:absolute;width:200px;background:rgba(36,41,47,0.98);border:1px solid rgba(255,255,255,0.15);color:#f6f8fa;border-radius:8px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:200;font-size:10px;pointer-events:none;line-height:1.4;word-break:break-all;"></div>
           <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
             <div class="f-meta-row" style="font-size: 10px; color: #57606a;">
               <span class="f-type">// 器官背包详情</span>
@@ -8725,11 +8739,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
               <div style="font-size: 10.5px; color: #57606a; line-height: 1.4;">${organItem.desc || '无描述'}</div>
               ${buildOrganStatsHtml(organItem.data)}
             </div>
-            ${targetSlotsHtml}
+            <div class="target-slots-header" style="font-size: 11px; font-weight: 600; color: #4a3c31; border-top: 1px solid #d0d7de; padding-top: 10px;">
+              <i class="ri-grid-line"></i> 选择装配部位 (悬停查看详情，点击装配)
+            </div>
+            <div class="equip-target-grid" style="display:grid;grid-template-columns:repeat(4,1fr)!important;gap:6px!important;max-height:220px;overflow-y:auto;padding:4px;width:100%;">
+              ${itemsHtml}
+            </div>
           </div>
         </div>
       </div>
     `;
+
     const $panel2 = $(`#${SCRIPT_ID}-panel`);
     $panel2.find(`#${SCRIPT_ID}-popup`).remove();
     $panel2.append(html);
@@ -8737,13 +8757,82 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     $popup.on('click', function (e) {
       if (e.target === this || $(e.target).closest('.popup-close').length) $(this).remove();
     });
-    // 绑定 12 种器官槽位 / 悬停具体子槽位的快速装配
-    $popup.find('.target-slot-btn, .sub-menu-item').on('click', function(e) {
+
+    // Shared tooltip engine
+    $popup.on('mouseenter', '.equip-target-slot-card', function() {
+      const content = $(this).attr('data-tooltip-html');
+      if (!content) return;
+      const $tooltip = $popup.find('#organ-shared-tooltip');
+      $tooltip.html(content).show();
+      const cardOff = $(this).offset();
+      const popOff = $popup.find('.fusion-card').offset();
+      const cH = $(this).outerHeight();
+      const cW = $(this).outerWidth();
+      const tW = $tooltip.outerWidth();
+      const tH = $tooltip.outerHeight();
+      const popW = $popup.find('.fusion-card').outerWidth();
+      let top = cardOff.top - popOff.top - tH - 8;
+      let left = cardOff.left - popOff.left + (cW - tW) / 2;
+      if (left < 10) left = 10;
+      if (left + tW > popW - 10) left = popW - tW - 10;
+      if (top < 10) top = cardOff.top - popOff.top + cH + 8;
+      $tooltip.css({ top: top + 'px', left: left + 'px' });
+    }).on('mouseleave', '.equip-target-slot-card', function() {
+      $popup.find('#organ-shared-tooltip').hide();
+    });
+
+    // Click: if single slot → direct equip; if multi slot → show sub-menu popup
+    $popup.on('click', '.equip-target-slot-card', function(e) {
       e.stopPropagation();
-      const targetSlot = $(this).data('target-slot');
-      if (!targetSlot) return;
-      $popup.remove();
-      equipOrganToSlot(targetSlot, organItem);
+      const count = parseInt($(this).data('slot-count')) || 1;
+      const key = $(this).data('slot-key');
+      if (count <= 1) {
+        const targetSlot = $(this).data('target-slot');
+        $popup.remove();
+        equipOrganToSlot(targetSlot, organItem);
+      } else {
+        // Multi slot: show sub-menu for specific slot selection
+        let subItemsHtml = '';
+        for (let i = 1; i <= count; i++) {
+          const subKey = `${key}_${i}`;
+          const organ = 器官列表[subKey];
+          const organName = (!organ || organ.空) ? '空' : (organ.名称 || '未知');
+          const lv = (!organ || organ.空) ? '' : ((organ.强化等级 || 0) > 0 ? ` +${organ.强化等级}` : '');
+          subItemsHtml += `<div class="sub-slot-pick-item" data-target-slot="${subKey}" style="position:relative;width:100%;height:52px;border-radius:6px;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;border:1px solid #d0d7de;cursor:pointer;transition:all 0.15s ease;box-sizing:border-box;padding:4px 2px;">
+            <div style="font-size:9px;color:#57606a;font-weight:700;">${key} #${i}</div>
+            <div style="font-size:8px;color:#8c959f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70px;">${organName}${lv}</div>
+          </div>`;
+        }
+        const subMenuHtml = `
+          <div id="${SCRIPT_ID}-sub-popup" class="fusion-popup-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);z-index:99999;display:flex;align-items:center;justify-content:center;">
+            <div class="fusion-card organ-theme-card" style="width: 340px; --quality-color: #0969da; position: relative;">
+              <button class="popup-close"><i class="ri-close-line"></i></button>
+              <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
+                <div class="f-title-row" style="display: flex; align-items: center; gap: 6px;">
+                  <span class="f-name" style="font-size: 14px; font-weight: 700; color: #24292f;">选择 ${key} 具体槽位</span>
+                </div>
+              </div>
+              <div class="f-body">
+                <div class="sub-slot-pick-grid" style="display:grid;grid-template-columns:repeat(4,1fr)!important;gap:6px!important;padding:4px;width:100%;">
+                  ${subItemsHtml}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        const $sub = $(subMenuHtml);
+        $sub.on('click', function(e) {
+          if (e.target === this || $(e.target).closest('.popup-close').length) $(this).remove();
+        });
+        $sub.on('click', '.sub-slot-pick-item', function(e) {
+          e.stopPropagation();
+          const targetSlot = $(this).data('target-slot');
+          $sub.remove();
+          $popup.remove();
+          equipOrganToSlot(targetSlot, organItem);
+        });
+        $('body').append($sub);
+      }
     });
   };
 
@@ -16380,7 +16469,7 @@ $panel.find('.organ-attrs-header-bar').remove();
                 <div class="traits-list" id="organ-page-list">
                   <div class="traits-empty"><i class="ri-ghost-line"></i> 暂无移植器官</div>
                 </div>
-                <div class="organ-medicine-card" id="organ-medicine-card" style="position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(142, 68, 173, 0.06); border: 1px solid rgba(142, 68, 173, 0.2); border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-top: 14px;" title="用于消除器官排异反应，每瓶可消除1个未排异器官的排斥反应。点击使用。">
+                <div class="organ-medicine-card" id="organ-medicine-card" style="position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(142, 68, 173, 0.06); border: 1px solid rgba(142, 68, 173, 0.2); border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-top: 14px;" title="用于消除器官排异反应，每瓶可消除1个未排异器官的排斥反应。点击使用。" onmouseover="this.style.borderColor='#8e44ad';this.style.background='rgba(142,68,173,0.12)';this.style.transform='translateY(-1px)';this.style.boxShadow='0 2px 8px rgba(142,68,173,0.15)'" onmouseout="this.style.borderColor='rgba(142,68,173,0.2)';this.style.background='rgba(142,68,173,0.06)';this.style.transform='';this.style.boxShadow=''">
                     <i class="ri-flask-fill" style="font-size: 20px; color: #8e44ad;"></i>
                     <span style="font-size: 12px; font-weight: 700; color: #6c3483;">排异药剂</span>
                     <span class="organ-medicine-count" style="position: absolute; bottom: 3px; right: 6px; font-size: 9px; color: #8e44ad; font-weight: 700;">0</span>
