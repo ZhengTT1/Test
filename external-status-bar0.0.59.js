@@ -8607,6 +8607,18 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const 健康度Val = organSystem.健康度 || 100;
     const 套装 = organSystem.已激活套装 || [];
 
+    const expandedSlots = [];
+    slotsDef.forEach(s => {
+      const count = s.count || 1;
+      if (count > 1) {
+        for (let i = 1; i <= count; i++) {
+          expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
+        }
+      } else {
+        expandedSlots.push({ key: s.key, baseKey: s.key });
+      }
+    });
+
     const $organInfo = $panel.find('#organ-status-info');
     if ($organInfo.length) {
       const healthColor = 健康度Val > 70 ? '#2ea87a' : (健康度Val > 30 ? '#d4a017' : '#cf222e');
@@ -8647,17 +8659,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     ];
 
     const getAttrVal = (key, defaultVal) => {
-      const expandedSlots = [];
-      slotsDef.forEach(s => {
-        const count = s.count || 1;
-        if (count > 1) {
-          for (let i = 1; i <= count; i++) {
-            expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
-          }
-        } else {
-          expandedSlots.push({ key: s.key, baseKey: s.key });
-        }
-      });
 
       let nativeBonusSum = 0;
       expandedSlots.forEach(slot => {
@@ -8717,18 +8718,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     let cardsHtml = '';
     attrsDef.forEach((attr, idxCard) => {
       const val = getAttrVal(attr.key, attr.default);
-      
-      const expandedSlots = [];
-      slotsDef.forEach(s => {
-        const count = s.count || 1;
-        if (count > 1) {
-          for (let i = 1; i <= count; i++) {
-            expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
-          }
-        } else {
-          expandedSlots.push({ key: s.key, baseKey: s.key });
-        }
-      });
 
       let providers = [];
       const groupedProviders = {};
@@ -9067,17 +9056,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     });
 
     // 收集额外的自定义属性与特性
-    const expandedSlots = [];
-    slotsDef.forEach(s => {
-      const count = s.count || 1;
-      if (count > 1) {
-        for (let i = 1; i <= count; i++) {
-          expandedSlots.push({ key: `${s.key}_${i}`, baseKey: s.key });
-        }
-      } else {
-        expandedSlots.push({ key: s.key, baseKey: s.key });
-      }
-    });
 
     const customAttrs = new Set();
     const activeTraits = {}; 
@@ -9327,20 +9305,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 
     // 获取所有槽位展开后的实例 key 列表，例如 ['眼球_1', '眼球_2', '肋骨_1', ...]
-    const getExpandedSlotKeys = () => {
-      const keys = [];
-      slotsDef.forEach(s => {
-        const count = s.count || 1;
-        if (count > 1) {
-          for (let i = 1; i <= count; i++) {
-            keys.push(`${s.key}_${i}`);
-          }
-        } else {
-          keys.push(s.key);
-        }
-      });
-      return keys;
-    };
+    const getExpandedSlotKeys = () => expandedSlots.map(s => s.key);
 
     const svgLines = `
       <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
