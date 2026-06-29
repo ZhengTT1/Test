@@ -8919,7 +8919,453 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       return finalVal;
     };
 
-    let attrsGridHtml = '<div class="organ-attrs-header-bar">';
+        // ===== 修复：先渲染核心插槽与背包，确保即使属性网格失败也能正常显示 =====
+    try {
+let slotsHtml = `
+      <div class="organ-slots-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: 4px; margin-bottom: 8px;">
+        <span><i class="ri-heart-pulse-fill"></i> 躯体</span>
+        <div class="organ-bg-controls" style="display: flex; gap: 8px; font-size: 10.5px;">
+          <span id="organ-test-random" style="cursor: pointer; color: #d29922; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-gift-line"></i> 测试测试</span>
+          <label for="organ-bg-upload" style="cursor: pointer; color: #0969da; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-upload-2-line"></i> 换底图</label>
+          <input type="file" id="organ-bg-upload" accept="image/*" style="display: none;" />
+          <span id="organ-bg-reset" style="cursor: pointer; color: #cf222e; font-weight: 600; display: ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'inline-flex' : 'none'}; align-items: center; gap: 2px;"><i class="ri-refresh-line"></i> 重置</span>
+        </div>
+      </div>
+      <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;` : ''}">
+        <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
+          <!-- 外接圆 -->
+          <circle cx="50" cy="51" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
+          <!-- 外接正方形 -->
+          <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
+          <!-- 对角线和水平垂直辅助线 -->
+          <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
+          <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
+          
+          <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
+          <!-- 姿态1：直立十字人体 -->
+          <circle cx="50" cy="17" r="3.2" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
+          <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(90, 70, 50, 0.25)" />
+          <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
+          <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+          <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+          <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+          <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
+
+          <!-- 姿态2：大字形展开人体 -->
+          <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
+          <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
+          <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
+          <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
+        </svg>
+    `;
+
+    const getOrganLevelColor = (lvl) => {
+      if (!lvl || lvl <= 0) return '#4a3c31'; // 古典铁锈褐
+      if (lvl <= 3) return '#1a7f37'; // 精良绿
+      if (lvl <= 6) return '#0969da'; // 稀有蓝
+      if (lvl <= 9) return '#8250df'; // 史诗紫
+      return '#cf222e'; // 传说红
+    };
+
+    // 只渲染12个品类的大圆圈插槽（与上个版本完全一致的主界面显示种类）
+    slotsDef.forEach(s => {
+      const count = s.count || 1;
+      let activeCount = 0;
+      let firstOrgan = null;
+      let allNative = true;
+      let allEmpty = true;
+
+      for (let i = 1; i <= count; i++) {
+        const subKey = count > 1 ? `${s.key}_${i}` : s.key;
+        const organInList = 器官列表[subKey];
+        const isEmpty = !!organInList && organInList.空;
+        const isEquipped = !!organInList && !organInList.空;
+        const isNative = !organInList;
+
+        if (!isEmpty) {
+          activeCount++;
+          if (isEquipped && !firstOrgan) {
+            firstOrgan = organInList;
+          }
+          if (!isNative) {
+            allNative = false;
+          }
+          allEmpty = false;
+        }
+      }
+
+      let displayName = '';
+      let qClass = 'quality-default';
+      let borderStyle = '';
+      let lvlColor = '#57606a';
+      let slotClass = 'empty-organ';
+      let nameColor = '#57606a';
+      let setBadge = '';
+
+      if (allEmpty) {
+        displayName = `[${s.key}]`;
+        qClass = 'is-empty';
+        slotClass = 'is-empty';
+        nameColor = '#afb8c1';
+      } else {
+        let baseName = '';
+        let level = 0;
+        if (firstOrgan) {
+          baseName = firstOrgan.名称 || s.key;
+          level = firstOrgan.强化等级 || 0;
+          allNative = false;
+        } else {
+          baseName = `人类${s.key}`;
+        }
+
+        const organLevel = level > 0 ? ` +${level}` : "";
+        const suffix = (count > 1) ? ` (${activeCount}/${count})` : "";
+        displayName = `${baseName}${organLevel}${suffix}`;
+        
+        if (firstOrgan && firstOrgan.套装) {
+          setBadge = `<span class="organ-set-tag-badge" style="display:inline-block; font-size:7px; background:#d29922; color:#fff; padding:0 2px; border-radius:3px; margin-left:3px; font-weight:700; vertical-align:middle;">${firstOrgan.套装}</span>`;
+        }
+
+        lvlColor = getOrganLevelColor(level);
+        nameColor = allNative ? '#8c8c8c' : lvlColor;
+
+        if (!allNative) {
+          slotClass = 'has-organ';
+          const quality = firstOrgan?.品质 || '普通';
+          if (quality === '稀有' || quality === '史诗') qClass = 'quality-rare';
+          else if (quality === '传说' || quality === '神话') qClass = 'quality-legendary';
+          else if (quality === '诅诅' || quality === '诅咒') qClass = 'quality-cursed';
+          if (level > 0) {
+            borderStyle = `border-color: ${lvlColor} !important; box-shadow: 0 0 5px ${lvlColor}aa;`;
+          }
+        }
+        // 检测是否未排异
+        const isUnadapted = firstOrgan && firstOrgan.已排异 !== true;
+        if (isUnadapted) {
+          qClass += ' quality-unadapted';
+        }
+      }
+
+      const unadaptedBadge = isUnadapted ? `<span class="organ-unadapted-badge" style="position:absolute; top:-3px; right:-3px; width:14px; height:14px; background:#cf222e; color:#fff; border-radius:50%; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 0 4px rgba(207,34,46,0.6); z-index:20; border:1.5px solid #fbf8ef;" title="未排异">!</span>` : '';
+      slotsHtml += `
+        <div class="organ-gear-slot ${slotClass} ${qClass}" 
+             style="top: ${s.y}%; left: ${s.x}%; cursor: pointer;" 
+             data-slot-key="${s.key}">
+          <div class="organ-gear-circle" style="${borderStyle}">
+            <i class="${s.icon}"></i>
+            ${unadaptedBadge}
+          </div>
+          <div class="organ-gear-label-box">
+            <span class="organ-gear-val-name" style="color: ${nameColor};">${displayName}${setBadge}</span>
+          </div>
+        </div>
+      `;
+    });
+    slotsHtml += '</div>';
+
+    const $list = $panel.find('#organ-page-list');
+    if ($list.length) {
+      $list.html(slotsHtml);
+      // (backpack, medicine, click handlers continue directly below inside if)
+      const allBackpackOrgans = findAllBackpackOrgans(data);
+      const $backpackGrid = $panel.find('#organ-backpack-grid');
+      const $backpackCount = $panel.find('.organ-backpack-count');
+      if ($backpackGrid.length) {
+        $backpackCount.text(`${allBackpackOrgans.length} 件`);
+        if (allBackpackOrgans.length === 0) {
+          $backpackGrid.html(`
+            <div class="organ-backpack-empty" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; color: #afb8c1; font-size: 11px; text-align: center; gap: 4px;">
+              <i class="ri-briefcase-3-line" style="font-size: 22px; color: #d0d7de;"></i>
+              <span>背包中暂无可用器官配件</span>
+            </div>
+          `);
+        } else {
+          const qualityColors = { '稀有': '#9b51e0', '史诗': '#9b51e0', '传说': '#f2994a', '神话': '#f2994a', '诅诅': '#eb5757', '诅咒': '#eb5757', '普通': '#57606a' };
+          let backpackHtml = '';
+          allBackpackOrgans.forEach((item, idx) => {
+            const color = qualityColors[item.quality] || '#57606a';
+            const slotGuess = item.data?.部位 || guessSlotFromOrganName(item.name) || '通用';
+            const level = item.level > 0 ? ` +${item.level}` : '';
+            const backpackSetBadge = item.data?.套装 ? `<span class="backpack-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${item.data.套装}</span>` : '';
+            // 背包内已排异标识 (右上角绿色勾)
+            const adaptedBadge = item.data?.已排异 === true ? `<span class="backpack-adapted-badge" style="position: absolute; top: 1px; right: 1px; font-size: 7px; background: #2ea87a; color: #fff; padding: 0 3px; border-radius: 2px; line-height: 1.2; font-weight: 700;" title="已排异">✓</span>` : '';
+            backpackHtml += `
+              <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
+                   style="position: relative; border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
+                ${backpackSetBadge}
+                ${adaptedBadge}
+                <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                  <i class="${getOrganIconClass(slotGuess, item.name)}"></i>
+                </span>
+                <span class="inv-item-name" style="color: ${color}; font-size: 9px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;">${stripNativePrefix(item.name)}${level}</span>
+              </div>
+            `;
+          });
+          $backpackGrid.html(backpackHtml);
+
+          // 绑定点击
+          $backpackGrid.find('.organ-backpack-item').off('click').on('click', function() {
+            const idx = $(this).data('bp-idx');
+            const item = allBackpackOrgans[idx];
+            if (item) showOrganItemDetailPopup(item);
+          });
+        }
+      }
+
+      // 渲染排异药剂数量并绑定按钮
+      const 排异药剂数量 = (data?.人物?.器官系统?.排异药剂数量 !== undefined) ? data.人物.器官系统.排异药剂数量 : 0;
+      const $medicineCount = $panel.find('.organ-medicine-count');
+      if ($medicineCount.length) {
+        $medicineCount.text(`${排异药剂数量} 瓶`);
+      }
+
+      $panel.find('#btn-test-get-medicine').off('click').on('click', async function() {
+        const win = typeof getCore === 'function' ? getCore().window : window;
+        const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
+        if (!mvuData || !mvuData.stat_data) {
+          showToast('error', '无法获取 MVU 数据');
+          return;
+        }
+        const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
+        sys.器官系统 = sys.器官系统 || {};
+        sys.器官系统.排异药剂数量 = (sys.器官系统.排异药剂数量 || 0) + 5;
+        const saved = await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
+        if (saved) {
+          showToast('success', '已成功获取 5 瓶排异药剂');
+          updateOrganUI();
+        } else {
+          showToast('error', '保存数据失败');
+        }
+      });
+
+      $panel.find('#btn-use-medicine').off('click').on('click', function() {
+        const d2 = fetchLatestMvuData();
+        const sys = d2?.人物?.器官系统;
+        const 列表 = sys?.器官列表 || {};
+        const 药数量 = (sys?.排异药剂数量 !== undefined) ? sys.排异药剂数量 : 0;
+        if (药数量 <= 0) {
+          showToast('warn', '排异药剂不足，无法使用');
+          return;
+        }
+        const 未排异槽位 = Object.entries(列表).filter(([k, o]) => o && !o.空 && o.已排异 !== true).map(([k]) => k);
+        if (未排异槽位.length === 0) {
+          showToast('info', '当前没有需要排异的器官');
+          return;
+        }
+        showUseMedicinePopup(未排异槽位, 药数量);
+      });
+      
+      // 绑定部位插槽点击
+      $list.find('.organ-gear-slot').off('click').on('click', function() {
+        try {
+          const slotKey = $(this).data('slot-key');
+          console.log("[RPG] Organ slot clicked:", slotKey);
+          showOrganSelectPopup(slotKey);
+        } catch (e) {
+          console.error("[RPG] Error showing organ popup:", e);
+          alert("打开器官面板失败：" + e.message + "\n" + e.stack);
+        }
+      });
+
+      // 测试随机生成器官监听
+      $list.find('#organ-test-random').off('click').on('click', async function() {
+        try {
+          const races = ['人类', '天降者', '亡灵', '机械', '精灵', '兽人', '龙族'];
+          const slots = ['心脏', '肝脏', '脾脏', '肺脏', '肾脏', '眼球', '脊柱', '神经网', '肌肉', '肋骨', '阑尾', '胃', '肠子'];
+          const qualities = ['普通', '精良', '稀有', '史诗', '传说', '神话'];
+          const traitsPool = ['聚焦', '超频爆发', '重击强化', '充能', '过载', '复苏', '不屈', '寒冰', '剧毒', '风行'];
+          const labelsPool = ['初火', '虚空', '深渊', '机械', '圣光', '暗影'];
+          const setsPool = ['初火誓约', '机械主宰', '虚空行者', '亡灵协奏', '风暴使者'];
+
+          const randomRace = races[Math.floor(Math.random() * races.length)];
+          const randomSlot = slots[Math.floor(Math.random() * slots.length)];
+          const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
+
+          const organName = `${randomRace}${randomSlot}`;
+
+          const traits = [];
+          const labels = [];
+
+          // 40% chance of random trait
+          if (Math.random() > 0.6) {
+            traits.push(traitsPool[Math.floor(Math.random() * traitsPool.length)]);
+          }
+          // 20% chance of "源火" unique trait, forcing "初火" label
+          if (Math.random() > 0.8) {
+            if (!traits.includes("源火")) traits.push("源火");
+            if (!labels.includes("初火")) labels.push("初火");
+          }
+
+          // 40% chance of random label
+          if (Math.random() > 0.6) {
+            const randomLabel = labelsPool[Math.floor(Math.random() * labelsPool.length)];
+            if (!labels.includes(randomLabel)) labels.push(randomLabel);
+          }
+
+          const hasSet = Math.random() > 0.5;
+          const setName = hasSet ? setsPool[Math.floor(Math.random() * setsPool.length)] : undefined;
+
+          // 根据器官种类生成符合逻辑的属性
+          const attrPools = {
+            '心脏': ['健康度'],
+            '眼球': ['视觉'],
+            '神经网': ['神经传递效率'],
+            '脊柱': ['负重上限', '坚韧'],
+            '肌肉': ['力量', '坚韧'],
+            '肋骨': ['坚韧'],
+            '肺脏': ['健康度', '耐力'],
+            '胃': ['消化效率', '健康度'],
+            '肠子': ['消化效率', '健康度'],
+            '肾脏': ['健康度'],
+            '肝脏': ['健康度'],
+            '脾脏': ['健康度'],
+            '阑尾': ['幸运']
+          };
+
+          // === 数值规范化：固定预算分配 ===
+          // 品质越高，预算越大；词条越多，单条数值越低
+          const qualityBudget = {
+            '普通': 2.0,
+            '精良': 3.0,
+            '稀有': 4.5,
+            '史诗': 6.0,
+            '传说': 8.0,
+            '神话': 10.0
+          };
+          const budget = qualityBudget[randomQuality] || 2.0;
+
+          const attrPool = attrPools[randomSlot] || ['健康度'];
+          // 决定属性词条数量 (1~3)
+          // 普通/精良: 80% 1条, 20% 2条
+          // 稀有/史诗: 30% 1条, 50% 2条, 20% 3条
+          // 传说/神话: 10% 1条, 40% 2条, 50% 3条
+          let attrCount = 1;
+          const qIdx = ['普通','精良','稀有','史诗','传说','神话'].indexOf(randomQuality);
+          const dice = Math.random();
+          if (qIdx >= 5) { // 神话
+            attrCount = dice < 0.1 ? 1 : (dice < 0.5 ? 2 : 3);
+          } else if (qIdx >= 4) { // 传说
+            attrCount = dice < 0.1 ? 1 : (dice < 0.5 ? 2 : 3);
+          } else if (qIdx >= 3) { // 史诗
+            attrCount = dice < 0.3 ? 1 : (dice < 0.8 ? 2 : 3);
+          } else if (qIdx >= 2) { // 稀有
+            attrCount = dice < 0.3 ? 1 : (dice < 0.8 ? 2 : 3);
+          } else { // 普通/精良
+            attrCount = dice < 0.8 ? 1 : 2;
+          }
+
+          // 随机抽取属性条目
+          const selectedAttrs = [];
+          const poolCopy = [...attrPool];
+          for (let i = 0; i < Math.min(attrCount, poolCopy.length); i++) {
+            const idx = Math.floor(Math.random() * poolCopy.length);
+            selectedAttrs.push(poolCopy.splice(idx, 1)[0]);
+          }
+
+          // 平均分配预算，但给主属性略微加权 (1.2倍)
+          const subAttrs = {};
+          if (selectedAttrs.length === 1) {
+            subAttrs[selectedAttrs[0]] = Math.round(budget * 10) / 10;
+          } else if (selectedAttrs.length === 2) {
+            const weights = [1.2, 0.8];
+            const totalW = 2.0;
+            selectedAttrs.forEach((attr, i) => {
+              subAttrs[attr] = Math.round((budget * weights[i] / totalW) * 10) / 10;
+            });
+          } else if (selectedAttrs.length >= 3) {
+            const weights = [1.2, 0.9, 0.9];
+            const totalW = 3.0;
+            selectedAttrs.forEach((attr, i) => {
+              subAttrs[attr] = Math.round((budget * weights[i] / totalW) * 10) / 10;
+            });
+          }
+
+          const win = typeof getCore === 'function' ? getCore().window : window;
+          const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
+          if (!mvuData || !mvuData.stat_data) {
+            alert("获取存档数据失败");
+            return;
+          }
+          
+          const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
+          sys.器官系统 = sys.器官系统 || {};
+          sys.器官系统.器官背包 = sys.器官系统.器官背包 || {};
+          
+          let uniqueName = organName;
+          let counter = 1;
+          while (sys.器官系统.器官背包[uniqueName]) {
+            uniqueName = `${organName} +${counter}`;
+            counter++;
+          }
+
+          sys.器官系统.器官背包[uniqueName] = {
+            名称: uniqueName,
+            品质: randomQuality,
+            描述: `来自随机种族 ${randomRace} 的 ${randomSlot} 测试器官。`,
+            空: false,
+            强化等级: 0,
+            属性加成: subAttrs,
+            特性: traits,
+            标签: labels,
+            套装: setName,
+            已排异: Math.random() > 0.5
+          };
+
+          await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
+          
+          // Re-render UI
+          updateOrganUI();
+          
+          // Show prompt
+          alert(`成功获得：[${randomQuality}] ${uniqueName}\n特性: ${traits.join(', ') || '无'}\n标签: ${labels.join(', ') || '无'}\n套装: ${setName || '无'}`);
+        } catch (err) {
+          console.error(err);
+          alert("随机生成器官失败：" + err.message);
+        }
+      });
+
+      // 动态文件上传背景监听
+      $list.find('#organ-bg-upload').off('change').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          if (file.size > 2 * 1024 * 1024) {
+            alert("上传的背景图请小于 2MB ！");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            const base64 = evt.target.result;
+            try {
+              localStorage.setItem(`${SCRIPT_ID}-organ-bg`, base64);
+              $list.find('.visual-organ-container').css('background-image', `url(${base64})`);
+              $list.find('.vitruvian-background-svg').css('opacity', '0');
+              $list.find('#organ-bg-reset').css('display', 'inline-flex');
+            } catch(err) {
+              alert("背景保存失败，可能是图片数据太大超出浏览器限制了！");
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // 动态重置背景监听
+      $list.find('#organ-bg-reset').off('click').on('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem(`${SCRIPT_ID}-organ-bg`);
+        $list.find('.visual-organ-container').css('background-image', 'none');
+        $list.find('.vitruvian-background-svg').css('opacity', '1');
+        $(this).css('display', 'none');
+        $list.find('#organ-bg-upload').val('');
+      });
+    }
+
+    } catch (e) {
+      console.error('[RPG] 构建/注入 slotsHtml 失败:', e);
+    }
+
+    // ===== 属性网格作为辅助渲染，失败不影响主界面 =====
+    try {
+let attrsGridHtml = '<div class="organ-attrs-header-bar">';
     attrsGridHtml += `<span><i class="ri-pulse-line"></i> 生理指数评估</span>`;
     attrsGridHtml += '</div>';
     
@@ -9526,7 +9972,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     attrsGridHtml += cardsHtml;
     attrsGridHtml += '</div>';
 
-    $panel.find('.organ-attrs-header-bar').remove();
+    
+$panel.find('.organ-attrs-header-bar').remove();
     $panel.find('.organ-attrs-grid').remove();
     $organSet.after(attrsGridHtml);
 
@@ -9575,443 +10022,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       </svg>
     `;
 
-    let slotsHtml = `
-      <div class="organ-slots-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d0d7de; padding-bottom: 4px; margin-bottom: 8px;">
-        <span><i class="ri-heart-pulse-fill"></i> 躯体</span>
-        <div class="organ-bg-controls" style="display: flex; gap: 8px; font-size: 10.5px;">
-          <span id="organ-test-random" style="cursor: pointer; color: #d29922; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-gift-line"></i> 测试测试</span>
-          <label for="organ-bg-upload" style="cursor: pointer; color: #0969da; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;"><i class="ri-upload-2-line"></i> 换底图</label>
-          <input type="file" id="organ-bg-upload" accept="image/*" style="display: none;" />
-          <span id="organ-bg-reset" style="cursor: pointer; color: #cf222e; font-weight: 600; display: ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'inline-flex' : 'none'}; align-items: center; gap: 2px;"><i class="ri-refresh-line"></i> 重置</span>
-        </div>
-      </div>
-      <div class="visual-organ-container" style="position: relative; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? `background-image: url('${localStorage.getItem(`${SCRIPT_ID}-organ-bg`)}'); background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;` : ''}">
-        <svg class="vitruvian-background-svg" viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transition: opacity 0.2s ease; ${localStorage.getItem(`${SCRIPT_ID}-organ-bg`) ? 'opacity: 0;' : ''}">
-          <!-- 外接圆 -->
-          <circle cx="50" cy="51" r="44" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
-          <!-- 外接正方形 -->
-          <rect x="12" y="12" width="76" height="76" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.5" fill="none" />
-          <!-- 对角线和水平垂直辅助线 -->
-          <line x1="50" y1="12" x2="50" y2="88" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
-          <line x1="12" y1="50" x2="88" y2="50" stroke="rgba(90, 70, 50, 0.12)" stroke-width="0.4" stroke-dasharray="1 1" />
-          
-          <!-- 达芬奇人体剪影（双姿态叠合，通过淡灰色填充与细致线条勾勒） -->
-          <!-- 姿态1：直立十字人体 -->
-          <circle cx="50" cy="17" r="3.2" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
-          <rect x="49" y="20.2" width="2" height="1.8" fill="rgba(90, 70, 50, 0.25)" />
-          <path d="M 46.5 22 L 53.5 22 L 52.5 48 L 47.5 48 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.35)" stroke-width="0.4" />
-          <path d="M 46.5 22 L 20 22 C 18.5 22 18.5 23.6 20 23.6 L 46.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-          <path d="M 53.5 22 L 80 22 C 81.5 22 81.5 23.6 80 23.6 L 53.5 23.6 Z" fill="rgba(90, 70, 50, 0.25)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-          <path d="M 47.5 48 L 50 48 L 49.5 87 C 49.5 88.5 47.5 88.5 47.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-          <path d="M 50 48 L 52.5 48 L 52.5 87 C 52.5 88.5 50.5 88.5 50.5 87 Z" fill="rgba(90, 70, 50, 0.22)" stroke="rgba(90, 70, 50, 0.3)" stroke-width="0.4" />
-
-          <!-- 姿态2：大字形展开人体 -->
-          <path d="M 46.5 22.5 L 24 13 C 22.5 12.3 22 13.8 23 14.8 L 46.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
-          <path d="M 53.5 22.5 L 76 13 C 77.5 12.3 78 13.8 77 14.8 L 53.5 24 Z" fill="rgba(90, 70, 50, 0.16)" stroke="rgba(90, 70, 50, 0.25)" stroke-width="0.4" />
-          <path d="M 47.5 48 L 33 82 C 32 83.2 33.8 84.2 34.8 83 L 48.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
-          <path d="M 52.5 48 L 67 82 C 68 83.2 66.2 84.2 65.2 83 L 51.5 48 Z" fill="rgba(90, 70, 50, 0.14)" stroke="rgba(90, 70, 50, 0.22)" stroke-width="0.4" />
-        </svg>
-    `;
-
-    const getOrganLevelColor = (lvl) => {
-      if (!lvl || lvl <= 0) return '#4a3c31'; // 古典铁锈褐
-      if (lvl <= 3) return '#1a7f37'; // 精良绿
-      if (lvl <= 6) return '#0969da'; // 稀有蓝
-      if (lvl <= 9) return '#8250df'; // 史诗紫
-      return '#cf222e'; // 传说红
-    };
-
-    // 只渲染12个品类的大圆圈插槽（与上个版本完全一致的主界面显示种类）
-    slotsDef.forEach(s => {
-      const count = s.count || 1;
-      let activeCount = 0;
-      let firstOrgan = null;
-      let allNative = true;
-      let allEmpty = true;
-
-      for (let i = 1; i <= count; i++) {
-        const subKey = count > 1 ? `${s.key}_${i}` : s.key;
-        const organInList = 器官列表[subKey];
-        const isEmpty = !!organInList && organInList.空;
-        const isEquipped = !!organInList && !organInList.空;
-        const isNative = !organInList;
-
-        if (!isEmpty) {
-          activeCount++;
-          if (isEquipped && !firstOrgan) {
-            firstOrgan = organInList;
-          }
-          if (!isNative) {
-            allNative = false;
-          }
-          allEmpty = false;
-        }
-      }
-
-      let displayName = '';
-      let qClass = 'quality-default';
-      let borderStyle = '';
-      let lvlColor = '#57606a';
-      let slotClass = 'empty-organ';
-      let nameColor = '#57606a';
-      let setBadge = '';
-
-      if (allEmpty) {
-        displayName = `[${s.key}]`;
-        qClass = 'is-empty';
-        slotClass = 'is-empty';
-        nameColor = '#afb8c1';
-      } else {
-        let baseName = '';
-        let level = 0;
-        if (firstOrgan) {
-          baseName = firstOrgan.名称 || s.key;
-          level = firstOrgan.强化等级 || 0;
-          allNative = false;
-        } else {
-          baseName = `人类${s.key}`;
-        }
-
-        const organLevel = level > 0 ? ` +${level}` : "";
-        const suffix = (count > 1) ? ` (${activeCount}/${count})` : "";
-        displayName = `${baseName}${organLevel}${suffix}`;
-        
-        if (firstOrgan && firstOrgan.套装) {
-          setBadge = `<span class="organ-set-tag-badge" style="display:inline-block; font-size:7px; background:#d29922; color:#fff; padding:0 2px; border-radius:3px; margin-left:3px; font-weight:700; vertical-align:middle;">${firstOrgan.套装}</span>`;
-        }
-
-        lvlColor = getOrganLevelColor(level);
-        nameColor = allNative ? '#8c8c8c' : lvlColor;
-
-        if (!allNative) {
-          slotClass = 'has-organ';
-          const quality = firstOrgan?.品质 || '普通';
-          if (quality === '稀有' || quality === '史诗') qClass = 'quality-rare';
-          else if (quality === '传说' || quality === '神话') qClass = 'quality-legendary';
-          else if (quality === '诅诅' || quality === '诅咒') qClass = 'quality-cursed';
-          if (level > 0) {
-            borderStyle = `border-color: ${lvlColor} !important; box-shadow: 0 0 5px ${lvlColor}aa;`;
-          }
-        }
-        // 检测是否未排异
-        const isUnadapted = firstOrgan && firstOrgan.已排异 !== true;
-        if (isUnadapted) {
-          qClass += ' quality-unadapted';
-        }
-      }
-
-      const unadaptedBadge = isUnadapted ? `<span class="organ-unadapted-badge" style="position:absolute; top:-3px; right:-3px; width:14px; height:14px; background:#cf222e; color:#fff; border-radius:50%; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 0 4px rgba(207,34,46,0.6); z-index:20; border:1.5px solid #fbf8ef;" title="未排异">!</span>` : '';
-      slotsHtml += `
-        <div class="organ-gear-slot ${slotClass} ${qClass}" 
-             style="top: ${s.y}%; left: ${s.x}%; cursor: pointer;" 
-             data-slot-key="${s.key}">
-          <div class="organ-gear-circle" style="${borderStyle}">
-            <i class="${s.icon}"></i>
-            ${unadaptedBadge}
-          </div>
-          <div class="organ-gear-label-box">
-            <span class="organ-gear-val-name" style="color: ${nameColor};">${displayName}${setBadge}</span>
-          </div>
-        </div>
-      `;
-    });
-    slotsHtml += '</div>';
-
-    const $list = $panel.find('#organ-page-list');
-    if ($list.length) {
-      $list.html(slotsHtml);
-      
-      // 渲染器官背包
-      const allBackpackOrgans = findAllBackpackOrgans(data);
-      const $backpackGrid = $panel.find('#organ-backpack-grid');
-      const $backpackCount = $panel.find('.organ-backpack-count');
-      if ($backpackGrid.length) {
-        $backpackCount.text(`${allBackpackOrgans.length} 件`);
-        if (allBackpackOrgans.length === 0) {
-          $backpackGrid.html(`
-            <div class="organ-backpack-empty" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; color: #afb8c1; font-size: 11px; text-align: center; gap: 4px;">
-              <i class="ri-briefcase-3-line" style="font-size: 22px; color: #d0d7de;"></i>
-              <span>背包中暂无可用器官配件</span>
-            </div>
-          `);
-        } else {
-          const qualityColors = { '稀有': '#9b51e0', '史诗': '#9b51e0', '传说': '#f2994a', '神话': '#f2994a', '诅诅': '#eb5757', '诅咒': '#eb5757', '普通': '#57606a' };
-          let backpackHtml = '';
-          allBackpackOrgans.forEach((item, idx) => {
-            const color = qualityColors[item.quality] || '#57606a';
-            const slotGuess = item.data?.部位 || guessSlotFromOrganName(item.name) || '通用';
-            const level = item.level > 0 ? ` +${item.level}` : '';
-            const backpackSetBadge = item.data?.套装 ? `<span class="backpack-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${item.data.套装}</span>` : '';
-            // 背包内已排异标识 (右上角绿色勾)
-            const adaptedBadge = item.data?.已排异 === true ? `<span class="backpack-adapted-badge" style="position: absolute; top: 1px; right: 1px; font-size: 7px; background: #2ea87a; color: #fff; padding: 0 3px; border-radius: 2px; line-height: 1.2; font-weight: 700;" title="已排异">✓</span>` : '';
-            backpackHtml += `
-              <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
-                   style="position: relative; border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
-                ${backpackSetBadge}
-                ${adaptedBadge}
-                <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
-                  <i class="${getOrganIconClass(slotGuess, item.name)}"></i>
-                </span>
-                <span class="inv-item-name" style="color: ${color}; font-size: 9px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;">${stripNativePrefix(item.name)}${level}</span>
-              </div>
-            `;
-          });
-          $backpackGrid.html(backpackHtml);
-
-          // 绑定点击
-          $backpackGrid.find('.organ-backpack-item').off('click').on('click', function() {
-            const idx = $(this).data('bp-idx');
-            const item = allBackpackOrgans[idx];
-            if (item) showOrganItemDetailPopup(item);
-          });
-        }
-      }
-
-      // 渲染排异药剂数量并绑定按钮
-      const 排异药剂数量 = (data?.人物?.器官系统?.排异药剂数量 !== undefined) ? data.人物.器官系统.排异药剂数量 : 0;
-      const $medicineCount = $panel.find('.organ-medicine-count');
-      if ($medicineCount.length) {
-        $medicineCount.text(`${排异药剂数量} 瓶`);
-      }
-
-      $panel.find('#btn-test-get-medicine').off('click').on('click', async function() {
-        const win = typeof getCore === 'function' ? getCore().window : window;
-        const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
-        if (!mvuData || !mvuData.stat_data) {
-          showToast('error', '无法获取 MVU 数据');
-          return;
-        }
-        const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
-        sys.器官系统 = sys.器官系统 || {};
-        sys.器官系统.排异药剂数量 = (sys.器官系统.排异药剂数量 || 0) + 5;
-        const saved = await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
-        if (saved) {
-          showToast('success', '已成功获取 5 瓶排异药剂');
-          updateOrganUI();
-        } else {
-          showToast('error', '保存数据失败');
-        }
-      });
-
-      $panel.find('#btn-use-medicine').off('click').on('click', function() {
-        const d2 = fetchLatestMvuData();
-        const sys = d2?.人物?.器官系统;
-        const 列表 = sys?.器官列表 || {};
-        const 药数量 = (sys?.排异药剂数量 !== undefined) ? sys.排异药剂数量 : 0;
-        if (药数量 <= 0) {
-          showToast('warn', '排异药剂不足，无法使用');
-          return;
-        }
-        const 未排异槽位 = Object.entries(列表).filter(([k, o]) => o && !o.空 && o.已排异 !== true).map(([k]) => k);
-        if (未排异槽位.length === 0) {
-          showToast('info', '当前没有需要排异的器官');
-          return;
-        }
-        showUseMedicinePopup(未排异槽位, 药数量);
-      });
-      
-      // 绑定部位插槽点击
-      $list.find('.organ-gear-slot').off('click').on('click', function() {
-        try {
-          const slotKey = $(this).data('slot-key');
-          console.log("[RPG] Organ slot clicked:", slotKey);
-          showOrganSelectPopup(slotKey);
-        } catch (e) {
-          console.error("[RPG] Error showing organ popup:", e);
-          alert("打开器官面板失败：" + e.message + "\n" + e.stack);
-        }
-      });
-
-      // 测试随机生成器官监听
-      $list.find('#organ-test-random').off('click').on('click', async function() {
-        try {
-          const races = ['人类', '天降者', '亡灵', '机械', '精灵', '兽人', '龙族'];
-          const slots = ['心脏', '肝脏', '脾脏', '肺脏', '肾脏', '眼球', '脊柱', '神经网', '肌肉', '肋骨', '阑尾', '胃', '肠子'];
-          const qualities = ['普通', '精良', '稀有', '史诗', '传说', '神话'];
-          const traitsPool = ['聚焦', '超频爆发', '重击强化', '充能', '过载', '复苏', '不屈', '寒冰', '剧毒', '风行'];
-          const labelsPool = ['初火', '虚空', '深渊', '机械', '圣光', '暗影'];
-          const setsPool = ['初火誓约', '机械主宰', '虚空行者', '亡灵协奏', '风暴使者'];
-
-          const randomRace = races[Math.floor(Math.random() * races.length)];
-          const randomSlot = slots[Math.floor(Math.random() * slots.length)];
-          const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
-
-          const organName = `${randomRace}${randomSlot}`;
-
-          const traits = [];
-          const labels = [];
-
-          // 40% chance of random trait
-          if (Math.random() > 0.6) {
-            traits.push(traitsPool[Math.floor(Math.random() * traitsPool.length)]);
-          }
-          // 20% chance of "源火" unique trait, forcing "初火" label
-          if (Math.random() > 0.8) {
-            if (!traits.includes("源火")) traits.push("源火");
-            if (!labels.includes("初火")) labels.push("初火");
-          }
-
-          // 40% chance of random label
-          if (Math.random() > 0.6) {
-            const randomLabel = labelsPool[Math.floor(Math.random() * labelsPool.length)];
-            if (!labels.includes(randomLabel)) labels.push(randomLabel);
-          }
-
-          const hasSet = Math.random() > 0.5;
-          const setName = hasSet ? setsPool[Math.floor(Math.random() * setsPool.length)] : undefined;
-
-          // 根据器官种类生成符合逻辑的属性
-          const attrPools = {
-            '心脏': ['健康度'],
-            '眼球': ['视觉'],
-            '神经网': ['神经传递效率'],
-            '脊柱': ['负重上限', '坚韧'],
-            '肌肉': ['力量', '坚韧'],
-            '肋骨': ['坚韧'],
-            '肺脏': ['健康度', '耐力'],
-            '胃': ['消化效率', '健康度'],
-            '肠子': ['消化效率', '健康度'],
-            '肾脏': ['健康度'],
-            '肝脏': ['健康度'],
-            '脾脏': ['健康度'],
-            '阑尾': ['幸运']
-          };
-
-          // === 数值规范化：固定预算分配 ===
-          // 品质越高，预算越大；词条越多，单条数值越低
-          const qualityBudget = {
-            '普通': 2.0,
-            '精良': 3.0,
-            '稀有': 4.5,
-            '史诗': 6.0,
-            '传说': 8.0,
-            '神话': 10.0
-          };
-          const budget = qualityBudget[randomQuality] || 2.0;
-
-          const attrPool = attrPools[randomSlot] || ['健康度'];
-          // 决定属性词条数量 (1~3)
-          // 普通/精良: 80% 1条, 20% 2条
-          // 稀有/史诗: 30% 1条, 50% 2条, 20% 3条
-          // 传说/神话: 10% 1条, 40% 2条, 50% 3条
-          let attrCount = 1;
-          const qIdx = ['普通','精良','稀有','史诗','传说','神话'].indexOf(randomQuality);
-          const dice = Math.random();
-          if (qIdx >= 5) { // 神话
-            attrCount = dice < 0.1 ? 1 : (dice < 0.5 ? 2 : 3);
-          } else if (qIdx >= 4) { // 传说
-            attrCount = dice < 0.1 ? 1 : (dice < 0.5 ? 2 : 3);
-          } else if (qIdx >= 3) { // 史诗
-            attrCount = dice < 0.3 ? 1 : (dice < 0.8 ? 2 : 3);
-          } else if (qIdx >= 2) { // 稀有
-            attrCount = dice < 0.3 ? 1 : (dice < 0.8 ? 2 : 3);
-          } else { // 普通/精良
-            attrCount = dice < 0.8 ? 1 : 2;
-          }
-
-          // 随机抽取属性条目
-          const selectedAttrs = [];
-          const poolCopy = [...attrPool];
-          for (let i = 0; i < Math.min(attrCount, poolCopy.length); i++) {
-            const idx = Math.floor(Math.random() * poolCopy.length);
-            selectedAttrs.push(poolCopy.splice(idx, 1)[0]);
-          }
-
-          // 平均分配预算，但给主属性略微加权 (1.2倍)
-          const subAttrs = {};
-          if (selectedAttrs.length === 1) {
-            subAttrs[selectedAttrs[0]] = Math.round(budget * 10) / 10;
-          } else if (selectedAttrs.length === 2) {
-            const weights = [1.2, 0.8];
-            const totalW = 2.0;
-            selectedAttrs.forEach((attr, i) => {
-              subAttrs[attr] = Math.round((budget * weights[i] / totalW) * 10) / 10;
-            });
-          } else if (selectedAttrs.length >= 3) {
-            const weights = [1.2, 0.9, 0.9];
-            const totalW = 3.0;
-            selectedAttrs.forEach((attr, i) => {
-              subAttrs[attr] = Math.round((budget * weights[i] / totalW) * 10) / 10;
-            });
-          }
-
-          const win = typeof getCore === 'function' ? getCore().window : window;
-          const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
-          if (!mvuData || !mvuData.stat_data) {
-            alert("获取存档数据失败");
-            return;
-          }
-          
-          const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
-          sys.器官系统 = sys.器官系统 || {};
-          sys.器官系统.器官背包 = sys.器官系统.器官背包 || {};
-          
-          let uniqueName = organName;
-          let counter = 1;
-          while (sys.器官系统.器官背包[uniqueName]) {
-            uniqueName = `${organName} +${counter}`;
-            counter++;
-          }
-
-          sys.器官系统.器官背包[uniqueName] = {
-            名称: uniqueName,
-            品质: randomQuality,
-            描述: `来自随机种族 ${randomRace} 的 ${randomSlot} 测试器官。`,
-            空: false,
-            强化等级: 0,
-            属性加成: subAttrs,
-            特性: traits,
-            标签: labels,
-            套装: setName,
-            已排异: Math.random() > 0.5
-          };
-
-          await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
-          
-          // Re-render UI
-          updateOrganUI();
-          
-          // Show prompt
-          alert(`成功获得：[${randomQuality}] ${uniqueName}\n特性: ${traits.join(', ') || '无'}\n标签: ${labels.join(', ') || '无'}\n套装: ${setName || '无'}`);
-        } catch (err) {
-          console.error(err);
-          alert("随机生成器官失败：" + err.message);
-        }
-      });
-
-      // 动态文件上传背景监听
-      $list.find('#organ-bg-upload').off('change').on('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          if (file.size > 2 * 1024 * 1024) {
-            alert("上传的背景图请小于 2MB ！");
-            return;
-          }
-          const reader = new FileReader();
-          reader.onload = function(evt) {
-            const base64 = evt.target.result;
-            try {
-              localStorage.setItem(`${SCRIPT_ID}-organ-bg`, base64);
-              $list.find('.visual-organ-container').css('background-image', `url(${base64})`);
-              $list.find('.vitruvian-background-svg').css('opacity', '0');
-              $list.find('#organ-bg-reset').css('display', 'inline-flex');
-            } catch(err) {
-              alert("背景保存失败，可能是图片数据太大超出浏览器限制了！");
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // 动态重置背景监听
-      $list.find('#organ-bg-reset').off('click').on('click', function(e) {
-        e.preventDefault();
-        localStorage.removeItem(`${SCRIPT_ID}-organ-bg`);
-        $list.find('.visual-organ-container').css('background-image', 'none');
-        $list.find('.vitruvian-background-svg').css('opacity', '1');
-        $(this).css('display', 'none');
-        $list.find('#organ-bg-upload').val('');
-      });
+    
+    } catch (e) {
+      console.error('[RPG] 构建/注入 attrsGridHtml 失败:', e);
     }
   };
 
