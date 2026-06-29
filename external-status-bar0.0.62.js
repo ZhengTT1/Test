@@ -7734,14 +7734,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       "胰腺": "ri-bubble-chart-line",
       "生殖": "ri-genderless-line"
     };
+    // 12 个标准器官种类
+    const standardSlots = ['眼球','心脏','肺脏','胃','肠子','阑尾','肌肉','肝脏','脾脏','肾脏','肋骨','脊柱'];
     const baseSlot = String(slotName || '').trim();
-    if (slotMap[baseSlot]) return slotMap[baseSlot];
-    
+    if (standardSlots.includes(baseSlot) && slotMap[baseSlot]) return slotMap[baseSlot];
+
     // 从名字里猜测槽位类型
     const guessed = guessSlotFromOrganName(organName);
-    if (guessed && slotMap[guessed]) return slotMap[guessed];
-    
-    return "ri-heart-fill";
+    if (guessed && standardSlots.includes(guessed) && slotMap[guessed]) return slotMap[guessed];
+
+    // 非 12 标准种类的器官使用通用神秘图标
+    return "ri-hexagon-line";
   };
 
   // 任意器官都可以装配到任意位置（更接近饰品的特性），仅筛选出"器官"类型的备用件
@@ -8492,30 +8495,6 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const organSystem = data?.push ? {} : (data?.人物?.器官系统 || {});
     const 器官列表 = organSystem.器官列表 || {};
 
-    const baseSlot = organItem.data?.部位 || guessSlotFromOrganName(organItem.name);
-    
-    // Resolve correct target sub-slot name for multi-slot categories
-    let slotName = baseSlot;
-    if (baseSlot) {
-      const s = slotsDef.find(x => x.key === baseSlot);
-      const count = s ? (s.count || 1) : 1;
-      if (count > 1) {
-        let targetSubKey = null;
-        for (let i = 1; i <= count; i++) {
-          const subKey = `${baseSlot}_${i}`;
-          const organInList = 器官列表[subKey];
-          if (!organInList || organInList.空) {
-            targetSubKey = subKey;
-            break;
-          }
-        }
-        slotName = targetSubKey || `${baseSlot}_1`;
-      }
-    }
-
-    const currentEquipped = 器官列表[slotName];
-    const slotOccupied = !!currentEquipped && !currentEquipped.空;
-
     const buildOrganStatsHtml = (organ) => {
       let statHtml = '';
       if (!organ) return statHtml;
@@ -8531,9 +8510,69 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       } else {
         statHtml += '<div style="font-size:10px; color:#8c8c8c; font-style:italic;">无属性加成</div>';
       }
-      statHtml += '</div>';
       return statHtml;
     };
+
+    // 生成 12 种器官插槽选择网格 (一排6个, 2列的格式: 即 6行, 2列)
+    let targetSlotsHtml = `
+      <div class="target-slots-header" style="font-size: 11px; font-weight: 600; color: #4a3c31; margin-top: 12px; border-top: 1px solid #d0d7de; padding-top: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+        <i class="ri-grid-line"></i> 选择装配部位 (点击直接装配，悬停查看多槽位)
+      </div>
+      <div class="target-slots-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+    `;
+    slotsDef.forEach(s => {
+      const key = s.key;
+      const count = s.count || 1;
+
+      // 寻找当前等级最低/为空的子槽位
+      let targetSubKey = '';
+      let lowestLevel = Infinity;
+      let lowestOrganName = '空';
+
+      for (let i = 1; i <= count; i++) {
+        const subKey = count > 1 ? `${key}_${i}` : key;
+        const organ = 器官列表[subKey];
+        const level = (!organ || organ.空) ? -1 : (organ.强化等级 || 0);
+        if (level < lowestLevel) {
+          lowestLevel = level;
+          targetSubKey = subKey;
+          lowestOrganName = (!organ || organ.空) ? '空' : (organ.名称 || '未知');
+        }
+      }
+
+      // 生成悬停时的具体槽位快速替换菜单
+      let subMenuItemsHtml = '';
+      for (let i = 1; i <= count; i++) {
+        const subKey = count > 1 ? `${key}_${i}` : key;
+        const organ = 器官列表[subKey];
+        const organName = (!organ || organ.空) ? '空' : organ.名称;
+        const displayName = count > 1 ? `${key} #${i}` : key;
+        subMenuItemsHtml += `
+          <div class="sub-menu-item" data-target-slot="${subKey}" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; font-size: 10px; border-radius: 4px; color: #24292f; cursor: pointer; transition: background 0.15s; margin-bottom: 2px;" onmouseover="this.style.background='#0969da'; this.style.color='#ffffff';" onmouseout="this.style.background='transparent'; this.style.color='#24292f';">
+            <span style="font-weight: 600;">${displayName}</span>
+            <span style="font-size: 8.5px; opacity: 0.7; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-align: right;">${organName}</span>
+          </div>
+        `;
+      }
+
+      const hoverMenuHtml = `
+        <div class="slot-sub-menu" style="display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: #ffffff; border: 1px solid #d0d7de; box-shadow: 0 4px 16px rgba(0,0,0,0.18); border-radius: 8px; padding: 6px; z-index: 110; min-width: 180px; flex-direction: column; margin-bottom: 4px;">
+          <div style="font-size: 9px; color: #8c959f; font-weight: 600; padding: 2px 8px 5px 8px; border-bottom: 1px solid #eaeef2; margin-bottom: 4px; display: flex; align-items: center; gap: 3px;">
+            <i class="ri-list-unordered" style="font-size: 9px;"></i> 替换到具体槽位
+          </div>
+          ${subMenuItemsHtml}
+        </div>
+      `;
+
+      targetSlotsHtml += `
+        <div class="target-slot-btn" data-target-slot="${targetSubKey}" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; font-size: 11px; color: #24292f; transition: all 0.15s; min-height: 32px;" onmouseover="this.querySelector('.slot-sub-menu').style.display='flex'; this.style.borderColor='#0969da'; this.style.background='#eaeef2';" onmouseout="this.querySelector('.slot-sub-menu').style.display='none'; this.style.borderColor='#d0d7de'; this.style.background='#f6f8fa';">
+          <span style="display: flex; align-items: center; gap: 5px; min-width: 0; flex-shrink: 0;"><i class="${s.icon}" style="font-size: 12px; color: #57606a;"></i><span style="font-weight: 600;">${key}</span></span>
+          <span style="font-size: 9px; color: #8c959f; max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 4px;">${lowestOrganName}</span>
+          ${hoverMenuHtml}
+        </div>
+      `;
+    });
+    targetSlotsHtml += `</div>`;
 
     let html = `
       <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
@@ -8553,13 +8592,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
               <div style="font-size: 10.5px; color: #57606a; line-height: 1.4;">${organItem.desc || '无描述'}</div>
               ${buildOrganStatsHtml(organItem.data)}
             </div>
-            ${slotName ? `
-              <button class="btn-organ-action btn-organ-equip-direct" data-slot="${slotName}" style="background: ${slotOccupied ? '#f2994a' : '#0969da'}; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">
-                <i class="${slotOccupied ? 'ri-refresh-line' : 'ri-heart-add-line'}"></i> ${slotOccupied ? '替换到' : '装配到'} [${slotName}] 部位
-              </button>
-            ` : `
-              <div style="font-size:11px; color:#cf222e; text-align:center; padding:5px; background: rgba(207,34,46,0.05); border-radius: 4px;">未识别到适配部位，请点击对应移植槽进行装配。</div>
-            `}
+            ${targetSlotsHtml}
           </div>
         </div>
       </div>
@@ -8571,8 +8604,11 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     $popup.on('click', function (e) {
       if (e.target === this || $(e.target).closest('.popup-close').length) $(this).remove();
     });
-    $popup.find('.btn-organ-equip-direct').on('click', function() {
-      const targetSlot = $(this).data('slot');
+    // 绑定 12 种器官槽位 / 悬停具体子槽位的快速装配
+    $popup.find('.target-slot-btn, .sub-menu-item').on('click', function(e) {
+      e.stopPropagation();
+      const targetSlot = $(this).data('target-slot');
+      if (!targetSlot) return;
       $popup.remove();
       equipOrganToSlot(targetSlot, organItem);
     });
@@ -9588,7 +9624,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       $list.find('#organ-test-random').off('click').on('click', async function() {
         try {
           const races = ['人类', '天降者', '亡灵', '机械', '精灵', '兽人', '龙族'];
-          const slots = ['心脏', '肝脏', '脾脏', '肺脏', '肾脏', '眼球', '大脑', '脊椎', '神经网', '左臂', '右臂', '左腿', '右腿', '皮下层'];
+          const slots = ['心脏', '肝脏', '脾脏', '肺脏', '肾脏', '眼球', '脊柱', '神经网', '肌肉', '肋骨', '阑尾', '胃', '肠子'];
           const qualities = ['普通', '精良', '稀有', '史诗', '传说', '神话'];
           const traitsPool = ['聚焦', '超频爆发', '重击强化', '充能', '过载', '复苏', '不屈', '寒冰', '剧毒', '风行'];
           const labelsPool = ['初火', '虚空', '深渊', '机械', '圣光', '暗影'];
@@ -9597,12 +9633,12 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const randomRace = races[Math.floor(Math.random() * races.length)];
           const randomSlot = slots[Math.floor(Math.random() * slots.length)];
           const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
-          
+
           const organName = `${randomRace}${randomSlot}`;
-          
+
           const traits = [];
           const labels = [];
-          
+
           // 40% chance of random trait
           if (Math.random() > 0.6) {
             traits.push(traitsPool[Math.floor(Math.random() * traitsPool.length)]);
@@ -9612,7 +9648,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             if (!traits.includes("源火")) traits.push("源火");
             if (!labels.includes("初火")) labels.push("初火");
           }
-          
+
           // 40% chance of random label
           if (Math.random() > 0.6) {
             const randomLabel = labelsPool[Math.floor(Math.random() * labelsPool.length)];
@@ -9622,15 +9658,34 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           const hasSet = Math.random() > 0.5;
           const setName = hasSet ? setsPool[Math.floor(Math.random() * setsPool.length)] : undefined;
 
-          const baseAttrs = ['健康度', '视觉', '坚韧', '敏捷', '神经传递效率', '负重上限'];
-          const attrKey = baseAttrs[Math.floor(Math.random() * baseAttrs.length)];
-          const attrVal = parseFloat((Math.random() * 5 + 0.5).toFixed(1));
+          // 根据器官种类生成符合逻辑的属性
+          const attrPools = {
+            '心脏': ['健康度'],
+            '眼球': ['视觉'],
+            '神经网': ['神经传递效率'],
+            '脊柱': ['负重上限', '坚韧'],
+            '肌肉': ['力量', '坚韧'],
+            '肋骨': ['坚韧'],
+            '肺脏': ['健康度', '耐力'],
+            '胃': ['消化效率', '健康度'],
+            '肠子': ['消化效率', '健康度'],
+            '肾脏': ['健康度'],
+            '肝脏': ['健康度'],
+            '脾脏': ['健康度'],
+            '阑尾': ['幸运']
+          };
+          const qualityMult = { '普通': 1.0, '精良': 1.3, '稀有': 1.6, '史诗': 2.0, '传说': 2.5, '神话': 3.0 }[randomQuality] || 1.0;
+          const attrPool = attrPools[randomSlot] || ['健康度'];
           const subAttrs = {};
-          subAttrs[attrKey] = attrVal;
-          if (Math.random() > 0.6) {
-            const subAttrKey = baseAttrs[Math.floor(Math.random() * baseAttrs.length)];
-            if (subAttrKey !== attrKey) {
-              subAttrs[subAttrKey] = parseFloat((Math.random() * 3 + 0.1).toFixed(1));
+          attrPool.forEach(attr => {
+            subAttrs[attr] = parseFloat(((Math.random() * 2.5 + 0.5) * qualityMult).toFixed(1));
+          });
+          // 30% chance to add a secondary attribute
+          if (Math.random() > 0.7) {
+            const secondaryPool = ['健康度', '坚韧', '神经传递效率'].filter(x => !attrPool.includes(x));
+            if (secondaryPool.length > 0) {
+              const secAttr = secondaryPool[Math.floor(Math.random() * secondaryPool.length)];
+              subAttrs[secAttr] = parseFloat(((Math.random() * 1.5 + 0.2) * qualityMult).toFixed(1));
             }
           }
 
