@@ -7670,6 +7670,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       organ.标签 = ["血肉", raceName];
       organ.描述 = `${raceName}的${slotKey}器官。`;
     }
+    // 初始/默认生成的种族器官默认为已排异状态 (免疫排斥反应)
+    organ.已排异 = true;
     return organ;
   };
 
@@ -7857,7 +7859,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             特性: currentOrgan.特性 || [],
             标签: currentOrgan.标签 || [],
             种族: currentOrgan.种族 || '',
-            强化等级: currentOrgan.强化等级 || 0
+            强化等级: currentOrgan.强化等级 || 0,
+            已排异: currentOrgan.已排异 === true
           }
         });
       }
@@ -7874,7 +7877,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         属性加成: organItem.data.属性加成 || {},
         特性: organItem.data.特性 || [],
         标签: organItem.data.标签 || [],
-        种族: organItem.data.种族 || ''
+        种族: organItem.data.种族 || '',
+        已排异: organItem.data.已排异 === true
       }
     });
 
@@ -8488,6 +8492,97 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
 
 
+  const showUseMedicinePopup = (slotKeys, medicineCount) => {
+    const data = fetchLatestMvuData();
+    const 列表 = data?.人物?.器官系统?.器官列表 || {};
+
+    let itemsHtml = '';
+    slotKeys.forEach(slotKey => {
+      const organ = 列表[slotKey];
+      if (!organ || organ.空) return;
+      const qColor = { '稀有': '#9b51e0', '史诗': '#9b51e0', '传说': '#f2994a', '神话': '#f2994a', '诅咒': '#eb5757', '普通': '#57606a' }[organ.品质] || '#57606a';
+      itemsHtml += `
+        <div class="use-medicine-item" data-slot="${slotKey}" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; margin-bottom: 6px; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; transition: all 0.15s;" onmouseover="this.style.borderColor='#8e44ad'; this.style.background='#f0e6f6';" onmouseout="this.style.borderColor='#d0d7de'; this.style.background='#f6f8fa';">
+          <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+            <span style="display: inline-block; width: 8px; height: 8px; background: #cf222e; border-radius: 50%; box-shadow: 0 0 6px rgba(207,34,46,0.5); flex-shrink: 0;"></span>
+            <span style="font-weight: 600; font-size: 11.5px; color: #24292f; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${organ.名称 || '未知器官'}</span>
+            <span style="font-size: 9px; padding: 1px 5px; border-radius: 3px; background: ${qColor}15; color: ${qColor}; border: 1px solid ${qColor}40; font-weight: 600; flex-shrink: 0;">${organ.品质 || '普通'}</span>
+          </div>
+          <span style="font-size: 9.5px; color: #8c8c8c; font-weight: 600; flex-shrink: 0; margin-left: 8px;">[${slotKey}]</span>
+        </div>
+      `;
+    });
+
+    const html = `
+      <div id="${SCRIPT_ID}-popup" class="fusion-popup-overlay">
+        <div class="fusion-card" style="width: 380px; --quality-color: #8e44ad;">
+          <button class="popup-close"><i class="ri-close-line"></i></button>
+          <div class="f-header" style="border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-bottom: 12px;">
+            <div class="f-meta-row" style="font-size: 10px; color: #57606a;">
+              <span class="f-type">// 排异药剂</span>
+            </div>
+            <div class="f-title-row" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+              <span class="f-name" style="font-size: 14px; font-weight: 700; color: #6c3483;">选择需要排异的器官</span>
+            </div>
+          </div>
+          <div class="f-body" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 10.5px; color: #57606a; line-height: 1.4;">
+              点击下方任意一个未排异器官，对其使用 1 瓶排异药剂 (剩余 <b style="color:#8e44ad;">${medicineCount}</b> 瓶)。
+            </div>
+            <div class="use-medicine-list" style="max-height: 300px; overflow-y: auto; padding: 4px;">
+              ${itemsHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const $panel2 = $(`#${SCRIPT_ID}-panel`);
+    $panel2.find(`#${SCRIPT_ID}-popup`).remove();
+    $panel2.append(html);
+    const $popup = $panel2.find(`#${SCRIPT_ID}-popup`);
+    $popup.on('click', function(e) {
+      if (e.target === this || $(e.target).closest('.popup-close').length) $(this).remove();
+    });
+    $popup.find('.use-medicine-item').on('click', async function() {
+      const targetSlot = $(this).data('slot');
+      $popup.remove();
+      await applyRejectionMedicine(targetSlot);
+    });
+  };
+
+  const applyRejectionMedicine = async (slotName) => {
+    const data = fetchLatestMvuData();
+    if (!data || !data.人物) return;
+    const sys = data.人物.器官系统 = data.人物.器官系统 || {};
+    const 药数量 = sys.排异药剂数量 || 0;
+    if (药数量 <= 0) {
+      showToast('warn', '排异药剂不足');
+      return;
+    }
+    const organ = sys.器官列表?.[slotName];
+    if (!organ || organ.空) {
+      showToast('error', '目标槽位为空或无效');
+      return;
+    }
+    if (organ.已排异 === true) {
+      showToast('info', '该器官已排异，无需使用药剂');
+      return;
+    }
+
+    const patches = [
+      { op: 'replace', path: `/人物/器官系统/器官列表/${slotName}/已排异`, value: true },
+      { op: 'replace', path: '/人物/器官系统/排异药剂数量', value: 药数量 - 1 }
+    ];
+
+    const success = await applyMvuPatches(patches);
+    if (success) {
+      showToast('success', `已对 [${organ.名称}] 使用排异药剂！排斥反应消除。`);
+      updateOrganUI();
+    } else {
+      showToast('error', '保存数据失败');
+    }
+  };
+
   const showOrganItemDetailPopup = (organItem) => {
     const data = fetchLatestMvuData();
     const organSystem = data?.push ? {} : (data?.人物?.器官系统 || {});
@@ -8634,6 +8729,39 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     return (Math.round(num * 10) / 10).toString();
   };
 
+  const recalculateOrganSystemStats = async () => {
+    const data = fetchLatestMvuData();
+    if (!data || !data.人物) return { 排斥等级: 0, 健康度: 100 };
+    const sys = data.人物.器官系统 = data.人物.器官系统 || {};
+    const 列表 = sys.器官列表 = sys.器官列表 || {};
+
+    let 排斥等级 = 0;
+
+    Object.values(列表).forEach(organ => {
+      if (organ && !organ.空) {
+        if (organ.已排异 !== true) {
+          排斥等级++;
+        }
+      }
+    });
+
+    // 基础健康度 100，每 1 个未排异器官扣除 15%，最低 0
+    const 健康度 = Math.max(0, 100 - 排斥等级 * 15);
+
+    // 如果数据有变化则保存 (异步)
+    if (sys.排斥等级 !== 排斥等级 || sys.健康度 !== 健康度) {
+      sys.排斥等级 = 排斥等级;
+      sys.健康度 = 健康度;
+      const patches = [
+        { op: 'replace', path: '/人物/器官系统/排斥等级', value: 排斥等级 },
+        { op: 'replace', path: '/人物/器官系统/健康度', value: 健康度 }
+      ];
+      applyMvuPatches(patches).catch(err => console.error('[RPG] Failed to save rejection stats:', err));
+    }
+
+    return { 排斥等级, 健康度 };
+  };
+
   const updateOrganUI = () => {
     if (!$) {
       console.warn('[RPG StatusBar] jQuery not available in updateOrganUI');
@@ -8644,9 +8772,15 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const race = data?.人物?.种族 || '';
     const organSystem = data?.人物?.器官系统 || {};
     const 器官列表 = organSystem.器官列表 || {};
-    const 排斥等级 = organSystem.排斥等级 || 0;
-    const 健康度Val = organSystem.健康度 || 100;
+    // 动态计算排斥等级和健康度
+    let 排斥等级 = 0;
+    Object.values(器官列表).forEach(o => {
+      if (o && !o.空 && o.已排异 !== true) 排斥等级++;
+    });
+    const 健康度Val = Math.max(0, 100 - 排斥等级 * 15);
     const 套装 = organSystem.已激活套装 || [];
+    // 异步更新到 MVU (不阻塞 UI)
+    recalculateOrganSystemStats().catch(err => console.error('[RPG] recalc error:', err));
 
     const getEffectColor = (name, desc = '') => {
       const text = (name + desc).toLowerCase();
@@ -9559,14 +9693,21 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             borderStyle = `border-color: ${lvlColor} !important; box-shadow: 0 0 5px ${lvlColor}aa;`;
           }
         }
+        // 检测是否未排异
+        const isUnadapted = firstOrgan && firstOrgan.已排异 !== true;
+        if (isUnadapted) {
+          qClass += ' quality-unadapted';
+        }
       }
 
+      const unadaptedBadge = isUnadapted ? `<span class="organ-unadapted-badge" style="position:absolute; top:-3px; right:-3px; width:14px; height:14px; background:#cf222e; color:#fff; border-radius:50%; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 0 4px rgba(207,34,46,0.6); z-index:20; border:1.5px solid #fbf8ef;" title="未排异">!</span>` : '';
       slotsHtml += `
         <div class="organ-gear-slot ${slotClass} ${qClass}" 
              style="top: ${s.y}%; left: ${s.x}%; cursor: pointer;" 
              data-slot-key="${s.key}">
           <div class="organ-gear-circle" style="${borderStyle}">
             <i class="${s.icon}"></i>
+            ${unadaptedBadge}
           </div>
           <div class="organ-gear-label-box">
             <span class="organ-gear-val-name" style="color: ${nameColor};">${displayName}${setBadge}</span>
@@ -9601,10 +9742,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             const slotGuess = item.data?.部位 || guessSlotFromOrganName(item.name) || '通用';
             const level = item.level > 0 ? ` +${item.level}` : '';
             const backpackSetBadge = item.data?.套装 ? `<span class="backpack-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${item.data.套装}</span>` : '';
+            // 背包内已排异标识 (右上角绿色勾)
+            const adaptedBadge = item.data?.已排异 === true ? `<span class="backpack-adapted-badge" style="position: absolute; top: 1px; right: 1px; font-size: 7px; background: #2ea87a; color: #fff; padding: 0 3px; border-radius: 2px; line-height: 1.2; font-weight: 700;" title="已排异">✓</span>` : '';
             backpackHtml += `
               <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
                    style="position: relative; border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
                 ${backpackSetBadge}
+                ${adaptedBadge}
                 <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
                   <i class="${getOrganIconClass(slotGuess, item.name)}"></i>
                 </span>
@@ -9613,7 +9757,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             `;
           });
           $backpackGrid.html(backpackHtml);
-          
+
           // 绑定点击
           $backpackGrid.find('.organ-backpack-item').off('click').on('click', function() {
             const idx = $(this).data('bp-idx');
@@ -9622,6 +9766,49 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           });
         }
       }
+
+      // 渲染排异药剂数量并绑定按钮
+      const 排异药剂数量 = (data?.人物?.器官系统?.排异药剂数量 !== undefined) ? data.人物.器官系统.排异药剂数量 : 0;
+      const $medicineCount = $panel.find('.organ-medicine-count');
+      if ($medicineCount.length) {
+        $medicineCount.text(`${排异药剂数量} 瓶`);
+      }
+
+      $panel.find('#btn-test-get-medicine').off('click').on('click', async function() {
+        const win = typeof getCore === 'function' ? getCore().window : window;
+        const mvuData = win.Mvu.getMvuData({ type: 'message', message_id: 'latest' });
+        if (!mvuData || !mvuData.stat_data) {
+          showToast('error', '无法获取 MVU 数据');
+          return;
+        }
+        const sys = mvuData.stat_data.人物 = mvuData.stat_data.人物 || {};
+        sys.器官系统 = sys.器官系统 || {};
+        sys.器官系统.排异药剂数量 = (sys.器官系统.排异药剂数量 || 0) + 5;
+        const saved = await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
+        if (saved) {
+          showToast('success', '已成功获取 5 瓶排异药剂');
+          updateOrganUI();
+        } else {
+          showToast('error', '保存数据失败');
+        }
+      });
+
+      $panel.find('#btn-use-medicine').off('click').on('click', function() {
+        const d2 = fetchLatestMvuData();
+        const sys = d2?.人物?.器官系统;
+        const 列表 = sys?.器官列表 || {};
+        const 药数量 = (sys?.排异药剂数量 !== undefined) ? sys.排异药剂数量 : 0;
+        if (药数量 <= 0) {
+          showToast('warn', '排异药剂不足，无法使用');
+          return;
+        }
+        const 未排异槽位 = Object.entries(列表).filter(([k, o]) => o && !o.空 && o.已排异 !== true).map(([k]) => k);
+        if (未排异槽位.length === 0) {
+          showToast('info', '当前没有需要排异的器官');
+          return;
+        }
+        showUseMedicinePopup(未排异槽位, 药数量);
+      });
       
       // 绑定部位插槽点击
       $list.find('.organ-gear-slot').off('click').on('click', function() {
@@ -9775,7 +9962,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             属性加成: subAttrs,
             特性: traits,
             标签: labels,
-            套装: setName
+            套装: setName,
+            已排异: Math.random() > 0.5
           };
 
           await win.Mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
@@ -9894,7 +10082,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
             标签: ["血肉", "人类"],
             种族: "",
             强化等级: 0,
-            初始: true
+            初始: true,
+            已排异: true
           }
         });
       }
@@ -9915,7 +10104,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           特性: [],
           标签: ["血肉", "暴君"],
           种族: "",
-          强化等级: 0
+          强化等级: 0,
+          已排异: true
         }
       });
     }
@@ -9935,7 +10125,8 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           特性: [],
           标签: ["机械", "血肉"],
           种族: "",
-          强化等级: 0
+          强化等级: 0,
+          已排异: true
         }
       });
     }
@@ -10437,6 +10628,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 }
 .organ-gear-slot.quality-cursed .organ-gear-circle i {
     color: #eb5757;
+}
+
+/* 未排异器官 - 红色警示脉冲 */
+.organ-gear-slot.quality-unadapted .organ-gear-circle {
+    border-color: #cf222e !important;
+    animation: organ-unadapted-pulse 1.5s ease-in-out infinite;
+}
+.organ-gear-slot.quality-unadapted .organ-gear-circle i {
+    color: #cf222e !important;
+}
+@keyframes organ-unadapted-pulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(207, 34, 46, 0.4); }
+    50% { box-shadow: 0 0 12px rgba(207, 34, 46, 0.8); }
 }
 
 /* 文字标签统一浮在圆圈图标正上方 */
@@ -16138,6 +16342,25 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
                 <div id="organ-set-info"></div>
                 <div class="traits-list" id="organ-page-list">
                   <div class="traits-empty"><i class="ri-ghost-line"></i> 暂无移植器官</div>
+                </div>
+                <div class="organ-rejection-medicine-container" style="margin-top: 14px; padding: 10px 12px; background: rgba(142, 68, 173, 0.06); border: 1px solid rgba(142, 68, 173, 0.2); border-radius: 10px;">
+                  <div class="organ-medicine-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed rgba(142, 68, 173, 0.25);">
+                    <span style="font-size: 13px; font-weight: 700; color: #6c3483; display: flex; align-items: center; gap: 6px;">
+                      <i class="ri-flask-fill" style="color: #8e44ad;"></i> 排异药剂
+                    </span>
+                    <span class="organ-medicine-count" style="font-size: 10px; color: #8e44ad; font-weight: 700; background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 10px;">0 瓶</span>
+                  </div>
+                  <div style="font-size: 10.5px; color: #5e3370; line-height: 1.4; margin-bottom: 8px;">
+                    用于消除器官的排异反应，使外来器官完美适应身体。每瓶药剂可消除 1 个未排异器官的排斥反应。
+                  </div>
+                  <div style="display: flex; gap: 6px;">
+                    <button id="btn-use-medicine" class="btn btn-sm" style="flex: 1; font-size: 10.5px; background: #8e44ad; color: #fff; border: none; border-radius: 4px; padding: 5px 8px; cursor: pointer; font-weight: 600;">
+                      <i class="ri-magic-line"></i> 使用药剂
+                    </button>
+                    <button id="btn-test-get-medicine" class="btn btn-sm" style="flex: 1; font-size: 10.5px; background: #57606a; color: #fff; border: none; border-radius: 4px; padding: 5px 8px; cursor: pointer; font-weight: 600;">
+                      <i class="ri-add-circle-line"></i> 测试获取药剂
+                    </button>
+                  </div>
                 </div>
                 <div class="organ-backpack-container" style="margin-top: 14px; padding: 10px 12px; background: rgba(246, 240, 224, 0.5); border: 1px solid rgba(90, 70, 50, 0.1); border-radius: 10px;">
                   <div class="organ-backpack-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(90, 70, 50, 0.2);">
