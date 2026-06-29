@@ -9089,10 +9089,12 @@ let slotsHtml = `
             const level = item.level > 0 ? ` +${item.level}` : '';
             const backpackSetBadge = item.data?.套装 ? `<span class="backpack-set-badge" style="position: absolute; bottom: 1px; right: 1px; font-size: 7px; background: #d29922; color: #fff; padding: 0 2px; border-radius: 2px; line-height: 1.1; scale: 0.9; font-weight: 700;">${item.data.套装}</span>` : '';
             // 背包内已排异标识 (右上角绿色勾)
-            const adaptedBadge = item.data?.已排异 === true ? `<span class="backpack-adapted-badge" style="position: absolute; top: 1px; right: 1px; font-size: 7px; background: #2ea87a; color: #fff; padding: 0 3px; border-radius: 2px; line-height: 1.2; font-weight: 700;" title="已排异">✓</span>` : '';
+            const isBackpackAdapted = item.data?.已排异 === true;
+            const backpackBorderColor = isBackpackAdapted ? `rgba(9,105,218,0.5)` : `#cf222e90`;
+            const adaptedBadge = isBackpackAdapted ? `<span class="backpack-adapted-badge" style="position: absolute; top: 1px; right: 1px; font-size: 7px; background: #2ea87a; color: #fff; padding: 0 3px; border-radius: 2px; line-height: 1.2; font-weight: 700;" title="已排异">✓</span>` : `<span class="backpack-unadapted-badge" style="position: absolute; top: 1px; right: 1px; font-size: 7px; background: #cf222e; color: #fff; padding: 0 3px; border-radius: 2px; line-height: 1.2; font-weight: 700;" title="未排异">!</span>`;
             backpackHtml += `
               <div class="inv-item inv-item-card organ-backpack-item" data-bp-idx="${idx}" 
-                   style="position: relative; border-color: ${color}90; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
+                   style="position: relative; border-color: ${backpackBorderColor}; background: ${color}08; cursor: pointer; width: 100%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; gap: 3px;">
                 ${backpackSetBadge}
                 ${adaptedBadge}
                 <span class="inv-icon" style="color: ${color}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
@@ -10624,21 +10626,21 @@ $panel.find('.organ-attrs-header-bar').remove();
 }
 
 .organ-gear-slot.quality-rare .organ-gear-circle {
-    border-color: #9b51e0;
+    /* 品质只影响图标颜色，不影响边框 */
 }
 .organ-gear-slot.quality-rare .organ-gear-circle i {
     color: #9b51e0;
 }
 
 .organ-gear-slot.quality-legendary .organ-gear-circle {
-    border-color: #f2994a;
+    /* 品质只影响图标颜色，不影响边框 */
 }
 .organ-gear-slot.quality-legendary .organ-gear-circle i {
     color: #f2994a;
 }
 
 .organ-gear-slot.quality-cursed .organ-gear-circle {
-    border-color: #eb5757;
+    /* 品质只影响图标颜色，不影响边框 */
 }
 .organ-gear-slot.quality-cursed .organ-gear-circle i {
     color: #eb5757;
@@ -10650,7 +10652,7 @@ $panel.find('.organ-attrs-header-bar').remove();
     animation: organ-unadapted-pulse 1.5s ease-in-out infinite;
 }
 .organ-gear-slot.quality-unadapted .organ-gear-circle i {
-    color: #cf222e !important;
+    /* 未排异不强制覆盖图标颜色，由品质决定图标色 */
 }
 @keyframes organ-unadapted-pulse {
     0%, 100% { box-shadow: 0 0 4px rgba(207, 34, 46, 0.4); }
