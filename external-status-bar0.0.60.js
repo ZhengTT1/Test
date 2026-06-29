@@ -8607,6 +8607,31 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     const 健康度Val = organSystem.健康度 || 100;
     const 套装 = organSystem.已激活套装 || [];
 
+    const getEffectColor = (name, desc = '') => {
+      const text = (name + desc).toLowerCase();
+      const isNegative = /诅诅|诅咒|排斥|受损|缺陷|惩罚|降低|减少|扣除|副作用|毒|病|弱化|流血/.test(text);
+      if (isNegative) {
+        return {
+          color: '#cf222e',
+          bg: 'rgba(207, 34, 46, 0.03)',
+          border: '#cf222e40'
+        };
+      }
+      if (name.includes('机械') || name.includes('金属') || name.includes('科技')) {
+        return {
+          color: '#0969da',
+          bg: 'rgba(9, 105, 218, 0.03)',
+          border: '#0969da40'
+        };
+      }
+      // Default positive/buff (Green)
+      return {
+        color: '#2ea87a',
+        bg: 'rgba(46, 168, 122, 0.03)',
+        border: '#2ea87a40'
+      };
+    };
+
     const expandedSlots = [];
     slotsDef.forEach(s => {
       const count = s.count || 1;
@@ -8635,9 +8660,9 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
     if ($organSet.length) {
       if (套装 && 套装.length > 0) {
         const setHtml = 套装.map(s => `<span class="organ-set-chip">${s}</span>`).join('');
-        $organSet.html(`<div class="organ-set-active-row">已激活套装: ${setHtml}</div>`);
+        $organSet.html(`<div class="organ-set-active-row">已激活套装: ${setHtml}</div>`).show();
       } else {
-        $organSet.html('<div class="organ-set-active-row empty">无激活套装</div>');
+        $organSet.html('').hide();
       }
     }
 
@@ -9177,7 +9202,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
 
       cardsHtml += `
         <div class="organ-attr-compact-card custom-attr-card ${edgeClass}" data-attr-key="${k}">
-          <div class="compact-header-vertical">
+          <div class="compact-header-vertical" style="color: #2ea87a;">
             <i class="${customIcon}"></i>
             <span class="organ-attr-value ${valClass}" style="font-size: 9.5px;">${val}</span>
           </div>
@@ -9222,20 +9247,40 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       else if (traitName === '重击强化') traitIcon = 'ri-hammer-line';
       else if (traitName === '充能') traitIcon = 'ri-flashlight-line';
 
-      cardsHtml += `
-        <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}" style="border-color: #2ea87a40; background: rgba(46,168,122,0.03);">
-          <div class="compact-header-vertical" style="color: #2ea87a;">
-            <i class="${traitIcon}"></i>
-            <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${traitVal}</span>
+      const isCommonTrait = ['超频爆发', '超频', '充能', '重击强化'].includes(traitName);
+
+      if (isCommonTrait) {
+        cardsHtml += `
+          <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}">
+            <div class="compact-header-vertical">
+              <i class="${traitIcon}"></i>
+              <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${traitVal}</span>
+            </div>
+            <div class="compact-detail">
+              <div class="compact-attr-name">[特性] ${traitName}</div>
+              <div class="compact-brief effect-normal">额外效果</div>
+              <div class="compact-desc">${traitDesc}</div>
+              ${providersHtml}
+            </div>
           </div>
-          <div class="compact-detail">
-            <div class="compact-attr-name" style="color: #2ea87a; font-weight: 700;">[特性] ${traitName}</div>
-            <div class="compact-brief effect-buff" style="color: #2ea87a;">额外效果</div>
-            <div class="compact-desc">${traitDesc}</div>
-            ${providersHtml}
+        `;
+      } else {
+        const effectStyle = getEffectColor(traitName, traitDesc);
+        cardsHtml += `
+          <div class="organ-attr-compact-card trait-card ${edgeClass}" data-attr-key="${traitName}" style="border-color: ${effectStyle.border}; background: ${effectStyle.bg};">
+            <div class="compact-header-vertical" style="color: ${effectStyle.color};">
+              <i class="${traitIcon}"></i>
+              <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${traitVal}</span>
+            </div>
+            <div class="compact-detail">
+              <div class="compact-attr-name" style="color: ${effectStyle.color}; font-weight: 700;">[特性] ${traitName}</div>
+              <div class="compact-brief effect-buff" style="color: ${effectStyle.color};">额外效果</div>
+              <div class="compact-desc">${traitDesc}</div>
+              ${providersHtml}
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
       customCardIdx++;
     });
 
@@ -9266,15 +9311,17 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
         setDesc = `已装备 ${count} 件机械套装部件。激活效果：机械传动效率提升，储能最大上限额外获得提升。`;
       }
 
+      const effectStyle = getEffectColor(setName, setDesc);
+
       cardsHtml += `
-        <div class="organ-attr-compact-card set-card ${edgeClass}" data-attr-key="${setName}" style="border-color: #d2992240; background: rgba(210,153,34,0.03);">
-          <div class="compact-header-vertical" style="color: #d29922;">
+        <div class="organ-attr-compact-card set-card ${edgeClass}" data-attr-key="${setName}" style="border-color: ${effectStyle.border}; background: ${effectStyle.bg};">
+          <div class="compact-header-vertical" style="color: ${effectStyle.color};">
             <i class="ri-vip-crown-line"></i>
             <span class="organ-attr-value" style="font-size: 9.5px; font-weight: 700;">+${count}</span>
           </div>
           <div class="compact-detail">
-            <div class="compact-attr-name" style="color: #d29922; font-weight: 700;">[套装] ${setName}</div>
-            <div class="compact-brief effect-buff" style="color: #d29922;">套装组合</div>
+            <div class="compact-attr-name" style="color: ${effectStyle.color}; font-weight: 700;">[套装] ${setName}</div>
+            <div class="compact-brief effect-buff" style="color: ${effectStyle.color};">套装组合</div>
             <div class="compact-desc">${setDesc}</div>
             ${setProvidersHtml}
           </div>
