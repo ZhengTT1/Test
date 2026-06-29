@@ -8843,13 +8843,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       if (attr.key === '健康度') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const pct = Math.round((attr.default - val) * 100);
+          const pct = Math.round((attr.default - val) * 10);
           effectText = val <= 0 ? '死亡' : `生命-${pct}%`;
           effectClass = 'effect-debuff';
           detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 20);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `生命+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
@@ -8862,13 +8862,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       else if (attr.key === '坚韧') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const pct = Math.round((attr.default - val) * 20);
+          const pct = Math.round((attr.default - val) * 5);
           effectText = `易伤+${pct}%`;
           effectClass = 'effect-debuff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 20);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `防御+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `-${pct}`);
@@ -8881,13 +8881,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       else if (attr.key === '神经传递效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const pct = Math.round((attr.default - val) * 100);
+          const pct = Math.round((attr.default - val) * 10);
           effectText = val <= 0 ? '瘫痪' : `迟钝+${pct}%`;
           effectClass = 'effect-debuff';
           detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 10);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `敏捷/先攻+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
@@ -8900,13 +8900,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       else if (attr.key === '血液过滤效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const pct = Math.round((attr.default - val) / 2 * 100);
+          const pct = Math.round((attr.default - val) * 10);
           effectText = `流血/治疗降${pct}%`;
           effectClass = 'effect-debuff';
           detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const filterPct = Math.round((val - attr.default) * 10);
+          const filterPct = Math.round((val - attr.default) * 5);
           effectText = `体质+${filterPct}%/再生`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${filterPct}`);
@@ -8957,13 +8957,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       else if (attr.key === '新陈代谢效率') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const pct = Math.round((attr.default - val) * 100);
+          const pct = Math.round((attr.default - val) * 10);
           effectText = val <= 0 ? '无经验' : `经验-${pct}%`;
           effectClass = 'effect-debuff';
           detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 10);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `经验+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
@@ -8976,13 +8976,13 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
       else if (attr.key === '肺活量') {
         if (val < attr.default) {
           valClass = 'attr-down';
-          const pct = Math.round((attr.default - val) / 2 * 100);
+          const pct = Math.round((attr.default - val) * 10);
           effectText = val <= 0 ? '窒息' : `窒息率+${pct}%`;
           effectClass = 'effect-debuff';
           detailedReport = attr.desc.replace('{pct}', `-${pct}`);
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 20);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `屏息+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
@@ -9000,7 +9000,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           detailedReport = "体力衰退，处于易劳累状态。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 10);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `战续+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
@@ -9018,7 +9018,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           detailedReport = "胃肠动力受损，食物吸收率下降。";
         } else if (val > attr.default) {
           valClass = 'attr-up';
-          const pct = Math.round((val - attr.default) * 10);
+          const pct = Math.round((val - attr.default) * 5);
           effectText = `抗毒+${pct}%`;
           effectClass = 'effect-buff';
           detailedReport = attr.desc.replace('{pct}', `+${pct}`);
